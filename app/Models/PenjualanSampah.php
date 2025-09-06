@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class PenjualanSampah extends Model
+{
+    protected $fillable = ['pengepul_id', 'tanggal', 'total_harga', 'keterangan'];
+
+    public function pengepul()
+    {
+        return $this->belongsTo(Pengepul::class);
+    }
+
+    public function detail_penjualan()
+    {
+        return $this->hasMany(DetailPenjualanSampah::class);
+    }
+
+    //     public function detailPenjualanSampahs()
+    //     {
+    //         return $this->hasMany(DetailPenjualanSampah::class);
+    //     }
+}
