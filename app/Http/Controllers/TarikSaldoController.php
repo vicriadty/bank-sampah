@@ -92,10 +92,13 @@ class TarikSaldoController extends Controller
 
         if ($nasabah->saldo < $request->jumlah_tarik) {
             return back()->with('error', 'Saldo nasabah tidak mencukupi');
-        }
-
-        // Kurangi saldo
-        $nasabah->decrement('saldo', $request->jumlah_tarik);
+        } else if ($request->jumlah_tarik < 10000) {
+            return back()->with('error', 'Tarik saldo minimal 10.000');
+        } else if ($request->jumlah_tarik > 1000000) {
+            return back()->with('error', 'Tarik saldo maksimal 1.000.000');
+        } else
+            // Kurangi saldo
+            $nasabah->decrement('saldo', $request->jumlah_tarik);
 
         // Simpan transaksi tarik saldo
         TarikSaldo::create([
