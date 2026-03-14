@@ -8,21 +8,22 @@
         <h1 class="h3 mb-0 text-gray-800">Data Pengepul</h1>
         <a href="/pengepul/create" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                 class="fas fa-plus fa-sm text-white-50"></i> Tambah Pengepul</a>
+
+
+        @if (session('success'))
+            <script>
+                Swal.fire({
+                    position: "top-end",
+                    text: "{{ session('success') }}",
+                    icon: "success",
+                    width: 600,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            </script>
+        @endif
     </div>
 
-
-    @if (session('success'))
-        <script>
-            Swal.fire({
-                position: "top-end",
-                text: "{{ session('success') }}",
-                icon: "success",
-                width: 600,
-                showConfirmButton: false,
-                timer: 1500
-            });
-        </script>
-    @endif
 
     <form method="GET" action="{{ route('pengepul.search') }}" class="row mb-3">
         <div class="col-md-3">
@@ -94,7 +95,6 @@
             </div>
 
         </div>
-    </div>
     </div>
 @endsection
 

@@ -12,8 +12,8 @@
     <hr class="sidebar-divider my-0">
 
     <!-- Nav Item - Dashboard -->
-    <li class="nav-item {{ request()->is('/') ? 'active' : '' }}">
-        <a class="nav-link" href="/">
+    <li class="nav-item {{ request()->is('/dashboard') ? 'active' : '' }}">
+        <a class="nav-link" href="/dashboard">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span></a>
     </li>
@@ -37,6 +37,11 @@
         <a class="nav-link" href="/pengepul">
             <i class="fas fa-fw fa-truck"></i>
             <span>Pengepul</span></a>
+    </li>
+    <li class="nav-item {{ request()->is('stok-sampah') ? 'active' : '' }}">
+        <a class="nav-link" href="/stok-sampah">
+            <i class="fas fa-fw fa-boxes"></i>
+            <span>Stok Sampah</span></a>
     </li>
     <li class="nav-item {{ request()->is('sampah') ? 'active' : '' }}">
         <a class="nav-link" href="/sampah">

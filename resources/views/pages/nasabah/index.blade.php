@@ -8,21 +8,21 @@
         <h1 class="h3 mb-0 text-gray-800">Data Nasabah</h1>
         <a href="/nasabah/create" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                 class="fas fa-plus fa-sm text-white-50"></i> Tambah Nasabah</a>
+
+
+        @if (session('success'))
+            <script>
+                Swal.fire({
+                    position: "top-end",
+                    text: "{{ session('success') }}",
+                    icon: "success",
+                    width: 600,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            </script>
+        @endif
     </div>
-
-
-    @if (session('success'))
-        <script>
-            Swal.fire({
-                position: "top-end",
-                text: "{{ session('success') }}",
-                icon: "success",
-                width: 600,
-                showConfirmButton: false,
-                timer: 1500
-            });
-        </script>
-    @endif
 
     <form method="GET" action="{{ route('nasabah.search') }}" class="row mb-3">
         <div class="col-md-3">
@@ -107,7 +107,6 @@
             </div>
 
         </div>
-    </div>
     </div>
 @endsection
 

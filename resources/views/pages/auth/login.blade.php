@@ -21,10 +21,25 @@
     <!-- Custom styles for this template-->
     <link href="{{ asset('template/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+
+        .btn-primary {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-primary:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+    </style>
 
 </head>
 
-<body class="bg-gradient-primary">
+<body>
 
 
     <div class="container">
@@ -32,21 +47,18 @@
         <!-- Outer Row -->
 
         <div class="row justify-content-center">
-            <div class="col-xl-10 col-lg-12 col-md-9">
+            <div class="col-xl-6 col-lg-8 col-md-9">
 
                 <div class="card o-hidden border-0 shadow-lg my-5">
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-login-image">
-                                <div class="justify-content-center row items-center mt-2">
-                                    <h2 style="font-weight: bold; color: green;">BANK SAMPAH</h2>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
+                            <div class="col-lg-12">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Selamat Datang</h1>
+                                        <img src="{{ asset('favicon1.svg') }}" alt="Recycle Logo" width="72">
+                                        <h1 class="h4 text-gray-900 mb-4 mt-3">BANK SAMPAH</h1>
+                                        <h2 class="h5 text-gray-900 mb-4">Selamat Datang</h2>
                                     </div>
 
                                     @if (session('error'))
@@ -91,7 +103,7 @@
                                     </form>
                                     <hr>
                                     <div class="text-center">
-                                        {{-- <a class="small" href="register">Daftar Akun</a> --}}
+                                        <span>Belum punya akun?</span> <a href="/register">Register</a>
                                     </div>
                                 </div>
                             </div>

@@ -10,15 +10,21 @@ use App\Http\Controllers\SampahController;
 use App\Http\Controllers\SetoranController;
 use App\Http\Controllers\TarikSaldoController;
 use App\Http\Controllers\UserController;
+use App\Models\JenisSampah;
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
 Route::get('/', function () {
-    return view('pages.dashboard');
+    $jenisSampah = JenisSampah::all();
+    $nasabah = null;
+    if (Auth::check()) {
+        // Assuming the User model has a relationship to Nasabah model
+        // and the nasabah is eager loaded or can be fetched like this.
+        $nasabah = Auth::user()?->nasabah;
+    }
+    return view('pages.landing', compact('jenisSampah', 'nasabah'));
 });
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth');
 
 //Nasabah Route
 Route::get('/nasabah', [NasabahController::class, 'index'])->name('nasabah.index')->middleware('auth');
@@ -39,18 +45,21 @@ Route::delete('/pengepul/{id}', [PengepulController::class, 'destroy']);
 Route::get('/pengepul-search', [PengepulController::class, 'search'])->name('pengepul.search');
 
 //Sampah Route
-Route::get('/sampah', [SampahController::class, 'index'])->name('sampah.index')->middleware('auth');
+Route::get('/sampah', [SampahController::class, 'indexSampah'])->name('sampah.index')->middleware('auth');
 Route::get('/sampah/create', [SampahController::class, 'create'])->name('sampah.create')->middleware('auth');
 Route::post('/sampah', [SampahController::class, 'store'])->name('sampah.store');
 Route::get('/sampah/{id}', [SampahController::class, 'edit'])->middleware('auth');
 Route::put('/sampah/{id}', [SampahController::class, 'update']);
 Route::delete('/sampah/{id}', [SampahController::class, 'destroy']);
 
+// Stok Sampah Route
+Route::get('/stok-sampah', [SampahController::class, 'indexStokSampah'])->name('stok-sampah.index')->middleware('auth');
+
 //Login Route
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/', [DashboardController::class, 'index'])->middleware('auth');
+// Route::get('/', [DashboardController::class, 'index'])->middleware('auth');
 
 //Register Route
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -69,6 +78,8 @@ Route::get('/setor-sampah', [SetoranController::class, 'index'])->name('setoran.
 Route::get('/setor-sampah/create', [SetoranController::class, 'create'])->name('setoran.create')->middleware('auth');
 Route::post('/setor-sampah', [SetoranController::class, 'store'])->name('setoran.store');
 Route::get('/get-sampah-by-jenis/{id}', [SetoranController::class, 'getSampahByJenis']);
+
+// Route::post('transaksi/setor-sampah', [SetoranController::class, 'store'])->name('setoran.store');
 
 //Tarik Saldo Route
 Route::get('/tarik-saldo', [TarikSaldoController::class, 'index'])->name('tarik-saldo.index')->middleware('auth');

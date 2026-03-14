@@ -5,16 +5,30 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\JenisSampah;
 use App\Models\Sampah;
+use App\Models\Setoran;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SampahController extends Controller
 {
-    public function index()
+    public function indexSampah()
     {
         $sampah = Sampah::all();
 
         return view('pages.sampah.index', [
             'sampah' => $sampah,
+        ]);
+    }
+
+    public function indexStokSampah()
+    {
+        $stokSampah = Setoran::with('sampah, nasabah')
+            ->select('sampah_id', DB::raw('SUM(berat) as total_berat'))
+            ->groupBy('sampah_id')
+            ->get();
+
+        return view('pages.stok-sampah.index', [
+            'stokSampah' => $stokSampah,
         ]);
     }
 

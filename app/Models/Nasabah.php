@@ -11,12 +11,17 @@ class Nasabah extends Model
 
     protected $table = 'nasabahs';
 
-    protected $fillable = ['nama', 'nik', 'jenis_kelamin', 'tanggal_lahir', 'tempat_lahir', 'alamat', 'no_hp'];
+    protected $fillable = ['nik', 'nama', 'jenis_kelamin', 'tanggal_lahir', 'tempat_lahir', 'alamat', 'no_hp'];
 
     protected $guarded = [];
 
     public function setorans()
     {
         return $this->hasMany(Setoran::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

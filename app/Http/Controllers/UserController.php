@@ -52,6 +52,10 @@ class UserController extends Controller
 
         $user = Auth::user();
 
+        if (!$user) {
+            return back()->withErrors(['error' => 'User not authenticated.']);
+        }
+
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password lama tidak cocok.']);
         }

@@ -55,33 +55,6 @@ class SetoranController extends Controller
         return view('pages.transaksi.setor-sampah.index', compact('setorans', 'nasabahs'));
     }
 
-
-
-
-    // public function index(Request $request)
-    // {
-    //     $query = Setoran::with(['nasabah', 'details.sampah'])->latest();
-
-    //     // Filter berdasarkan nama nasabah
-    //     if ($request->filled('nasabah')) {
-    //         $query->whereHas('nasabah', function ($q) use ($request) {
-    //             $q->where('nama', 'like', '%' . $request->nasabah . '%');
-    //         });
-    //     }
-
-    //     // Filter berdasarkan range tanggal
-    //     if ($request->filled('tanggal_mulai') && $request->filled('tanggal_selesai')) {
-    //         $query->whereBetween('created_at', [
-    //             $request->tanggal_mulai . ' 00:00:00',
-    //             $request->tanggal_selesai . ' 23:59:59'
-    //         ]);
-    //     }
-
-    //     $setorans = $query->get();
-
-    //     return view('pages.transaksi.setor-sampah.index', compact('setorans'));
-    // }
-
     public function create()
     {
         $nasabahs = Nasabah::all();

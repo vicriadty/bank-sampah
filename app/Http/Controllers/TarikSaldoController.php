@@ -50,34 +50,10 @@ class TarikSaldoController extends Controller
         return view('pages.transaksi.tarik-saldo.index', compact('tarikSaldos', 'nasabahs'));
     }
 
-    // public function index(Request $request)
-    // {
-    //     $query = TarikSaldo::with('nasabah')->latest();
-
-    //     // Filter berdasarkan nama nasabah
-    //     if ($request->filled('nasabah')) {
-    //         $query->whereHas('nasabah', function ($q) use ($request) {
-    //             $q->where('nama', 'like', '%' . $request->nasabah . '%');
-    //         });
-    //     }
-
-    //     // Filter berdasarkan range tanggal
-    //     if ($request->filled('tanggal_mulai') && $request->filled('tanggal_selesai')) {
-    //         $query->whereBetween('created_at', [
-    //             $request->tanggal_mulai . ' 00:00:00',
-    //             $request->tanggal_selesai . ' 23:59:59'
-    //         ]);
-    //     }
-
-    //     $tarikSaldos = $query->get();
-
-    //     return view('pages.transaksi.tarik-saldo.index', compact('tarikSaldos'));
-    // }
-
-
     public function create()
     {
-        $nasabahs = Nasabah::all();
+        // Tampilkan nasabah yang mempunyai saldo > 0
+        $nasabahs = Nasabah::where('saldo', '>', 0)->get();
         return view('pages.transaksi.tarik-saldo.create', compact('nasabahs'));
     }
 
@@ -92,6 +68,14 @@ class TarikSaldoController extends Controller
 
         if ($nasabah->saldo < $request->jumlah_tarik) {
             return back()->with('error', 'Saldo nasabah tidak mencukupi');
+        } elseif ($request->jumlah_tarik <= 0) {
+            return back()->with('error', 'Jumlah tarik harus lebih besar dari 0');
+        } elseif ($request->jumlah_tarik > $nasabah->saldo) {
+            return back()->with('error', 'Jumlah tarik tidak boleh melebihi saldo nasabah');
+        } elseif ($request->jumlah_tarik > 1000000) {
+            return back()->with('error', 'Jumlah tarik tidak boleh melebihi 1.000.000');
+        } elseif ($request->jumlah_tarik < 10000) {
+            return back()->with('error', 'Jumlah tarik tidak boleh kurang dari 10.000');
         }
 
         // Kurangi saldo
@@ -105,17 +89,4 @@ class TarikSaldoController extends Controller
 
         return redirect()->route('tarik-saldo.index')->with('success', 'Tarik saldo berhasil');
     }
-
-    // public function laporanPDF()
-    // {
-    //     $tarikSaldos = TarikSaldo::with('nasabah')->latest()->get();
-
-    //     $pdf = Pdf::loadView('pages.transaksi.tarik-saldo.laporan_pdf', compact('tarikSaldos'));
-
-    //     $tanggal = now()->format('d-m-y');
-
-    //     $namaFile = 'laporan-tarik-saldo-' . $tanggal . '.pdf';
-
-    //     return $pdf->download($namaFile);
-    // }
 }
