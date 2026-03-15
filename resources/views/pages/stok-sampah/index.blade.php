@@ -1,8 +1,10 @@
 @extends('layouts.app')
 
+@section('title', 'Bank Sampah - Stok Sampah')
+
 @section('content')
     <div class="container">
-        <h1 class="mb-4">Sampah Stock</h1>
+        <h2 class="mb-4">Stok Sampah</h2>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -13,10 +15,10 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($sampahStock as $index => $stock)
+                @forelse ($stokSampah as $index => $stock)
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td>{{ $stock->sampah->jenis_sampah->nama_jenis ?? '-' }}</td>
+                        <td>{{ $stock->sampah->jenisSampah->nama_jenis ?? '-' }}</td>
                         <td>{{ $stock->sampah->nama_sampah ?? '-' }}</td>
                         <td>{{ number_format($stock->total_berat, 2) }}</td>
                     </tr>

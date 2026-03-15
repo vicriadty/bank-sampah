@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class JenisSampah extends Model
 {
-    protected $table = 'jenis_sampahs'; // sesuaikan jika berbeda
+    protected $table = 'jenis_sampahs';
     protected $fillable = ['nama_jenis'];
 
     public function sampahs()

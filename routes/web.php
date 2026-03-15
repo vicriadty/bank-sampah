@@ -8,6 +8,7 @@ use App\Http\Controllers\PengepulController;
 use App\Http\Controllers\PenjualanSampahController;
 use App\Http\Controllers\SampahController;
 use App\Http\Controllers\SetoranController;
+use App\Http\Controllers\StokSampahController;
 use App\Http\Controllers\TarikSaldoController;
 use App\Http\Controllers\UserController;
 use App\Models\JenisSampah;
@@ -53,7 +54,8 @@ Route::put('/sampah/{id}', [SampahController::class, 'update']);
 Route::delete('/sampah/{id}', [SampahController::class, 'destroy']);
 
 // Stok Sampah Route
-Route::get('/stok-sampah', [SampahController::class, 'indexStokSampah'])->name('stok-sampah.index')->middleware('auth');
+// Route::get('/stok-sampah', [SampahController::class, 'indexStokSampah'])->name('stok-sampah.index')->middleware('auth');
+Route::get('/stok-sampah', [StokSampahController::class, 'index'])->name('stok-sampah.index')->middleware('auth');
 
 //Login Route
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
