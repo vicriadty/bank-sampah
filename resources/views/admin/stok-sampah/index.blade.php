@@ -11,7 +11,7 @@
                     <th>#</th>
                     <th>Jenis Sampah</th>
                     <th>Nama Sampah</th>
-                    <th>Total Berat (kg)</th>
+                    <th>Total Stok (kg)</th>
                 </tr>
             </thead>
             <tbody>

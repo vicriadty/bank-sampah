@@ -9,7 +9,7 @@ class SetoranDetail extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['setoran_id', 'sampah_id', 'berat', 'harga_per_kg', 'subtotal'];
+    protected $fillable = ['setoran_id', 'sampah_id', 'berat', 'harga_per_kg', 'subtotal', 'stok'];
 
     public function setoran()
     {

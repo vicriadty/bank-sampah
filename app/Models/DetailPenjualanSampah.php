@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DetailPenjualanSampah extends Model
 {
-    protected $fillable = ['penjualan_sampah_id', 'sampah_id', 'berat', 'harga_per_kg', 'subtotal'];
+    protected $fillable = ['penjualan_sampah_id', 'sampah_id', 'berat', 'harga_per_kg', 'subtotal', 'stok'];
 
     public function penjualan()
     {

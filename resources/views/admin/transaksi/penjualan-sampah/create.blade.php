@@ -3,6 +3,10 @@
 @section('title', 'Bank Sampah - Penjualan')
 
 @section('content')
+    @if (session('error'))
+        <div class="alert alert-danger mb-4">{{ session('error') }}</div>
+    @endif
+
     <div class="row">
         <div class="col-lg-10">
             <div class="card shadow mb-4">

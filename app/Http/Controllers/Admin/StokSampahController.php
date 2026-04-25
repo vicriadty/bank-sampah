@@ -19,6 +19,8 @@ class StokSampahController extends Controller
             ->get()
             ->map(function ($sampah) {
                 $totalBerat = ($sampah->setoran_details_sum_berat ?? 0) - ($sampah->penjualan_sampahs_sum_berat ?? 0);
+                $sampah->update(['stok' => $totalBerat]);
+
                 return (object) [
                     'sampah' => $sampah,
                     'total_berat' => $totalBerat,

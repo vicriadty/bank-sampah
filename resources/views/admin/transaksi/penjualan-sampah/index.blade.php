@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Data Penjualan Sampah</h1>
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-cash-register text-primary"></i> Data Penjualan Sampah</h1>
 
         @if (session('success'))
             <script>
@@ -64,7 +64,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($penjualans as $jual)
+                @forelse ($penjualans as $jual)
                     <tr>
                         <td>{{ $jual->tanggal }}</td>
                         <td>{{ $jual->pengepul->nama }}</td>
@@ -78,7 +78,11 @@
                         </td>
                         </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="4" class="text-center">Tidak ada data penjualan sampah.</td>
+                    </tr>
+                @endforelse
 
             </tbody>
         </table>

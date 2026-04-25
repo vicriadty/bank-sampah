@@ -9,7 +9,7 @@ class Sampah extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['sampah_id', 'nama_jenis', 'jenis_sampah_id', 'nama_sampah', 'harga_per_kg'];
+    protected $fillable = ['sampah_id', 'nama_jenis', 'jenis_sampah_id', 'nama_sampah', 'stok', 'harga_per_kg'];
 
     public function jenisSampah()
     {

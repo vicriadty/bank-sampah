@@ -95,6 +95,8 @@ class SetoranController extends Controller
                 'subtotal' => $subtotal,
             ]);
 
+            $sampah->increment('stok', $request->berat);
+
             $setoran->nasabah->increment('saldo', $subtotal);
 
             DB::commit();

@@ -124,6 +124,8 @@ class PenjualanSampahController extends Controller
                     'harga_per_kg' => $sampah->harga_per_kg,
                     'subtotal' => $subtotal,
                 ]);
+
+                $sampah->decrement('stok', $berat);
             }
 
             $penjualan->update(['total_harga' => $totalHarga]);
