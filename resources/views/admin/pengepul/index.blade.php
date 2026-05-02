@@ -6,7 +6,7 @@
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Data Pengepul</h1>
-        <a href="/pengepul/create" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+        <a href="{{ route('admin.pengepul.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                 class="fas fa-plus fa-sm text-white-50"></i> Tambah Pengepul</a>
 
 
@@ -25,14 +25,14 @@
     </div>
 
 
-    <form method="GET" action="{{ route('pengepul.search') }}" class="row mb-3">
+    <form method="GET" action="{{ route('admin.pengepul.search') }}" class="row mb-3">
         <div class="col-md-3">
             <input type="text" name="pengepul" class="form-control" placeholder="Cari Nama Pengepul"
                 value="{{ request('pengepul') }}">
         </div>
         <div class="col-md-3">
             <button type="submit" class="btn btn-primary">Filter</button>
-            <a href="{{ route('pengepul.search') }}" class="btn btn-secondary">Reset</a>
+            <a href="{{ route('admin.pengepul.search') }}" class="btn btn-secondary">Reset</a>
         </div>
     </form>
 
@@ -70,7 +70,7 @@
                                     <td>{{ $item->keterangan }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center">
-                                            <a href="/pengepul/{{ $item->id }}"
+                                            <a href="{{ route('admin.pengepul.edit', $item->id) }}"
                                                 class="d-inline-block mr-2 btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i>
                                             </a>
@@ -80,7 +80,7 @@
                                             </button>
                                             <!-- Form hapus tersembunyi -->
                                             <form id="form-delete-{{ $item->id }}"
-                                                action="/pengepul/{{ $item->id }}" method="POST"
+                                                action="{{ route('admin.pengepul.destroy', $item->id) }}" method="POST"
                                                 style="display: none;">
                                                 @csrf
                                                 @method('DELETE')

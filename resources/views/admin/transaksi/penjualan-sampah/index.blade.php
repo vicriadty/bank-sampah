@@ -21,7 +21,7 @@
     </div>
 
     {{-- Form Filter --}}
-    <form method="GET" action="{{ route('penjualan.index') }}" class="row mb-3">
+    <form method="GET" action="{{ route('admin.penjualan.index') }}" class="row mb-3">
         <div class="col-md-2">
             <input type="text" name="pengepul" class="form-control" placeholder="Cari Nama Pengepul"
                 value="{{ request('pengepul') }}">
@@ -37,14 +37,14 @@
         </div>
         <div class="col md-3">
             <button type="submit" name="action" value="filter" class="btn btn-primary mr-2">Filter</button>
-            <a href="{{ route('penjualan.index') }}" class="btn btn-secondary mr-5">Reset</a>
+            <a href="{{ route('admin.penjualan.index') }}" class="btn btn-secondary mr-5">Reset</a>
         </div>
         <div class="col-md-3 d-flex justify-content-end">
 
             <button type="submit" name="action" value="cetak" class="btn btn-danger mr-2"><i class="fas fa-file-pdf"></i>
                 Cetak
                 Laporan</button>
-            <a href="/penjualan-sampah/create" class="btn btn-primary"><i class="fas fa-plus fa-sm text-white-50"></i>
+            <a href="{{ route('admin.penjualan.create') }}" class="btn btn-primary"><i class="fas fa-plus fa-sm text-white-50"></i>
                 Tambah
                 Penjualan</a>
         </div>

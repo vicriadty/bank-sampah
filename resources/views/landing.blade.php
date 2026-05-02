@@ -181,7 +181,7 @@
 
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="/dashboard">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ Auth::user()->role === 'admin' ? route('admin.dashboard') : route('nasabah.dashboard') }}">Dashboard</a></li>
                             <li><a class="dropdown-item" href="{{ route('settings.edit') }}">Settings</a></li>
                             <li>
                                 <hr class="dropdown-divider">
@@ -227,7 +227,7 @@
                     <div class="card p-4 shadow-sm">
                         <h4 class="text-center mb-4">Formulir Setor Sampah</h4>
                         @auth
-                            <form action="/setor-sampah" method="post">
+                            <form action="{{ route('admin.setoran.store') }}" method="post">
                                 @csrf
                                 @method('POST')
                                 <div class="mb-3">
@@ -318,7 +318,7 @@
                 let jenisID = $(this).val();
                 if (jenisID) {
                     $.ajax({
-                        url: '/get-sampah-by-jenis/' + jenisID,
+                        url: '/admin/get-sampah-by-jenis/' + jenisID,
                         type: 'GET',
                         dataType: 'json',
                         success: function(data) {

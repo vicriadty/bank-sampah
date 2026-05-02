@@ -5,7 +5,7 @@
 @section('content')
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Data Sampah</h1>
-        <a href="/sampah/create" class="btn btn-sm btn-primary">
+        <a href="{{ route('admin.sampah.create') }}" class="btn btn-sm btn-primary">
             <i class="fas fa-plus"></i> Tambah Sampah
         </a>
     </div>
@@ -45,7 +45,7 @@
                                 <td>Rp{{ number_format($item->harga_per_kg, 0, ',', '.') }}</td>
                                 <td>
                                     <div class="d-flex justify-content-center">
-                                        <a href="/sampah/{{ $item->id }}"
+                                        <a href="{{ route('admin.sampah.edit', $item->id) }}"
                                             class="d-inline-block mr-2 btn btn-sm btn-warning">
                                             <i class="fas fa-edit"></i>
                                         </a>
@@ -54,7 +54,7 @@
                                             <i class="fas fa-trash"></i>
                                         </button>
                                         <!-- Form hapus tersembunyi -->
-                                        <form id="form-delete-{{ $item->id }}" action="/sampah/{{ $item->id }}"
+                                        <form id="form-delete-{{ $item->id }}" action="{{ route('admin.sampah.destroy', $item->id) }}"
                                             method="POST" style="display: none;">
                                             @csrf
                                             @method('DELETE')

@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col">
-            <form action="/nasabah" method="post">
+            <form action="{{ route('admin.nasabah.store') }}" method="post">
                 @csrf
                 @method('POST')
                 <div class="card">
@@ -33,6 +33,36 @@
                             @error('nama') is-invalid @enderror"
                                 value="{{ old('nama') }}">
                             @error('nama')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="username">Username</label>
+                            <input type="text" name="username" id="username"
+                                class="form-control 
+                            @error('username') is-invalid @enderror"
+                                value="{{ old('username') }}">
+                            @error('username')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="email">Email</label>
+                            <input type="email" name="email" id="email"
+                                class="form-control 
+                            @error('email') is-invalid @enderror"
+                                value="{{ old('email') }}">
+                            @error('email')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="username">Password</label>
+                            <input type="password" name="password" id="password"
+                                class="form-control 
+                            @error('password') is-invalid @enderror"
+                                value="{{ old('password') }}">
+                            @error('password')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
                         </div>
@@ -104,7 +134,7 @@
 
                         <div class="card-footer">
                             <div class="d-flex justify-content-end" style="gap: 10px">
-                                <a href="/nasabah" class="btn btn-outline-secondary">Batal</a>
+                                <a href="{{ route('admin.nasabah.index') }}" class="btn btn-outline-secondary">Batal</a>
                                 <button type="submit" class="btn btn-primary">Simpan</button>
                             </div>
                         </div>

@@ -50,7 +50,11 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        @include('layouts.sidebar')
+        @if(Auth::check() && Auth::user()->role === 'admin')
+            @include('layouts.sidebar')
+        @elseif(Auth::check() && Auth::user()->role === 'nasabah')
+            @include('layouts.sidebar-nasabah')
+        @endif
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->

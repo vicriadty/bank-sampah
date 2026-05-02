@@ -6,7 +6,7 @@
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Data Nasabah</h1>
-        <a href="/nasabah/create" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+        <a href="{{ route('admin.nasabah.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                 class="fas fa-plus fa-sm text-white-50"></i> Tambah Nasabah</a>
 
 
@@ -24,7 +24,7 @@
         @endif
     </div>
 
-    <form method="GET" action="{{ route('nasabah.search') }}" class="row mb-3">
+    <form method="GET" action="{{ route('admin.nasabah.search') }}" class="row mb-3">
         <div class="col-md-3">
             <input type="text" name="nasabah" class="form-control" placeholder="Cari Nama Nasabah"
                 value="{{ request('nasabah') }}">
@@ -40,7 +40,7 @@
         </div> --}}
         <div class="col-md-3">
             <button type="submit" class="btn btn-primary">Filter</button>
-            <a href="{{ route('nasabah.search') }}" class="btn btn-secondary">Reset</a>
+            <a href="{{ route('admin.nasabah.search') }}" class="btn btn-secondary">Reset</a>
         </div>
     </form>
 
@@ -82,7 +82,7 @@
                                     <td>Rp {{ number_format($item->saldo, 2, ',', '.') }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center">
-                                            <a href="/nasabah/{{ $item->id }}"
+                                            <a href="{{ route('admin.nasabah.edit', $item->id) }}"
                                                 class="d-inline-block mr-2 btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i>
                                             </a>
@@ -92,7 +92,7 @@
                                             </button>
                                             <!-- Form hapus tersembunyi -->
                                             <form id="form-delete-{{ $item->id }}"
-                                                action="/nasabah/{{ $item->id }}" method="POST"
+                                                action="{{ route('admin.nasabah.destroy', $item->id) }}" method="POST"
                                                 style="display: none;">
                                                 @csrf
                                                 @method('DELETE')

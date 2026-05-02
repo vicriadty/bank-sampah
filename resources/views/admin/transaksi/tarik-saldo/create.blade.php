@@ -10,7 +10,7 @@
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
-        <form action="{{ route('tarik-saldo.store') }}" method="POST">
+        <form action="{{ route('admin.tarik-saldo.store') }}" method="POST">
             @csrf
             <div class="form-group">
                 <label>Nasabah</label>

@@ -6,7 +6,7 @@
     <div class="container">
         <h4>Form Penjualan Sampah ke Pengepul</h4>
 
-        <form action="{{ route('penjualan.store') }}" method="POST">
+        <form action="{{ route('admin.penjualan.store') }}" method="POST">
             @csrf
             @method('POST')
             {{-- Select Pengepul --}}

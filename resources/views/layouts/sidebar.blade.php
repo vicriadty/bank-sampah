@@ -1,7 +1,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('admin.dashboard') }}">
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-recycle"></i>
         </div>
@@ -12,8 +12,8 @@
     <hr class="sidebar-divider my-0">
 
     <!-- Nav Item - Dashboard -->
-    <li class="nav-item {{ request()->is('/dashboard') ? 'active' : '' }}">
-        <a class="nav-link" href="/dashboard">
+    <li class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span></a>
     </li>
@@ -28,23 +28,23 @@
     <!-- Divider -->
     <hr class="sidebar-divider">
     <!-- Nav Item - Tables -->
-    <li class="nav-item {{ request()->is('nasabah') ? 'active' : '' }}">
-        <a class="nav-link" href="/nasabah">
+    <li class="nav-item {{ request()->routeIs('admin.nasabah.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.nasabah.index') }}">
             <i class="fas fa-fw fa-users"></i>
             <span>Nasabah</span></a>
     </li>
-    <li class="nav-item {{ request()->is('pengepul') ? 'active' : '' }}">
-        <a class="nav-link" href="/pengepul">
+    <li class="nav-item {{ request()->routeIs('admin.pengepul.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.pengepul.index') }}">
             <i class="fas fa-fw fa-truck"></i>
             <span>Pengepul</span></a>
     </li>
-    <li class="nav-item {{ request()->is('stok-sampah') ? 'active' : '' }}">
-        <a class="nav-link" href="/stok-sampah">
+    <li class="nav-item {{ request()->routeIs('admin.stok-sampah.index') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.stok-sampah.index') }}">
             <i class="fas fa-fw fa-boxes"></i>
             <span>Stok Sampah</span></a>
     </li>
-    <li class="nav-item {{ request()->is('sampah') ? 'active' : '' }}">
-        <a class="nav-link" href="/sampah">
+    <li class="nav-item {{ request()->routeIs('admin.sampah.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.sampah.index') }}">
             <i class="fas fa-fw fa-trash"></i>
             <span>Sampah</span></a>
     </li>
@@ -55,19 +55,19 @@
     <!-- Divider -->
     <hr class="sidebar-divider">
     <!-- Nav Item - Tables -->
-    <li class="nav-item {{ request()->is('setor-sampah') ? 'active' : '' }}">
-        <a class="nav-link" href="/setor-sampah">
+    <li class="nav-item {{ request()->routeIs('admin.setoran.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.setoran.index') }}">
             <i class="fas fa-fw fa-upload"></i>
             <span>Setor Sampah</span></a>
     </li>
     <!-- Nav Item - Tables -->
-    <li class="nav-item {{ request()->is('tarik-saldo') ? 'active' : '' }}">
-        <a class="nav-link" href="/tarik-saldo">
+    <li class="nav-item {{ request()->routeIs('admin.tarik-saldo.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.tarik-saldo.index') }}">
             <i class="fas fa-fw fa-download"></i>
             <span>Tarik Saldo</span></a>
     </li>
-    <li class="nav-item {{ request()->is('penjualan-sampah') ? 'active' : '' }}">
-        <a class="nav-link" href="/penjualan-sampah">
+    <li class="nav-item {{ request()->routeIs('admin.penjualan.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.penjualan.index') }}">
             <i class="fas fa-fw fa-cash-register"></i>
             <span>Penjualan Sampah</span></a>
     </li>
@@ -79,8 +79,5 @@
     <div class="text-center d-none d-md-inline">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
     </div>
-
-    <!-- Sidebar Message -->
-
 
 </ul>
