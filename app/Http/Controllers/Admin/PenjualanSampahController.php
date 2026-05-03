@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+
+
 use App\Models\DetailPenjualanSampah;
 use App\Models\Pengepul;
 use App\Models\PenjualanSampah;
@@ -38,7 +40,7 @@ class PenjualanSampahController extends Controller
 
         if ($request->action == 'cetak') {
             $penjualans = $query->get();
-            $pdf = Pdf::loadView('pages.transaksi.penjualan-sampah.laporan_pdf', compact('penjualans', 'tanggalAwal', 'tanggalAkhir', 'pengepulId'))
+            $pdf = Pdf::loadView('admin.transaksi.penjualan-sampah.laporan_pdf', compact('penjualans', 'tanggalAwal', 'tanggalAkhir', 'pengepulId'))
                 ->setPaper('A4', 'portrait');
 
             $tanggal = now()->format('d-m-y');
@@ -51,7 +53,7 @@ class PenjualanSampahController extends Controller
         // Default tampil data
         $penjualans = $query->paginate(10);
         $nasabahs = PenjualanSampah::all();
-        return view('pages.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepulId'));
+        return view('admin.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepulId'));
     }
 
     // public function index(Request $request)
@@ -67,7 +69,7 @@ class PenjualanSampahController extends Controller
     //         ->latest()
     //         ->get();
 
-    //     return view('pages.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepuls', 'pengepulId'));
+    //     return view('admin.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepuls', 'pengepulId'));
     // }
 
 
@@ -75,7 +77,7 @@ class PenjualanSampahController extends Controller
     {
         $pengepuls = Pengepul::all();
         $sampahs = Sampah::all();
-        return view('pages.transaksi.penjualan-sampah.create', compact('pengepuls', 'sampahs'));
+        return view('admin.transaksi.penjualan-sampah.create', compact('pengepuls', 'sampahs'));
     }
 
     public function store(Request $request)
@@ -119,7 +121,7 @@ class PenjualanSampahController extends Controller
 
             DB::commit();
 
-            return redirect()->route('penjualan.index')->with('success', 'Data Penjualan berhasil ditambahkan');
+            return redirect()->route('admin.penjualan.index')->with('success', 'Data Penjualan berhasil ditambahkan');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Gagal menyimpan penjualan: ' . $e->getMessage()]);
@@ -150,7 +152,7 @@ class PenjualanSampahController extends Controller
     //         return back()->withErrors(['error' => 'Tidak ada data penjualan pada tanggal tersebut.']);
     //     }
 
-    //     $pdf = Pdf::loadView('pages.transaksi.penjualan-sampah.laporan_pdf', [
+    //     $pdf = Pdf::loadView('admin.transaksi.penjualan-sampah.laporan_pdf', [
     //         'penjualan_sampahs' => $penjualan_sampahs,
     //         'tanggal' => $tanggal,
     //     ]);

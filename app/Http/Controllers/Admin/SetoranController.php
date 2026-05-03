@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Http\Controllers\Controller;
+
 use App\Models\JenisSampah;
 use App\Models\Nasabah;
 use App\Models\Sampah;
@@ -39,7 +41,7 @@ class SetoranController extends Controller
 
         if ($request->action == 'cetak') {
             $setorans = $query->get();
-            $pdf = Pdf::loadView('pages.transaksi.setor-sampah.laporan_pdf', compact('setorans', 'tanggalAwal', 'tanggalAkhir', 'nasabahId'))
+            $pdf = Pdf::loadView('admin.transaksi.setor-sampah.laporan_pdf', compact('setorans', 'tanggalAwal', 'tanggalAkhir', 'nasabahId'))
                 ->setPaper('A4', 'portrait');
 
             $tanggal = now()->format('d-m-y');
@@ -52,14 +54,14 @@ class SetoranController extends Controller
         // Default tampil data
         $setorans = $query->paginate(10);
         $nasabahs = Nasabah::all();
-        return view('pages.transaksi.setor-sampah.index', compact('setorans', 'nasabahs'));
+        return view('admin.transaksi.setor-sampah.index', compact('setorans', 'nasabahs'));
     }
 
     public function create()
     {
         $nasabahs = Nasabah::all();
         $jenisSampah = JenisSampah::all();
-        return view('pages.transaksi.setor-sampah.create', compact('nasabahs', 'jenisSampah'));
+        return view('admin.transaksi.setor-sampah.create', compact('nasabahs', 'jenisSampah'));
     }
 
     public function getSampahByJenis($id)
@@ -96,7 +98,7 @@ class SetoranController extends Controller
             $setoran->nasabah->increment('saldo', $subtotal);
 
             DB::commit();
-            return redirect('/setor-sampah')->with('success', 'Data Setoran berhasil ditambahkan');
+            return redirect()->route('admin.setoran.index')->with('success', 'Data Setoran berhasil ditambahkan');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal: ' . $e->getMessage());
@@ -106,7 +108,7 @@ class SetoranController extends Controller
     // public function laporanPDF()
     // {
     //     $setorans = Setoran::with(['nasabah', 'details.sampah'])->latest()->get();
-    //     $pdf = Pdf::loadView('pages.transaksi.setor-sampah.laporan_pdf', compact('setorans'));
+    //     $pdf = Pdf::loadView('admin.transaksi.setor-sampah.laporan_pdf', compact('setorans'));
     //     return $pdf->download('laporan-setoran.pdf');
     // }
 
@@ -114,7 +116,7 @@ class SetoranController extends Controller
     //     {
     //         $setorans = Setoran::with(['nasabah', 'details.sampah'])->latest()->get();
 
-    //         $pdf = Pdf::loadView('pages.transaksi.setor-sampah.laporan_pdf', compact('setorans'));
+    //         $pdf = Pdf::loadView('admin.transaksi.setor-sampah.laporan_pdf', compact('setorans'));
 
     //         $tanggal = now()->format('d-m-y');
 

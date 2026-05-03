@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\Pengepul;
 
-use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
 
 class PengepulController extends Controller
@@ -12,14 +14,14 @@ class PengepulController extends Controller
     public function index()
     {
         $pengepul = Pengepul::all();
-        return view('pages.pengepul.index', [
+        return view('admin.pengepul.index', [
             'pengepul' => $pengepul,
         ]);
     }
 
     public function create()
     {
-        return view('pages.pengepul.create');
+        return view('admin.pengepul.create');
     }
 
     public function store(Request $request)
@@ -32,14 +34,14 @@ class PengepulController extends Controller
 
         Pengepul::create($request->all());
 
-        return redirect('/pengepul')->with('success', 'Pengepul berhasil ditambahkan');
+        return redirect()->route('admin.pengepul.index')->with('success', 'Pengepul berhasil ditambahkan');
     }
 
     public function edit($id)
     {
         $pengepul = Pengepul::findOrFail($id);
 
-        return view('pages.pengepul.edit', [
+        return view('admin.pengepul.edit', [
             'pengepul' => $pengepul,
         ]);
     }
@@ -55,7 +57,7 @@ class PengepulController extends Controller
         $pengepul = Pengepul::findOrFail($id);
         $pengepul->update($request->all());
 
-        return redirect('/pengepul')->with('success', 'Pengepul berhasil diupdate');
+        return redirect()->route('admin.pengepul.index')->with('success', 'Pengepul berhasil diupdate');
     }
 
     public function destroy($id)
@@ -63,12 +65,12 @@ class PengepulController extends Controller
         $pengepul = Pengepul::findOrFail($id);
         $pengepul->delete();
 
-        return redirect('/pengepul')->with('success', 'Pengepul berhasil dihapus');
+        return redirect()->route('admin.pengepul.index')->with('success', 'Pengepul berhasil dihapus');
     }
 
     public function search(Request $request)
     {
         $pengepul = Pengepul::where('nama', 'LIKE', '%' . $request->pengepul . '%')->get();
-        return view('pages.pengepul.index', compact('pengepul'));
+        return view('admin.pengepul.index', compact('pengepul'));
     }
 }

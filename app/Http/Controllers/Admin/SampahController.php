@@ -1,19 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+
+
 use App\Models\JenisSampah;
 use App\Models\Sampah;
 use Illuminate\Http\Request;
 
 class SampahController extends Controller
 {
-    public function indexSampah()
+    public function index()
     {
         $sampah = Sampah::all();
 
-        return view('pages.sampah.index', [
+        return view('admin.sampah.index', [
             'sampah' => $sampah,
         ]);
     }
@@ -25,7 +27,7 @@ class SampahController extends Controller
     //         ->groupBy('sampah_id')
     //         ->get();
 
-    //     return view('pages.stok-sampah.index', [
+    //     return view('admin.stok-sampah.index', [
     //         'stokSampah' => $stokSampah,
     //     ]);
     // }
@@ -33,7 +35,7 @@ class SampahController extends Controller
     public function create()
     {
         $jenisSampahs = JenisSampah::all();
-        return view('pages.sampah.create', compact('jenisSampahs'));
+        return view('admin.sampah.create', compact('jenisSampahs'));
     }
 
     public function store(Request $request)
@@ -46,7 +48,7 @@ class SampahController extends Controller
 
         Sampah::create($request->all());
 
-        return redirect("/sampah")->with('success', 'Data sampah berhasil ditambahkan.');
+        return redirect()->route('admin.sampah.index')->with('success', 'Data sampah berhasil ditambahkan.');
     }
 
 
@@ -54,7 +56,7 @@ class SampahController extends Controller
     {
         $sampah = Sampah::findOrFail($id);
 
-        return view('pages.sampah.edit', [
+        return view('admin.sampah.edit', [
             'sampah' => $sampah,
         ]);
     }
@@ -69,7 +71,7 @@ class SampahController extends Controller
 
         Sampah::findOrFail($id)->update($validatedData);
 
-        return redirect('/sampah')->with('success', 'Sampah berhasil di update');
+        return redirect()->route('admin.sampah.index')->with('success', 'Sampah berhasil di update');
     }
 
     public function destroy($id)
@@ -77,6 +79,6 @@ class SampahController extends Controller
         $sampah = Sampah::findOrFail($id);
         $sampah->delete();
 
-        return redirect('/sampah')->with('success', 'Sampah berhasil dihapus');
+        return redirect()->route('admin.sampah.index')->with('success', 'Sampah berhasil dihapus');
     }
 }

@@ -10,12 +10,15 @@
     </div>
 
     <div class="row">
-        <div class="col">
-            <form action="/pengepul" method="post">
-                @csrf
-                @method('POST')
-                <div class="card">
-                    <div class="card-body">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Informasi Pengepul Baru</h6>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('admin.pengepul.store') }}" method="post">
+                        @csrf
+                        @method('POST')
                         <div class="form-group mb-3">
                             <label for="nama">Nama Pengepul</label>
                             <input type="text" name="nama" id="nama"
@@ -51,37 +54,24 @@
                             <select name="status" id="status"
                                 class="form-control 
                             @error('status') is-invalid @enderror">
-                                @error('status')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
                                 <option value="" disabled selected>-- Pilih Status --</option>
-                                @foreach ([
-            (object)
-    [
-                'label' => 'Aktif',
-                'value' => 'Aktif',
-            ],
-            (object) [
-                'label' => 'Tidak Aktif',
-                'value' => 'Tidak Aktif',
-            ],
-        ] as $item)
-                                    <option value="{{ $item->value }}" @selected(old('status'))>{{ $item->label }}
-                                    </option>
-                                @endforeach
-
+                                <option value="Aktif" @selected(old('status') == 'Aktif')>Aktif</option>
+                                <option value="Tidak Aktif" @selected(old('status') == 'Tidak Aktif')>Tidak Aktif</option>
                             </select>
+                            @error('status')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
 
-                        <div class="card-footer">
-                            <div class="d-flex justify-content-end" style="gap: 10px">
-                                <a href="/pengepul" class="btn btn-outline-secondary">Batal</a>
+                        <div class="form-group row mt-4">
+                            <div class="col-sm-12 d-flex justify-content-end" style="gap: 10px;">
+                                <a href="{{ route('admin.pengepul.index') }}" class="btn btn-secondary">Batal</a>
                                 <button type="submit" class="btn btn-primary">Simpan</button>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 @endsection

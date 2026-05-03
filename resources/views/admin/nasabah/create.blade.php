@@ -10,12 +10,15 @@
     </div>
 
     <div class="row">
-        <div class="col">
-            <form action="{{ route('admin.nasabah.store') }}" method="post">
-                @csrf
-                @method('POST')
-                <div class="card">
-                    <div class="card-body">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Informasi Nasabah Baru</h6>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('admin.nasabah.store') }}" method="post">
+                        @csrf
+                        @method('POST')
                         <div class="form-group mb-3">
                             <label for="nik">NIK</label>
                             <input type="number" inputmode="numeric" name="nik" id="nik"
@@ -57,7 +60,7 @@
                             @enderror
                         </div>
                         <div class="form-group mb-3">
-                            <label for="username">Password</label>
+                            <label for="password">Password</label>
                             <input type="password" name="password" id="password"
                                 class="form-control 
                             @error('password') is-invalid @enderror"
@@ -67,33 +70,20 @@
                             @enderror
                         </div>
                         <div class="form-group mb-3">
-                            <label for="nik">Jenis Kelamin</label>
+                            <label for="jenis_kelamin">Jenis Kelamin</label>
                             <select name="jenis_kelamin" id="jenis_kelamin"
                                 class="form-control 
                             @error('jenis_kelamin') is-invalid @enderror">
-                                @error('jenis_kelamin')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
                                 <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
-                                @foreach ([
-            (object)
-    [
-                'label' => 'Laki-laki',
-                'value' => 'laki-laki',
-            ],
-            (object) [
-                'label' => 'Perempuan',
-                'value' => 'perempuan',
-            ],
-        ] as $item)
-                                    <option value="{{ $item->value }}" @selected(old('jenis_kelamin'))>{{ $item->label }}
-                                    </option>
-                                @endforeach
-
+                                <option value="laki-laki" @selected(old('jenis_kelamin') == 'laki-laki')>Laki-laki</option>
+                                <option value="perempuan" @selected(old('jenis_kelamin') == 'perempuan')>Perempuan</option>
                             </select>
+                            @error('jenis_kelamin')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="form-group mb-3">
-                            <label for="nama">Tanggal Lahir</label>
+                            <label for="tanggal_lahir">Tanggal Lahir</label>
                             <input type="date" name="tanggal_lahir" id="tanggal_lahir"
                                 class="form-control 
                             @error('tanggal_lahir') is-invalid @enderror"
@@ -103,7 +93,7 @@
                             @enderror
                         </div>
                         <div class="form-group mb-3">
-                            <label for="nama">Tempat Lahir</label>
+                            <label for="tempat_lahir">Tempat Lahir</label>
                             <input type="text" name="tempat_lahir" id="tempat_lahir"
                                 class="form-control 
                             @error('tempat_lahir') is-invalid @enderror"
@@ -113,7 +103,7 @@
                             @enderror
                         </div>
                         <div class="form-group mb-3">
-                            <label for="nama">Alamat</label>
+                            <label for="alamat">Alamat</label>
                             <textarea name="alamat" id="alamat" cols="15" rows="5"
                                 class="form-control 
                             @error('alamat') is-invalid @enderror">{{ old('alamat') }}</textarea>
@@ -122,7 +112,7 @@
                             @enderror
                         </div>
                         <div class="form-group mb-3">
-                            <label for="nama">No. Handphone</label>
+                            <label for="no_hp">No. Handphone</label>
                             <input type="number" name="no_hp" id="no_hp"
                                 class="form-control 
                             @error('no_hp') is-invalid @enderror"
@@ -132,15 +122,15 @@
                             @enderror
                         </div>
 
-                        <div class="card-footer">
-                            <div class="d-flex justify-content-end" style="gap: 10px">
-                                <a href="{{ route('admin.nasabah.index') }}" class="btn btn-outline-secondary">Batal</a>
+                        <div class="form-group row mt-4">
+                            <div class="col-sm-12 d-flex justify-content-end" style="gap: 10px;">
+                                <a href="{{ route('admin.nasabah.index') }}" class="btn btn-secondary">Batal</a>
                                 <button type="submit" class="btn btn-primary">Simpan</button>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 @endsection

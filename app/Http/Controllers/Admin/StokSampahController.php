@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+
+
 use App\Models\Sampah;
 use Illuminate\Http\Request;
 
@@ -24,7 +26,7 @@ class StokSampahController extends Controller
             });
 
         // dd($stokSampah);
-        return view('pages.stok-sampah.index', [
+        return view('admin.stok-sampah.index', [
             'stokSampah' => $stokSampah,
         ]);
     }

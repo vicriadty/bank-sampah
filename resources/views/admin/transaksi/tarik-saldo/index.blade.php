@@ -75,7 +75,7 @@
                 Cetak
                 Laporan</button>
             <a href="{{ route('admin.tarik-saldo.create') }}" class="btn btn-primary"><i class="fas fa-plus fa-sm text-white-50"></i> Tambah
-                Setoran</a>
+                Tarik Saldo</a>
         </div>
     </form>
 

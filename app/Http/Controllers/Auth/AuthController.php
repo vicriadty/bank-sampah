@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\User;
 
@@ -16,7 +18,7 @@ class AuthController extends Controller
             return back();
         }
 
-        return view('pages.auth.login');
+        return view('auth.login');
     }
 
     public function login(Request $request)
@@ -32,7 +34,14 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/');
+
+            // LOGIKA REDIRECT BERDASARKAN ROLE
+            $user = Auth::user();
+            if ($user->role === 'admin') {
+                return redirect()->intended('/admin/dashboard');
+            }
+
+            return redirect()->intended('/nasabah/dashboard');
         }
 
         return back()->withErrors([
@@ -55,7 +64,7 @@ class AuthController extends Controller
             return back();
         }
 
-        return view('pages.auth.register');
+        return view('auth.register');
     }
 
     public function register(Request $request)

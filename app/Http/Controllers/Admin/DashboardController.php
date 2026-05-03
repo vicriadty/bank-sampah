@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\DetailPenjualanSampah;
 use Illuminate\Http\Request;
@@ -24,7 +26,7 @@ class DashboardController extends Controller
         $totalPenjualanSampah = DetailPenjualanSampah::sum('berat');
         $totalPenjualan = PenjualanSampah::sum('total_harga');
 
-        return view('pages.dashboard', compact(
+        return view('admin.dashboard', compact(
             'jumlahNasabah',
             'jumlahPengepul',
             'totalSampahDisetorkan',
