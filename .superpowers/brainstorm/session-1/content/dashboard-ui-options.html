@@ -1,0 +1,57 @@
+<h2>Nasabah Dashboard UI Options</h2>
+<p class="subtitle">Choose the visual direction for the new Nasabah area</p>
+
+<div class="options">
+  <div class="option" data-choice="consistent" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Consistent (SB Admin 2)</h3>
+      <p>Uses the existing Bootstrap 4 template. Seamless experience when switching between Admin and Nasabah (for testing/multi-role users).</p>
+      <div class="mockup" style="margin-top: 1rem;">
+        <div class="mockup-header">Preview: SB Admin 2 Style</div>
+        <div class="mockup-body" style="background: #f8f9fc; padding: 1rem;">
+          <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+            <div style="flex: 1; background: #fff; border-left: 4px solid #4e73df; padding: 1rem; border-radius: 5px; box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15);">
+              <div style="font-size: .7rem; font-weight: bold; color: #4e73df; text-transform: uppercase;">Saldo Anda</div>
+              <div style="font-size: 1.2rem; font-weight: bold; color: #5a5c69;">Rp 250.000</div>
+            </div>
+            <div style="flex: 1; background: #fff; border-left: 4px solid #1cc88a; padding: 1rem; border-radius: 5px; box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15);">
+              <div style="font-size: .7rem; font-weight: bold; color: #1cc88a; text-transform: uppercase;">Total Sampah</div>
+              <div style="font-size: 1.2rem; font-weight: bold; color: #5a5c69;">15.5 Kg</div>
+            </div>
+          </div>
+          <div style="background: #fff; height: 100px; border-radius: 5px; box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15); display: flex; align-items: center; justify-content: center; color: #858796;">
+            Riwayat Transaksi Table...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="modern" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Modern / Premium</h3>
+      <p>A fresh, modern look for Nasabah. Using cleaner typography, glassmorphism, and better spacing to make it feel like a premium user app.</p>
+      <div class="mockup" style="margin-top: 1rem;">
+        <div class="mockup-header">Preview: Modern Style</div>
+        <div class="mockup-body" style="background: #f0f2f5; padding: 1rem; font-family: 'Inter', sans-serif;">
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 15px; color: white; margin-bottom: 1rem;">
+            <div style="opacity: 0.8; font-size: 0.9rem;">Saldo Aktif</div>
+            <div style="font-size: 1.8rem; font-weight: 700;">Rp 250.000</div>
+            <div style="margin-top: 1rem; font-size: 0.8rem; background: rgba(255,255,255,0.2); padding: 0.5rem; border-radius: 8px; display: inline-block;">
+              Request Pencairan
+            </div>
+          </div>
+          <div style="background: white; border-radius: 15px; padding: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Aktivitas Terakhir</div>
+            <div style="border-bottom: 1px solid #eee; padding: 0.5rem 0; display: flex; justify-content: space-between;">
+              <span>Setor Botol Plastik</span>
+              <span style="color: #10b981; font-weight: 600;">+Rp 5.000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -9,7 +9,7 @@ class TarikSaldo extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nasabah_id', 'jumlah_tarik'];
+    protected $fillable = ['nasabah_id', 'jumlah_tarik', 'status', 'keterangan'];
 
     public function nasabah()
     {

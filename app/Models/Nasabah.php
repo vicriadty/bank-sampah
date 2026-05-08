@@ -11,7 +11,7 @@ class Nasabah extends Model
 
     protected $table = 'nasabahs';
 
-    protected $fillable = ['nik', 'nama', 'jenis_kelamin', 'tanggal_lahir', 'tempat_lahir', 'alamat', 'no_hp'];
+    protected $fillable = ['user_id', 'nik', 'nama', 'jenis_kelamin', 'tanggal_lahir', 'tempat_lahir', 'alamat', 'no_hp'];
 
     protected $guarded = [];
 
