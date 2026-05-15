@@ -71,6 +71,11 @@
             <i class="fas fa-fw fa-cash-register"></i>
             <span>Penjualan Sampah</span></a>
     </li>
+    <li class="nav-item {{ request()->routeIs('admin.gold-exchange.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.gold-exchange.index') }}">
+            <i class="fas fa-fw fa-coins"></i>
+            <span>Penukaran Emas</span></a>
+    </li>
 
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">

@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Bank Sampah - Tarik Saldo')
+@section('title', 'Bank Sampah - Penukaran Emas')
 
 @section('content')
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Data Tarik Saldo</h1>
+        <h1 class="h3 mb-0 text-gray-800">Data Penukaran Emas</h1>
 
         @if (session('success'))
             <script>
@@ -26,43 +26,25 @@
                 });
             </script>
         @endif
-
     </div>
 
     {{-- Form Filter --}}
-    <form method="GET" action="{{ route('admin.tarik-saldo.index') }}" class="row mb-3">
-        <div class="col-md-1">
+    <form method="GET" action="{{ route('admin.gold-exchange.index') }}" class="row mb-3">
+        <div class="col-md-2">
             <input type="text" name="nasabah" class="form-control" placeholder="Nama Nasabah"
                 value="{{ request('nasabah') }}">
         </div>
-        <div class="col-md-1">
+        <div class="col-md-2">
             <select name="status" class="form-control">
                 <option value="">Semua Status</option>
                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
                 <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
             </select>
         </div>
-        <div class="col-md-2 d-flex ">
-            <input type="date" name="tanggal_awal" class="form-control" value="{{ request('tanggal_awal') }}">
-            <div class="ml-3 d-flex align-items-center">
-                <span>s/d</span>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <input type="date" name="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') }}">
-        </div>
-         <div class="col md-3">
-            <button type="submit" name="action" value="filter" class="btn btn-primary mr-2">Filter</button>
-            <a href="{{ route('admin.tarik-saldo.index') }}" class="btn btn-secondary mr-5">Reset</a>
-        </div>
-        <div class="col-md-3 d-flex justify-content-end">
-
-            <button type="submit" name="action" value="cetak" class="btn btn-danger mr-2"><i class="fas fa-file-pdf"></i>
-                Cetak
-                Laporan</button>
-            <a href="{{ route('admin.tarik-saldo.create') }}" class="btn btn-primary"><i class="fas fa-plus fa-sm text-white-50"></i> Tambah
-                Tarik Saldo</a>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary mr-2">Filter</button>
+            <a href="{{ route('admin.gold-exchange.index') }}" class="btn btn-secondary">Reset</a>
         </div>
     </form>
 
@@ -72,33 +54,41 @@
             <thead>
                 <tr>
                     <th>Nama Nasabah</th>
-                    <th>Jumlah Tarik</th>
+                    <th>Jumlah Saldo</th>
+                    <th>Harga Emas/gram</th>
+                    <th>Jumlah Gram</th>
                     <th>Status</th>
                     <th>Tanggal</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($tarikSaldos as $tarik)
+                @forelse ($goldExchanges as $exchange)
                     <tr>
-                        <td>{{ $tarik->nasabah->nama }}</td>
-                        <td>Rp {{ number_format($tarik->jumlah_tarik, 0, ',', '.') }}</td>
+                        <td>{{ $exchange->nasabah->nama }}</td>
+                        <td>Rp {{ number_format($exchange->jumlah_saldo, 0, ',', '.') }}</td>
+                        <td>Rp {{ number_format($exchange->harga_emas_per_gram, 0, ',', '.') }}</td>
+                        <td>{{ number_format($exchange->jumlah_gram, 4, ',', '.') }} g</td>
                         <td>
-                            <span class="badge {{ $tarik->status == 'approved' ? 'badge-success' : ($tarik->status == 'pending' ? 'badge-warning' : 'badge-danger') }}">
-                                {{ ucfirst($tarik->status) }}
+                            <span class="badge
+                                {{ $exchange->status == 'completed' ? 'badge-success' : '' }}
+                                {{ $exchange->status == 'pending' ? 'badge-warning' : '' }}
+                                {{ $exchange->status == 'rejected' ? 'badge-danger' : '' }}
+                            ">
+                                {{ ucfirst($exchange->status) }}
                             </span>
                         </td>
-                        <td>{{ $tarik->created_at->format('d/m/Y H:i') }}</td>
+                        <td>{{ $exchange->created_at->format('d/m/Y H:i') }}</td>
                         <td>
-                            @if($tarik->status == 'pending')
+                            @if($exchange->status == 'pending')
                                 <div class="d-flex">
-                                    <form action="{{ route('admin.tarik-saldo.approve', $tarik->id) }}" method="POST" class="mr-1">
+                                    <form action="{{ route('admin.gold-exchange.approve', $exchange->id) }}" method="POST" class="mr-1">
                                         @csrf
-                                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Setujui penarikan ini?')">Approve</button>
+                                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Setujui penukaran emas ini?')">Approve</button>
                                     </form>
-                                    <button type="button" class="btn btn-danger btn-sm btn-reject-tarik" 
-                                        data-id="{{ $tarik->id }}" 
-                                        data-url="{{ route('admin.tarik-saldo.reject', $tarik->id) }}">
+                                    <button type="button" class="btn btn-danger btn-sm btn-reject-gold" 
+                                        data-id="{{ $exchange->id }}" 
+                                        data-url="{{ route('admin.gold-exchange.reject', $exchange->id) }}">
                                         Reject
                                     </button>
                                 </div>
@@ -109,24 +99,24 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center">Tidak ada data.</td>
+                        <td colspan="7" class="text-center">Tidak ada data.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
         <div class="mt-3">
-            {{ $tarikSaldos->links() }}
+            {{ $goldExchanges->links() }}
         </div>
     </div>
 @endsection
 
 @section('scripts')
 <script>
-    $(document).on('click', '.btn-reject-tarik', function() {
+    $(document).on('click', '.btn-reject-gold', function() {
         const url = $(this).data('url');
         
         Swal.fire({
-            title: 'Tolak Permintaan',
+            title: 'Tolak Penukaran Emas',
             text: "Masukkan alasan penolakan:",
             input: 'textarea',
             inputPlaceholder: 'Tulis alasan di sini...',
@@ -153,11 +143,11 @@
                 csrfInput.value = '{{ csrf_token() }}';
                 form.appendChild(csrfInput);
 
-                const keteranganInput = document.createElement('input');
-                keteranganInput.type = 'hidden';
-                keteranganInput.name = 'keterangan';
-                keteranganInput.value = result.value;
-                form.appendChild(keteranganInput);
+                const catatanInput = document.createElement('input');
+                catatanInput.type = 'hidden';
+                catatanInput.name = 'catatan';
+                catatanInput.value = result.value;
+                form.appendChild(catatanInput);
 
                 document.body.appendChild(form);
                 form.submit();

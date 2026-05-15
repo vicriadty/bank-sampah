@@ -46,6 +46,12 @@
             <span>Request Pencairan</span></a>
     </li>
 
+    <li class="nav-item {{ request()->routeIs('nasabah.gold-exchange.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('nasabah.gold-exchange.create') }}">
+            <i class="fas fa-fw fa-coins"></i>
+            <span>Tukar Emas</span></a>
+    </li>
+
     <!-- Divider -->
     <hr class="sidebar-divider">
 

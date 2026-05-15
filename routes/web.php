@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SampahController;
 use App\Http\Controllers\Admin\SetoranController;
 use App\Http\Controllers\Admin\StokSampahController;
 use App\Http\Controllers\Admin\TarikSaldoController;
+use App\Http\Controllers\Admin\GoldExchangeController as AdminGoldExchangeController;
 use App\Http\Controllers\UserController;
 use App\Models\JenisSampah;
 use Illuminate\Support\Facades\Route;
@@ -55,6 +56,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     
     Route::resource('penjualan', PenjualanSampahController::class);
     Route::get('/penjualan/laporan', [PenjualanSampahController::class, 'laporanPDF'])->name('penjualan.laporan');
+
+    // Gold Exchange
+    Route::get('/gold-exchange', [AdminGoldExchangeController::class, 'index'])->name('gold-exchange.index');
+    Route::post('/gold-exchange/{id}/approve', [AdminGoldExchangeController::class, 'approve'])->name('gold-exchange.approve');
+    Route::post('/gold-exchange/{id}/reject', [AdminGoldExchangeController::class, 'reject'])->name('gold-exchange.reject');
 });
 
 // Nasabah Routes
@@ -68,6 +74,11 @@ Route::middleware(['auth', 'role:nasabah'])->prefix('nasabah')->name('nasabah.')
     // Request Pencairan
     Route::get('/request-pencairan', [App\Http\Controllers\Nasabah\PencairanController::class, 'create'])->name('pencairan.create');
     Route::post('/request-pencairan', [App\Http\Controllers\Nasabah\PencairanController::class, 'store'])->name('pencairan.store');
+
+    // Tukar Emas
+    Route::get('/tukar-emas', [App\Http\Controllers\Nasabah\GoldExchangeController::class, 'index'])->name('gold-exchange.index');
+    Route::get('/tukar-emas/create', [App\Http\Controllers\Nasabah\GoldExchangeController::class, 'create'])->name('gold-exchange.create');
+    Route::post('/tukar-emas', [App\Http\Controllers\Nasabah\GoldExchangeController::class, 'store'])->name('gold-exchange.store');
     
     // Profil
     Route::get('/profile', [App\Http\Controllers\Nasabah\ProfileController::class, 'index'])->name('profile');

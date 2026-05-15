@@ -75,8 +75,8 @@
                                 class="form-control 
                             @error('jenis_kelamin') is-invalid @enderror">
                                 <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
-                                <option value="laki-laki" @selected(old('jenis_kelamin') == 'laki-laki')>Laki-laki</option>
-                                <option value="perempuan" @selected(old('jenis_kelamin') == 'perempuan')>Perempuan</option>
+                                <option value="Laki-laki" @selected(old('jenis_kelamin') == 'Laki-laki')>Laki-laki</option>
+                                <option value="Perempuan" @selected(old('jenis_kelamin') == 'Perempuan')>Perempuan</option>
                             </select>
                             @error('jenis_kelamin')
                                 <span class="invalid-feedback">{{ $message }}</span>
