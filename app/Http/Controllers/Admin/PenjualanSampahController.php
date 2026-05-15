@@ -76,7 +76,16 @@ class PenjualanSampahController extends Controller
     public function create()
     {
         $pengepuls = Pengepul::all();
-        $sampahs = Sampah::all();
+        $sampahs = Sampah::with(['jenisSampah'])
+            ->select('id', 'nama_sampah', 'jenis_sampah_id', 'harga_per_kg')
+            ->withSum('setoranDetails', 'berat')
+            ->withSum('penjualanSampahs', 'berat')
+            ->get()
+            ->map(function ($sampah) {
+                $sampah->stok = ($sampah->setoran_details_sum_berat ?? 0) - ($sampah->penjualan_sampahs_sum_berat ?? 0);
+                return $sampah;
+            });
+
         return view('admin.transaksi.penjualan-sampah.create', compact('pengepuls', 'sampahs'));
     }
 

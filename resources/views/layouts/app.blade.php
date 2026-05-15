@@ -93,30 +93,7 @@
     </a>
 
     <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                @method('POST')
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Konfirmasi Logout</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">Apakah anda yakin ingin logout?</div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" type="button"
-                            data-dismiss="modal">Batal</button>
-                        <button class="btn btn-primary" type="submit">Logout</button>
-                    </div>
-                </div>
-            </form>
-
-        </div>
-    </div>
+    {{-- Redundant: handled by navbar SweetAlert2 --}}
 
     <!-- Bootstrap core JavaScript-->
     <script src="{{ asset('template/vendor/jquery/jquery.min.js') }}"></script>

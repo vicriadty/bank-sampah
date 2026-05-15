@@ -20,5 +20,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             JenisSampahSeeder::class,
         ]);
+
+        $this->call([
+            NasabahSeeder::class,
+        ]);
+
+        $this->call([
+            PengepulSeeder::class,
+        ]);
     }
 }
