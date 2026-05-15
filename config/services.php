@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    'metalpriceapi' => [
+        'key' => env('METALPRICE_API_KEY'),
+        'base_url' => env('METALPRICE_API_BASE_URL', 'https://api.metalpriceapi.com/v1'),
+        'default_metal' => 'XAU',
+        'default_currency' => 'IDR',
+    ],
+
+    'exchangerate' => [
+        'key' => env('EXCHANGE_RATE_API_KEY'),
+        'base_url' => 'https://v6.exchangerate-api.com/v6',
+    ],
+
 ];

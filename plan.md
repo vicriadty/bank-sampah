@@ -18,7 +18,7 @@ This plan is written for junior programmers and AI agents. Keep the implementati
 - The application fetches gold prices from MetalpriceAPI.
 - MetalpriceAPI configuration is stored in `config/services.php`, using environment variables from `.env` and `.env.example`.
 - The service converts the ounce-based price into a gram-based price before controllers or views receive it.
-- Dashboard UI primarily displays the gram price.
+- Dashboard UI primarily displays the gram price in `IDR` currency format.
 - Existing gold exchange logic continues to calculate purchased gold grams from saldo using `price_per_gram`.
 
 ## External API Notes
@@ -76,7 +76,7 @@ Do not perform this conversion in Blade views or controllers. Keep it in `GoldPr
   - `METALPRICE_API_KEY=`
   - optionally `METALPRICE_API_BASE_URL=https://api.metalpriceapi.com/v1`
 - Keep `default_metal` as `XAU`.
-- Keep `default_currency` as `USD` unless the business flow explicitly requests IDR.
+- Keep `default_currency` as `IDR` because the dashboard and exchange flow display rupiah values.
 
 2. Refactor `GoldPriceService`
 
