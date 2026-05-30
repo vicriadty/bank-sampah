@@ -44,7 +44,8 @@
             <button type="submit" name="action" value="cetak" class="btn btn-danger mr-2"><i class="fas fa-file-pdf"></i>
                 Cetak
                 Laporan</button>
-            <a href="{{ route('admin.setoran.create') }}" class="btn btn-primary"><i class="fas fa-plus fa-sm text-white-50"></i> Tambah
+            <a href="{{ route('admin.setoran.create') }}" class="btn btn-primary"><i
+                    class="fas fa-plus fa-sm text-white-50"></i> Tambah
                 Setoran</a>
         </div>
     </form>
@@ -57,8 +58,8 @@
                     <th>Nasabah</th>
                     <th>Tanggal</th>
                     <th>Nama Sampah</th>
-                    <th>Harga /Kg</th>
-                    <th>Berat</th>
+                    <th>Harga/Kg</th>
+                    <th>Berat(Kg)</th>
                     <th>Subtotal</th>
                 </tr>
             </thead>

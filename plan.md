@@ -1,156 +1,164 @@
-# High-Level Implementation Plan: Move Gold Pricing to MetalpriceAPI and Display Gram Pricing
+﻿# High-Level Implementation Plan: Fix Stock Logic for Waste Transactions
 
 ## Goal
 
-Replace the current GoldAPI.io gold price integration with MetalpriceAPI, and make the dashboard and gold exchange flows display gold pricing in grams instead of ounces.
+Fix waste stock behavior so every transaction changes `sampahs.stok` consistently:
 
-This plan is written for junior programmers and AI agents. Keep the implementation small, service-centered, and easy to verify.
+- Setor sampah adds stock.
+- Penjualan sampah reduces stock.
+- Admin penjualan form rejects invalid weight before saving.
 
-## Current State
+AI Agent must implement this in a new branch before editing code.
 
-- Gold price fetching is centralized in `app/Services/GoldPriceService.php`.
-- The service currently reads credentials and defaults from `config/services.php` under the `goldapi` key.
-- Dashboard and exchange screens already consume the service result through fields such as `price_per_gram`, `price_per_ounce`, `currency`, and `timestamp`.
-- The platform currently depends on GoldAPI.io response fields such as `price` and `price_gram_24k`.
+## Branch Instruction for AI Agent
 
-## Target State
+Create a new branch first:
 
-- The application fetches gold prices from MetalpriceAPI.
-- MetalpriceAPI configuration is stored in `config/services.php`, using environment variables from `.env` and `.env.example`.
-- The service converts the ounce-based price into a gram-based price before controllers or views receive it.
-- Dashboard UI primarily displays the gram price in `IDR` currency format.
-- Existing gold exchange logic continues to calculate purchased gold grams from saldo using `price_per_gram`.
-
-## External API Notes
-
-Use the MetalpriceAPI latest rates endpoint:
-
-```text
-https://api.metalpriceapi.com/v1/latest
+```bash
+git checkout -b fix/stock-transaction-logic
 ```
 
-Recommended query parameters:
+If branch name already exists, use a close name such as:
 
-```text
-api_key=<METALPRICE_API_KEY>
-base=USD
-currencies=XAU
+```bash
+git checkout -b fix/stock-transaction-logic-2
 ```
 
-MetalpriceAPI returns rates in a `rates` object. For a `base=USD&currencies=XAU` response, the `rates.XAU` value represents how many ounces of gold equal 1 USD. The reciprocal gives the gold price per ounce:
+Do not implement on `main` or current working branch.
 
-```text
-price_per_ounce = 1 / rates.XAU
-```
+## Current Code Areas
 
-If a response includes a direct `USDXAU` value, prefer it as the price per ounce and use the reciprocal as a fallback.
+Likely files to inspect and update:
 
-## Unit Conversion Rule
+- `app/Http/Controllers/Admin/SetoranController.php`
+- `app/Http/Controllers/Admin/PenjualanSampahController.php`
+- `app/Models/Sampah.php`
+- `app/Models/Setoran.php`
+- `app/Models/SetoranDetail.php`
+- `app/Models/PenjualanSampah.php`
+- `app/Models/DetailPenjualanSampah.php`
+- `resources/views/admin/transaksi/penjualan-sampah/create.blade.php`
+- `tests/Feature/Admin/SetoranControllerTest.php`
+- `tests/Feature/Admin/PenjualanSampahControllerTest.php`
 
-Product requirement:
+## Target Behavior
 
-```text
-grams = ounces * 28.3495
-```
+1. Setor sampah
 
-For price conversion, apply the inverse relationship:
+- When admin creates a valid setoran, selected `Sampah` stock increases by submitted `berat`.
+- Stock update happens in the same database transaction as `setorans`, `setoran_details`, and nasabah saldo update.
+- If any part fails, stock must not change.
 
-```text
-price_per_gram = price_per_ounce / 28.3495
-```
+2. Penjualan sampah
 
-Define the conversion factor as a named constant in the service, for example:
+- When admin creates a valid penjualan, each selected `Sampah` stock decreases by submitted `berat`.
+- Stock update happens in the same database transaction as `penjualan_sampahs` and `detail_penjualan_sampahs`.
+- If any part fails, stock must not change.
+- Stock must never become negative.
 
-```php
-private const OUNCE_TO_GRAM = 28.3495;
-```
+3. Penjualan validation
 
-Do not perform this conversion in Blade views or controllers. Keep it in `GoldPriceService`.
+- If any submitted `berat` is `0`, form must show validation error and not save transaction.
+- If submitted `berat` is greater than available `stok`, form must show validation error and not save transaction.
+- Important: user request says `jika request->berat <= stok tampilkan error`, but business rule for sales should be error when requested weight exceeds stock. Confirm wording if needed; implement as `berat > stok` invalid unless product owner explicitly confirms opposite rule.
 
 ## Implementation Steps
 
-1. Update configuration
+1. Verify schema and model relationships
 
-- Replace or supplement the current `services.goldapi` configuration with `services.metalpriceapi`.
-- Add environment variables to `.env.example`:
-  - `METALPRICE_API_KEY=`
-  - optionally `METALPRICE_API_BASE_URL=https://api.metalpriceapi.com/v1`
-- Keep `default_metal` as `XAU`.
-- Keep `default_currency` as `IDR` because the dashboard and exchange flow display rupiah values.
+- Confirm `sampahs` table has `stok` column from `database/migrations/2026_03_17_181111_add_stok_to_sampahs_table.php`.
+- Confirm `Sampah` model allows reading/updating `stok`.
+- Confirm relationships used by penjualan and setoran tests are correct.
 
-2. Refactor `GoldPriceService`
+2. Fix setoran stock update
 
-- Rename internal config reads from `services.goldapi.*` to `services.metalpriceapi.*`.
-- Change the request URL from `/{metal}/{currency}` to `/latest`.
-- Send the API key as either the `api_key` query parameter or `X-API-KEY` header. Prefer query parameter if that matches the MetalpriceAPI examples used by the team.
-- Request `base=USD` and `currencies=XAU`.
-- Parse the response safely:
-  - Validate `success === true` when present.
-  - Read `rates.USDXAU` if available.
-  - Otherwise read `rates.XAU` and calculate `1 / rates.XAU`.
-  - Guard against missing, zero, or non-numeric values.
-- Return the same service contract currently used by controllers:
-  - `price_per_gram`
-  - `price_per_ounce`
-  - `currency`
-  - `timestamp`
-- Calculate `price_per_gram` inside the service with `price_per_ounce / 28.3495`.
-- Keep fallback behavior returning zero values if the API request fails.
-- Update log messages from `GoldAPI` to `MetalpriceAPI`.
+- In `SetoranController::store`, keep validation requiring numeric positive weight.
+- After creating `setoran_details`, increment selected `Sampah::stok` by submitted `berat`.
+- Keep this inside `DB::beginTransaction()` / `DB::commit()`.
+- Prefer locking selected row if concurrent transactions can happen, for example `Sampah::whereKey($id)->lockForUpdate()->firstOrFail()` inside transaction.
 
-3. Review IDR conversion behavior
+3. Fix penjualan stock source
 
-- The existing service converts USD prices to IDR through `ExchangeRateService` when the requested currency is `IDR`.
-- Keep this behavior if the platform still needs rupiah display.
-- Perform the ounce-to-gram conversion before currency conversion, then multiply both `price_per_ounce` and `price_per_gram` by the USD-to-IDR exchange rate.
-- Make sure the returned `currency` field becomes `IDR` after conversion.
+- In `PenjualanSampahController::create`, display available stock from `sampahs.stok`, not recalculated stock from setoran details minus sales details, unless repository convention explicitly requires recalculation.
+- Include `stok` in selected fields sent to Blade so form can display correct stock.
+- Keep view data stable for existing UI JavaScript.
 
-4. Update dashboard and exchange views
+4. Fix penjualan server-side validation
 
-- Keep dashboard display focused on `price_per_gram`.
-- Remove or de-emphasize any primary dashboard text that shows the gold price per ounce.
-- If an ounce price remains visible for reference, label it clearly as secondary information.
-- Confirm existing gold exchange create form uses `price_per_gram` for gram estimation.
+- Keep base validation:
+  - `pengepul_id` required and exists.
+  - `sampah_id` required array.
+  - each `sampah_id.*` exists.
+  - `berat` required array.
+  - each `berat.*` numeric and greater than zero.
+- Add custom validation after base validation and before creating records:
+  - Reject missing paired `berat` for each selected sampah.
+  - Reject `berat <= 0` with field-specific error like `berat.0`.
+  - Load each selected sampah from database and compare requested weight to current `stok`.
+  - Reject `berat > stok` with clear field-specific error message.
+- Return back with old input and validation errors so `admin/penjualan/create` shows errors.
 
-5. Add or update tests
+5. Fix penjualan stock decrement
 
-- Add a service test for a MetalpriceAPI response with `rates.USDXAU`.
-- Add a service test for a MetalpriceAPI response with only `rates.XAU`, verifying the reciprocal calculation.
-- Assert `price_per_gram = price_per_ounce / 28.3495`.
-- Add an API failure test confirming the fallback structure remains stable.
-- If IDR behavior is covered, mock `ExchangeRateService` and assert both ounce and gram prices are converted.
+- Inside database transaction, for each detail row:
+  - Lock selected `sampahs` row.
+  - Re-check `berat > stok` after lock to prevent race condition.
+  - Create `DetailPenjualanSampah` only after stock passes validation.
+  - Decrement `stok` by `berat`.
+- If any item fails, roll back entire penjualan.
 
-6. Manual verification
+6. Improve Blade error display if needed
 
-- Configure a local `METALPRICE_API_KEY`.
-- Clear the gold price cache.
-- Load the admin dashboard and nasabah dashboard.
-- Confirm the displayed gold price is shown per gram.
-- Open the gold exchange create page and confirm saldo-to-gram estimation still works.
-- Confirm logs do not show failed GoldAPI calls.
+- In `resources/views/admin/transaksi/penjualan-sampah/create.blade.php`, make sure validation errors for `berat`, `berat.*`, and general `error` messages are visible.
+- Keep old input behavior so user does not lose form data after validation failure.
+- If client-side JavaScript blocks zero weight, keep it as helper only; server-side validation remains source of truth.
 
-## Suggested File Touch Points
+7. Add or update automated tests
 
-- `app/Services/GoldPriceService.php`
-- `config/services.php`
-- `.env.example`
-- `resources/views/admin/dashboard.blade.php`
-- `resources/views/nasabah/dashboard.blade.php`
-- `resources/views/nasabah/gold-exchange/create.blade.php`
-- `tests/Unit` or `tests/Feature`, depending on the existing test style
+- Add/adjust setoran feature test:
+  - Given sampah stock `10`, posting setoran with `berat = 2.5` results in stock `12.5`.
+- Add/adjust penjualan feature tests:
+  - Given sampah stock `10`, posting penjualan with `berat = 3` results in stock `7`.
+  - Posting penjualan with `berat = 0` fails validation and stock remains unchanged.
+  - Posting penjualan with `berat = 11` while stock is `10` fails validation and stock remains unchanged.
+  - Multi-item penjualan rolls back all changes if one item exceeds stock.
+- Run focused tests first, then broader suite if time allows.
+
+## Suggested Validation Messages
+
+Use Indonesian messages aligned with app style, for example:
+
+- `Berat sampah harus lebih dari 0.`
+- `Berat penjualan melebihi stok tersedia.`
+- `Stok sampah tidak mencukupi.`
+
+Keep messages tied to correct field keys so Blade can show them beside related input.
 
 ## Acceptance Criteria
 
-- No runtime code references `goldapi.co` or GoldAPI.io configuration for gold price fetching.
-- MetalpriceAPI is the only provider used by `GoldPriceService`.
-- The service converts ounce-based API pricing into gram pricing.
-- Dashboard gold price display is in grams.
-- Gold exchange purchase estimation uses gram pricing.
-- Automated tests cover successful API parsing, gram conversion, and fallback behavior.
-- Existing dashboard and gold exchange routes continue to load without errors.
+- AI Agent works on a new branch.
+- Setoran sampah increases `sampahs.stok` by submitted `berat`.
+- Penjualan sampah decreases `sampahs.stok` by submitted `berat`.
+- Penjualan with `berat = 0` fails validation and does not create records.
+- Penjualan with `berat > stok` fails validation and does not create records.
+- Failed penjualan does not change any stock values.
+- Stock cannot become negative, including concurrent request path handled by transaction row lock or equivalent database-safe check.
+- Tests cover stock increment, stock decrement, zero weight validation, insufficient stock validation, and rollback behavior.
 
-## Risks and Notes
+## Manual Verification
 
-- MetalpriceAPI rate semantics can be confusing because `rates.XAU` under `base=USD` is an amount of gold per 1 USD, not the USD price of 1 ounce. Use the reciprocal or `rates.USDXAU` for price per ounce.
-- The product requirement uses `28.3495` as the ounce-to-gram factor. Apply that exact factor consistently, even if future business requirements decide to change the precision.
-- Avoid moving conversion math into controllers or Blade templates. Keeping it in the service prevents duplicate and inconsistent calculations.
+1. Create or choose one sampah with known stock.
+2. Create setoran for that sampah.
+3. Confirm stock increases on admin stok sampah page or database.
+4. Create penjualan for part of available stock.
+5. Confirm stock decreases.
+6. Try penjualan with `berat = 0`; confirm error appears and no transaction is saved.
+7. Try penjualan with `berat` above stock; confirm error appears and no transaction is saved.
+
+## Notes for AI Agent
+
+- Keep change scoped to transaction stock logic and validation.
+- Do not rewrite unrelated dashboard, report PDF, or layout code.
+- Preserve existing route names and view names.
+- Prefer Laravel validation and transaction patterns already used in controllers.
+- If existing tests use factories, extend those tests instead of creating unrelated setup style.

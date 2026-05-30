@@ -33,6 +33,7 @@
                             <th>Jenis Sampah</th>
                             <th>Nama Sampah</th>
                             <th>Harga per Kg</th>
+                            <th>Stok</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -43,6 +44,7 @@
                                 <td>{{ $item->jenisSampah->nama_jenis }}</td>
                                 <td>{{ $item->nama_sampah }}</td>
                                 <td>Rp{{ number_format($item->harga_per_kg, 0, ',', '.') }}</td>
+                                <td>{{ $item->stok }}</td>
                                 <td>
                                     <div class="d-flex justify-content-center">
                                         <a href="{{ route('admin.sampah.edit', $item->id) }}"
@@ -54,8 +56,9 @@
                                             <i class="fas fa-trash"></i>
                                         </button>
                                         <!-- Form hapus tersembunyi -->
-                                        <form id="form-delete-{{ $item->id }}" action="{{ route('admin.sampah.destroy', $item->id) }}"
-                                            method="POST" style="display: none;">
+                                        <form id="form-delete-{{ $item->id }}"
+                                            action="{{ route('admin.sampah.destroy', $item->id) }}" method="POST"
+                                            style="display: none;">
                                             @csrf
                                             @method('DELETE')
                                         </form>
