@@ -116,6 +116,103 @@ class PenjualanSampahControllerTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
+    // Store — Stock behavior
+    // -----------------------------------------------------------------------
+
+    /** @test */
+    public function penjualan_decreases_sampah_stock(): void
+    {
+        // Arrange
+        $admin    = $this->adminUser();
+        $pengepul = Pengepul::factory()->create();
+        $sampah   = Sampah::factory()->create(['harga_per_kg' => 1000, 'stok' => 10]);
+
+        // Act
+        $this->actingAs($admin)->post(route('admin.penjualan.store'), [
+            'pengepul_id' => $pengepul->id,
+            'sampah_id'   => [$sampah->id],
+            'berat'       => [3],
+        ]);
+
+        // Assert: stock harus berkurang
+        $this->assertEquals(7, $sampah->fresh()->stok);
+    }
+
+    /** @test */
+    public function penjualan_with_zero_berat_fails_validation(): void
+    {
+        // Arrange
+        $admin    = $this->adminUser();
+        $pengepul = Pengepul::factory()->create();
+        $sampah   = Sampah::factory()->create(['harga_per_kg' => 1000, 'stok' => 10]);
+
+        // Act
+        $response = $this->actingAs($admin)->post(route('admin.penjualan.store'), [
+            'pengepul_id' => $pengepul->id,
+            'sampah_id'   => [$sampah->id],
+            'berat'       => [0],
+        ]);
+
+        // Assert: error dengan field spesifik
+        $response->assertSessionHasErrors('berat.0');
+        $this->assertDatabaseCount('penjualan_sampahs', 0);
+        $this->assertDatabaseCount('detail_penjualan_sampahs', 0);
+        // Stock tetap sama
+        $this->assertEquals(10, $sampah->fresh()->stok);
+    }
+
+    /** @test */
+    public function penjualan_with_insufficient_stock_fails_validation(): void
+    {
+        // Arrange
+        $admin    = $this->adminUser();
+        $pengepul = Pengepul::factory()->create();
+        $sampah   = Sampah::factory()->create(['harga_per_kg' => 1000, 'stok' => 10]);
+
+        // Act
+        $response = $this->actingAs($admin)->post(route('admin.penjualan.store'), [
+            'pengepul_id' => $pengepul->id,
+            'sampah_id'   => [$sampah->id],
+            'berat'       => [11],
+        ]);
+
+        // Assert: error dengan field spesifik
+        $response->assertSessionHasErrors('berat.0');
+        $this->assertDatabaseCount('penjualan_sampahs', 0);
+        $this->assertDatabaseCount('detail_penjualan_sampahs', 0);
+        // Stock tetap sama
+        $this->assertEquals(10, $sampah->fresh()->stok);
+    }
+
+    /** @test */
+    public function penjualan_rolls_back_all_changes_when_one_item_exceeds_stock(): void
+    {
+        // Arrange
+        $admin    = $this->adminUser();
+        $pengepul = Pengepul::factory()->create();
+        $sampah1  = Sampah::factory()->create(['harga_per_kg' => 2000, 'stok' => 10]);
+        $sampah2  = Sampah::factory()->create(['harga_per_kg' => 3000, 'stok' => 5]);
+
+        // Act: item 1 valid (5 < 10), item 2 melebihi stok (10 > 5)
+        $response = $this->actingAs($admin)->post(route('admin.penjualan.store'), [
+            'pengepul_id' => $pengepul->id,
+            'sampah_id'   => [$sampah1->id, $sampah2->id],
+            'berat'       => [5, 10],
+        ]);
+
+        // Assert: must fail - either custom validation caught it or transaction rolled back
+        $response->assertSessionHasErrors();
+
+        // Tidak ada satupun penjualan atau detail yang tersimpan
+        $this->assertDatabaseCount('penjualan_sampahs', 0);
+        $this->assertDatabaseCount('detail_penjualan_sampahs', 0);
+
+        // Stock kedua sampah tetap tidak berubah
+        $this->assertEquals(10, $sampah1->fresh()->stok);
+        $this->assertEquals(5, $sampah2->fresh()->stok);
+    }
+
+    // -----------------------------------------------------------------------
     // Store — Validasi
     // -----------------------------------------------------------------------
 
