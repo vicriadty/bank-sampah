@@ -80,7 +80,7 @@ class SetoranController extends Controller
 
         DB::beginTransaction();
         try {
-            $sampah = Sampah::findOrFail($request->sampah_id);
+            $sampah = Sampah::where('id', $request->sampah_id)->lockForUpdate()->firstOrFail();
             $subtotal = $sampah->harga_per_kg * $request->berat;
 
             $setoran = Setoran::create([

@@ -43,6 +43,26 @@ class SetoranControllerTest extends TestCase
     }
 
     /** @test */
+    public function setoran_increases_sampah_stock(): void
+    {
+        // Arrange
+        $admin   = $this->adminUser();
+        $nasabah = Nasabah::factory()->withSaldo(0)->create();
+        $sampah  = Sampah::factory()->create(['harga_per_kg' => 2000, 'stok' => 10]);
+
+        // Act
+        $response = $this->actingAs($admin)->post(route('admin.setoran.store'), [
+            'nasabah_id' => $nasabah->id,
+            'sampah_id'  => $sampah->id,
+            'berat'      => 2.5,
+        ]);
+
+        // Assert
+        $response->assertRedirect(route('admin.setoran.index'));
+        $this->assertEquals(12.5, $sampah->fresh()->stok);
+    }
+
+    /** @test */
     public function admin_can_view_setoran_index(): void
     {
         // Arrange

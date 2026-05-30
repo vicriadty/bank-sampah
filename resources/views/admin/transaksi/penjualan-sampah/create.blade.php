@@ -7,6 +7,16 @@
         <div class="alert alert-danger mb-4">{{ session('error') }}</div>
     @endif
 
+    @if ($errors->any())
+        <div class="alert alert-danger mb-4">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-lg-10">
             <div class="card shadow mb-4">
@@ -54,6 +64,9 @@
                                 <div class="col-md-3">
                                     <label>Berat (kg)</label>
                                     <input type="number" name="berat[]" class="form-control" step="0.01" required>
+                                    @error('berat.0')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
 
                                 <div class="col-md-1 d-flex align-items-end">
