@@ -77,14 +77,8 @@ class PenjualanSampahController extends Controller
     {
         $pengepuls = Pengepul::all();
         $sampahs = Sampah::with(['jenisSampah'])
-            ->select('id', 'nama_sampah', 'jenis_sampah_id', 'harga_per_kg')
-            ->withSum('setoranDetails', 'berat')
-            ->withSum('penjualanSampahs', 'berat')
-            ->get()
-            ->map(function ($sampah) {
-                $sampah->stok = ($sampah->setoran_details_sum_berat ?? 0) - ($sampah->penjualan_sampahs_sum_berat ?? 0);
-                return $sampah;
-            });
+            ->select('id', 'nama_sampah', 'jenis_sampah_id', 'harga_per_kg', 'stok')
+            ->get();
 
         return view('admin.transaksi.penjualan-sampah.create', compact('pengepuls', 'sampahs'));
     }
@@ -98,6 +92,25 @@ class PenjualanSampahController extends Controller
             'berat' => 'required|array',
             'berat.*' => 'required|numeric|min:0.1',
         ]);
+
+        $errors = [];
+        foreach ($request->sampah_id as $index => $sampahId) {
+            $berat = $request->berat[$index] ?? null;
+
+            if ($berat === null || $berat <= 0) {
+                $errors["berat.{$index}"] = 'Berat sampah harus lebih dari 0.';
+                continue;
+            }
+
+            $sampah = Sampah::find($sampahId);
+            if ($sampah && $berat > $sampah->stok) {
+                $errors["berat.{$index}"] = 'Berat penjualan melebihi stok tersedia.';
+            }
+        }
+
+        if (!empty($errors)) {
+            return back()->withErrors($errors)->withInput();
+        }
 
         DB::beginTransaction();
 
@@ -113,7 +126,12 @@ class PenjualanSampahController extends Controller
 
             foreach ($request->sampah_id as $index => $sampahId) {
                 $berat = $request->berat[$index];
-                $sampah = Sampah::findOrFail($sampahId);
+                $sampah = Sampah::where('id', $sampahId)->lockForUpdate()->firstOrFail();
+
+                if ($berat > $sampah->stok) {
+                    throw new \Exception('Stok sampah ' . $sampah->nama_sampah . ' tidak mencukupi.');
+                }
+
                 $subtotal = $berat * $sampah->harga_per_kg;
                 $totalHarga += $subtotal;
 
