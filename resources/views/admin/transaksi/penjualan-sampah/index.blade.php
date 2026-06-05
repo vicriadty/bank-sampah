@@ -6,15 +6,48 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-cash-register text-primary"></i> Data Penjualan Sampah</h1>
 
+        {{-- Toast: Success --}}
         @if (session('success'))
             <script>
                 Swal.fire({
-                    position: "top-end",
-                    text: "{{ session('success') }}",
-                    icon: "success",
-                    width: 600,
+                    icon: 'success',
+                    title: '{{ session('success') }}',
+                    toast: true,
+                    position: 'top-end',
                     showConfirmButton: false,
-                    timer: 1500
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            </script>
+        @endif
+
+        {{-- Toast: Error from session --}}
+        @if (session('error'))
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: '{{ session('error') }}',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true
+                });
+            </script>
+        @endif
+
+        {{-- Toast: Validation errors --}}
+        @if ($errors->any())
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan',
+                    html: `{!! implode('<br>', $errors->all()) !!}`,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true
                 });
             </script>
         @endif
@@ -44,7 +77,8 @@
             <button type="submit" name="action" value="cetak" class="btn btn-danger mr-2"><i class="fas fa-file-pdf"></i>
                 Cetak
                 Laporan</button>
-            <a href="{{ route('admin.penjualan.create') }}" class="btn btn-primary"><i class="fas fa-plus fa-sm text-white-50"></i>
+            <a href="{{ route('admin.penjualan.create') }}" class="btn btn-primary"><i
+                    class="fas fa-plus fa-sm text-white-50"></i>
                 Tambah
                 Penjualan</a>
         </div>

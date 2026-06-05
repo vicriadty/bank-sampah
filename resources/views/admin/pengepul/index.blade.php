@@ -5,20 +5,53 @@
 @section('content')
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Data Pengepul</h1>
-        <a href="{{ route('admin.pengepul.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                class="fas fa-plus fa-sm text-white-50"></i> Tambah Pengepul</a>
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-truck text-primary"></i> Data Pengepul</h1>
+        {{-- <a href="{{ route('admin.pengepul.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                class="fas fa-plus fa-sm text-white-50"></i> Tambah Pengepul</a> --}}
 
 
+        {{-- Toast: Success --}}
         @if (session('success'))
             <script>
                 Swal.fire({
-                    position: "top-end",
-                    text: "{{ session('success') }}",
-                    icon: "success",
-                    width: 600,
+                    icon: 'success',
+                    title: '{{ session('success') }}',
+                    toast: true,
+                    position: 'top-end',
                     showConfirmButton: false,
-                    timer: 1500
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            </script>
+        @endif
+
+        {{-- Toast: Error from session --}}
+        @if (session('error'))
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: '{{ session('error') }}',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true
+                });
+            </script>
+        @endif
+
+        {{-- Toast: Validation errors --}}
+        @if ($errors->any())
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan',
+                    html: `{!! implode('<br>', $errors->all()) !!}`,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true
                 });
             </script>
         @endif
@@ -33,6 +66,11 @@
         <div class="col-md-3">
             <button type="submit" class="btn btn-primary">Filter</button>
             <a href="{{ route('admin.pengepul.search') }}" class="btn btn-secondary">Reset</a>
+        </div>
+        <div class="col-md-6 d-flex justify-content-end">
+            <a href="{{ route('admin.pengepul.create') }}" class="btn btn-primary"><i
+                    class="fas fa-plus fa-sm text-white-50"></i> Tambah
+                Pengepul</a>
         </div>
     </form>
 
@@ -75,7 +113,7 @@
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <button type="button" class="d-inline-block btn btn-danger btn-delete"
-                                                data-id="{{ $item->id }}">
+                                                data-id="{{ $item->id }}" data-nama="{{ $item->nama }}">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                             <!-- Form hapus tersembunyi -->
@@ -106,8 +144,9 @@
         deleteButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const id = this.getAttribute('data-id');
+                const namaPengepul = this.getAttribute('data-nama');
                 Swal.fire({
-                    title: 'Apakah Anda yakin?',
+                    title: `Apakah Anda yakin ingin menghapus pengepul <br> ${namaPengepul}?`,
                     text: "Data yang dihapus tidak dapat dikembalikan!",
                     icon: 'warning',
                     showCancelButton: true,

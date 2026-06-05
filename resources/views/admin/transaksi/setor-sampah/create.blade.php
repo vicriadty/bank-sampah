@@ -3,8 +3,36 @@
 @section('title', 'Bank Sampah - Setoran')
 
 @section('content')
+
+    {{-- Toast: Error from session --}}
     @if (session('error'))
-        <div class="alert alert-danger mb-4">{{ session('error') }}</div>
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: '{{ session('error') }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true
+            });
+        </script>
+    @endif
+
+    {{-- Toast: Validation errors --}}
+    @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true
+            });
+        </script>
     @endif
 
     <div class="row">

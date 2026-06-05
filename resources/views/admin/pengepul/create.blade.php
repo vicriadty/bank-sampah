@@ -62,6 +62,15 @@
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
                         </div>
+                        <div class="form-group mb-3">
+                            <label for="keterangan">Keterangan</label>
+                            <textarea name="keterangan" id="keterangan" cols="15" rows="5"
+                                class="form-control 
+                            @error('keterangan') is-invalid @enderror">{{ old('keterangan') }}</textarea>
+                            @error('keterangan')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
 
                         <div class="form-group row mt-4">
                             <div class="col-sm-12 d-flex justify-content-end" style="gap: 10px;">

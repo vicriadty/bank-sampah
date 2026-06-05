@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Data Penukaran Emas</h1>
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-coins text-primary"></i> Data Penukaran Emas</h1>
 
         @if (session('success'))
             <script>
@@ -70,7 +70,8 @@
                         <td>Rp {{ number_format($exchange->harga_emas_per_gram, 0, ',', '.') }}</td>
                         <td>{{ number_format($exchange->jumlah_gram, 4, ',', '.') }} g</td>
                         <td>
-                            <span class="badge
+                            <span
+                                class="badge
                                 {{ $exchange->status == 'completed' ? 'badge-success' : '' }}
                                 {{ $exchange->status == 'pending' ? 'badge-warning' : '' }}
                                 {{ $exchange->status == 'rejected' ? 'badge-danger' : '' }}
@@ -80,14 +81,16 @@
                         </td>
                         <td>{{ $exchange->created_at->format('d/m/Y H:i') }}</td>
                         <td>
-                            @if($exchange->status == 'pending')
+                            @if ($exchange->status == 'pending')
                                 <div class="d-flex">
-                                    <form action="{{ route('admin.gold-exchange.approve', $exchange->id) }}" method="POST" class="mr-1">
+                                    <form action="{{ route('admin.gold-exchange.approve', $exchange->id) }}" method="POST"
+                                        class="mr-1">
                                         @csrf
-                                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Setujui penukaran emas ini?')">Approve</button>
+                                        <button type="submit" class="btn btn-success btn-sm"
+                                            onclick="return confirm('Setujui penukaran emas ini?')">Approve</button>
                                     </form>
-                                    <button type="button" class="btn btn-danger btn-sm btn-reject-gold" 
-                                        data-id="{{ $exchange->id }}" 
+                                    <button type="button" class="btn btn-danger btn-sm btn-reject-gold"
+                                        data-id="{{ $exchange->id }}"
                                         data-url="{{ route('admin.gold-exchange.reject', $exchange->id) }}">
                                         Reject
                                     </button>
@@ -111,48 +114,48 @@
 @endsection
 
 @section('scripts')
-<script>
-    $(document).on('click', '.btn-reject-gold', function() {
-        const url = $(this).data('url');
-        
-        Swal.fire({
-            title: 'Tolak Penukaran Emas',
-            text: "Masukkan alasan penolakan:",
-            input: 'textarea',
-            inputPlaceholder: 'Tulis alasan di sini...',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, Tolak!',
-            cancelButtonText: 'Batal',
-            inputValidator: (value) => {
-                if (!value) {
-                    return 'Alasan penolakan wajib diisi!'
+    <script>
+        $(document).on('click', '.btn-reject-gold', function() {
+            const url = $(this).data('url');
+
+            Swal.fire({
+                title: 'Tolak Penukaran Emas',
+                text: "Masukkan alasan penolakan:",
+                input: 'textarea',
+                inputPlaceholder: 'Tulis alasan di sini...',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Tolak!',
+                cancelButtonText: 'Batal',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Alasan penolakan wajib diisi!'
+                    }
                 }
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = url;
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = url;
 
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = '_token';
-                csrfInput.value = '{{ csrf_token() }}';
-                form.appendChild(csrfInput);
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfInput);
 
-                const catatanInput = document.createElement('input');
-                catatanInput.type = 'hidden';
-                catatanInput.name = 'catatan';
-                catatanInput.value = result.value;
-                form.appendChild(catatanInput);
+                    const catatanInput = document.createElement('input');
+                    catatanInput.type = 'hidden';
+                    catatanInput.name = 'catatan';
+                    catatanInput.value = result.value;
+                    form.appendChild(catatanInput);
 
-                document.body.appendChild(form);
-                form.submit();
-            }
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
         });
-    });
-</script>
+    </script>
 @endsection

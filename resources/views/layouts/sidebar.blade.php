@@ -38,11 +38,11 @@
             <i class="fas fa-fw fa-truck"></i>
             <span>Pengepul</span></a>
     </li>
-    <li class="nav-item {{ request()->routeIs('admin.stok-sampah.index') ? 'active' : '' }}">
+    {{-- <li class="nav-item {{ request()->routeIs('admin.stok-sampah.index') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.stok-sampah.index') }}">
             <i class="fas fa-fw fa-boxes"></i>
             <span>Stok Sampah</span></a>
-    </li>
+    </li> --}}
     <li class="nav-item {{ request()->routeIs('admin.sampah.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.sampah.index') }}">
             <i class="fas fa-fw fa-trash"></i>
@@ -61,11 +61,11 @@
             <span>Setor Sampah</span></a>
     </li>
     <!-- Nav Item - Tables -->
-    <li class="nav-item {{ request()->routeIs('admin.tarik-saldo.*') ? 'active' : '' }}">
+    {{-- <li class="nav-item {{ request()->routeIs('admin.tarik-saldo.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.tarik-saldo.index') }}">
             <i class="fas fa-fw fa-download"></i>
             <span>Tarik Saldo</span></a>
-    </li>
+    </li> --}}
     <li class="nav-item {{ request()->routeIs('admin.penjualan.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.penjualan.index') }}">
             <i class="fas fa-fw fa-cash-register"></i>

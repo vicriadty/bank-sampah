@@ -77,25 +77,6 @@ class NasabahController extends Controller
         }
     }
 
-    // public function store(Request $request)
-    // {
-    //     $validatedData = $request->validate([
-    //         'nik' => ['required', 'min:16', 'max:16'],
-    //         'nama' => ['required', 'max:100'],
-    //         'jenis_kelamin' => ['required', Rule::in(['laki-laki', 'perempuan'])],
-    //         'tanggal_lahir' => ['required', 'string'],
-    //         'tempat_lahir' => ['required', 'max:100'],
-    //         'alamat' => ['required', 'max:255'],
-    //         'no_hp' => ['required', 'max:13'],
-    //         'saldo' => ['nullable', 'numeric'],
-    //         'total_sampah' => ['nullable', 'numeric'],
-    //     ]);
-
-    //     Nasabah::create($validatedData);
-
-    //     return redirect('/nasabah')->with('success', 'Data Nasabah berhasil ditambahkan');
-    // }
-
     public function edit($id)
     {
         $nasabah = Nasabah::findOrFail($id);
