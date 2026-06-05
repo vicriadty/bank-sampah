@@ -1,164 +1,405 @@
-﻿# High-Level Implementation Plan: Fix Stock Logic for Waste Transactions
+# Implementation Plan: Optimize Auth Pages (Login & Register)
 
 ## Goal
 
-Fix waste stock behavior so every transaction changes `sampahs.stok` consistently:
+Redesign `login.blade.php` and `register.blade.php` with a minimal clean style (white dominant + thin green accent). Replace the current SB Admin 2 template with Bootstrap 5 CDN + SweetAlert2 toasts. The register form must handle complete nasabah registration (both `users` and `nasabahs` tables).
 
-- Setor sampah adds stock.
-- Penjualan sampah reduces stock.
-- Admin penjualan form rejects invalid weight before saving.
+---
 
-AI Agent must implement this in a new branch before editing code.
-
-## Branch Instruction for AI Agent
-
-Create a new branch first:
+## Branch
 
 ```bash
-git checkout -b fix/stock-transaction-logic
+git checkout -b fix/auth-design-optimization
 ```
 
-If branch name already exists, use a close name such as:
+---
 
-```bash
-git checkout -b fix/stock-transaction-logic-2
+## Current State
+
+| Area | Current | Target |
+|------|---------|--------|
+| CSS framework | SB Admin 2 (Bootstrap 4 based, local assets) | Bootstrap 5 CDN |
+| Login form fields | Username + Password only | Same (keep) |
+| Register form fields | Username + Email + Password + Confirm Password | **Full nasabah form** (NIK, Nama, JK, TTL, Alamat, No HP + Akun section) |
+| AuthController::register | Creates `User` only | Must create `User` + `Nasabah` in transaction |
+| Error display | SweetAlert2 modal on load | SweetAlert2 **toast** (top-end, auto-dismiss) |
+| Layout | SB Admin 2 card | Custom centered card, white + green accent |
+
+---
+
+## Database Schema Reference
+
+### `users` table
+| Column | Type | Constraints |
+|--------|------|-------------|
+| username | string | |
+| email | string | unique |
+| password | string | hashed |
+| role | string | default 'nasabah' |
+
+### `nasabahs` table
+| Column | Type | Constraints |
+|--------|------|-------------|
+| nik | string(16) | unique, 16 digits |
+| nama | string(100) | |
+| jenis_kelamin | enum('Laki-laki', 'Perempuan') | |
+| tanggal_lahir | date | |
+| tempat_lahir | string(100) | |
+| alamat | text | |
+| no_hp | string(15) | |
+| saldo | decimal(12,2) | default 0 |
+
+### Model `$fillable`
+- **User**: `username`, `email`, `password`, `role`
+- **Nasabah**: `user_id`, `nik`, `nama`, `jenis_kelamin`, `tanggal_lahir`, `tempat_lahir`, `alamat`, `no_hp`
+- **User hasOne Nasabah** / **Nasabah belongsTo User**
+
+---
+
+## Files to Modify
+
+1. `resources/views/auth/login.blade.php` — Full rewrite
+2. `resources/views/auth/register.blade.php` — Full rewrite
+3. `app/Http/Controllers/Auth/AuthController.php` — Expand `register()` validation + nasabah creation
+
+---
+
+## Design System
+
+### Color Palette
+- Background: `#ffffff`
+- Card: white, subtle shadow `rgba(0,0,0,0.05)`
+- Primary (green accent): `#10b981` (emerald-500) — buttons, links, borders
+- Primary hover: `#059669` (emerald-600)
+- Text: `#1f2937` (gray-800)
+- Muted text: `#6b7280` (gray-500)
+- Input border: `#d1d5db` (gray-300)
+- Input focus ring: `#10b981` with `rgba(16,185,129,0.15)`
+
+### CDN Dependencies (all loaded via `<link>` / `<script>` in Blade)
+- Bootstrap 5 CSS: `https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css`
+- Bootstrap 5 JS Bundle: `https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js`
+- SweetAlert2: `https://cdn.jsdelivr.net/npm/sweetalert2@11`
+- Flatpickr (Date Picker): `https://cdn.jsdelivr.net/npm/flatpickr`
+- Flatpickr CSS: `https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css`
+- Font Awesome 6 (icons): `https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css`
+
+### Toast Notifications (SweetAlert2)
+- **Success toast**: `Swal.fire({ icon: 'success', title: '...', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 })`
+- **Error toast**: Same pattern with `icon: 'error'` and appropriate title
+- All triggered via `@if (session(...))` / `@if ($errors->any())` Blade blocks with inline `<script>`
+
+---
+
+## Login Page Layout
+
+```
++----------------------------------+
+|         [Logo]                   |
+|         BANK SAMPAH              |
+|     Selamat Datang               |
+|                                  |
+|  ┌──────────────────────────┐    |
+|  │  Username                │    |
+|  └──────────────────────────┘    |
+|  ┌──────────────────────────┐    |
+|  │  Password                │    |
+|  └──────────────────────────┘    |
+|                                  |
+|  ┌──────────────────────────┐    |
+|  │        Masuk             │    |
+|  └──────────────────────────┘    |
+|                                  |
+|  Belum punya akun? Daftar        |
++----------------------------------+
+  Centered card, max-width: 400px
 ```
 
-Do not implement on `main` or current working branch.
+### HTML Structure
+```html
+<body class="bg-white min-vh-100 d-flex align-items-center justify-content-center">
+  <div class="card shadow-sm" style="max-width: 400px; width: 100%;">
+    <div class="card-body p-4 p-md-5">
+      <!-- Brand Header: logo + title -->
+      <!-- Toast scripts (success/error) -->
+      <!-- Form -->
+    </div>
+  </div>
+</body>
+```
 
-## Current Code Areas
+### Elements
+- **BrandHeader**: Logo image (favicon1.svg, 56px) + "BANK SAMPAH" title (h4, bold, green accent) + subtitle
+- **Form inputs**: Bootstrap 5 `.form-control` with `@error()` inline feedback
+- **Tombol "Masuk"**: Full width, green (`btn btn-success w-100`)
+- **Link daftar**: Centered below, "Belum punya akun? Daftar" with `<a href="/register">`
 
-Likely files to inspect and update:
+---
 
-- `app/Http/Controllers/Admin/SetoranController.php`
-- `app/Http/Controllers/Admin/PenjualanSampahController.php`
-- `app/Models/Sampah.php`
-- `app/Models/Setoran.php`
-- `app/Models/SetoranDetail.php`
-- `app/Models/PenjualanSampah.php`
-- `app/Models/DetailPenjualanSampah.php`
-- `resources/views/admin/transaksi/penjualan-sampah/create.blade.php`
-- `tests/Feature/Admin/SetoranControllerTest.php`
-- `tests/Feature/Admin/PenjualanSampahControllerTest.php`
+## Register Page Layout
 
-## Target Behavior
+```
++------------------------------------------+
+|         [Logo]                           |
+|         BANK SAMPAH                      |
+|     Daftar Akun Baru                     |
+|                                          |
+|  ─── Data Diri ──────────────────────    |
+|  ┌────────────────┐ ┌────────────────┐   |
+|  │ NIK (16 digit)  │ │ Nama Lengkap  │   |
+|  └────────────────┘ └────────────────┘   |
+|                                          |
+|  Jenis Kelamin:                          |
+|  ○ Laki-laki  ○ Perempuan                |
+|                                          |
+|  ┌────────────────┐ ┌────────────────┐   |
+|  │ Tempat Lahir   │ │ Tgl Lahir 🗓  │   |
+|  └────────────────┘ └────────────────┘   |
+|                                          |
+|  ┌──────────────────────────────────┐    |
+|  │ Alamat Lengkap                   │    |
+|  │                                  │    |
+|  └──────────────────────────────────┘    |
+|  ┌──────────────────────────────────┐    |
+|  │ No. Handphone                    │    |
+|  └──────────────────────────────────┘    |
+|                                          |
+|  ─── Akun ───────────────────────────    |
+|  ┌────────────────┐ ┌────────────────┐   |
+|  │ Username       │ │ Email         │   |
+|  └────────────────┘ └────────────────┘   |
+|  ┌────────────────┐ ┌────────────────┐   |
+|  │ Password       │ │ Konfirmasi    │   |
+|  └────────────────┘ └────────────────┘   |
+|                                          |
+|  ┌──────────────────────────────────┐    |
+|  │            Daftar                │    |
+|  └──────────────────────────────────┘    |
+|                                          |
+|  Sudah punya akun? Masuk                 |
++------------------------------------------+
+  Centered card, max-width: 640px, scrollable
+```
 
-1. Setor sampah
+### HTML Structure
+```html
+<body class="bg-white min-vh-100 d-flex align-items-center justify-content-center py-4">
+  <div class="card shadow-sm" style="max-width: 640px; width: 100%;">
+    <div class="card-body p-4 p-md-5">
+      <!-- Brand Header -->
+      <!-- Toast scripts -->
+      <form>
+        <!-- Section 1: Data Diri -->
+        <h6 class="text-uppercase text-muted small fw-bold mb-3">Data Diri</h6>
+        <hr class="mt-0">
+        
+        <div class="row">
+          <!-- NIK (col-12 or col-md-6) -->
+          <!-- Nama Lengkap (col-12 or col-md-6) -->
+        </div>
+        <!-- RadioGroup: Jenis Kelamin -->
+        <div class="row">
+          <!-- Tempat Lahir -->
+          <!-- Tanggal Lahir (Flatpickr) -->
+        </div>
+        <!-- Alamat (textarea, full width) -->
+        <!-- No. Handphone (full width) -->
 
-- When admin creates a valid setoran, selected `Sampah` stock increases by submitted `berat`.
-- Stock update happens in the same database transaction as `setorans`, `setoran_details`, and nasabah saldo update.
-- If any part fails, stock must not change.
+        <!-- Section 2: Akun -->
+        <h6 class="text-uppercase text-muted small fw-bold mb-3 mt-4">Akun</h6>
+        <hr class="mt-0">
+        
+        <div class="row">
+          <!-- Username -->
+          <!-- Email -->
+        </div>
+        <div class="row">
+          <!-- Password -->
+          <!-- Konfirmasi Password -->
+        </div>
 
-2. Penjualan sampah
+        <!-- Submit -->
+        <button class="btn btn-success w-100">Daftar</button>
+        <!-- Link login -->
+      </form>
+    </div>
+  </div>
+</body>
+```
 
-- When admin creates a valid penjualan, each selected `Sampah` stock decreases by submitted `berat`.
-- Stock update happens in the same database transaction as `penjualan_sampahs` and `detail_penjualan_sampahs`.
-- If any part fails, stock must not change.
-- Stock must never become negative.
+---
 
-3. Penjualan validation
+## AuthController::register() — Expanded Validation & Logic
 
-- If any submitted `berat` is `0`, form must show validation error and not save transaction.
-- If submitted `berat` is greater than available `stok`, form must show validation error and not save transaction.
-- Important: user request says `jika request->berat <= stok tampilkan error`, but business rule for sales should be error when requested weight exceeds stock. Confirm wording if needed; implement as `berat > stok` invalid unless product owner explicitly confirms opposite rule.
+The current `register()` only validates username/email/password and creates a `User`. Must be expanded:
+
+### Validation Rules
+
+| Field | Rules |
+|-------|-------|
+| `nik` | required, string, size:16, unique:nasabahs,nik |
+| `nama` | required, string, max:100 |
+| `jenis_kelamin` | required, in:Laki-laki,Perempuan |
+| `tempat_lahir` | required, string, max:100 |
+| `tanggal_lahir` | required, date, before:today |
+| `alamat` | required, string, max:1000 |
+| `no_hp` | required, string, max:15 |
+| `username` | required, string, max:100, unique:users,username |
+| `email` | required, email, unique:users,email |
+| `password` | required, min:6, confirmed |
+
+### Store Flow (inside DB::beginTransaction)
+```
+1. Validate all fields
+2. DB::beginTransaction()
+3. Create User: User::create(['username', 'email', 'password'])
+4. Create Nasabah: Nasabah::create(['user_id' => $user->id, 'nik', 'nama', 'jenis_kelamin', 'tanggal_lahir', 'tempat_lahir', 'alamat', 'no_hp'])
+5. DB::commit()
+6. Redirect to login with success toast message
+7. On failure: DB::rollBack(), return back with errors
+```
+
+---
+
+## Form Field Input Types & Validation Feedback
+
+Each field must show:
+- `@error('field_name')` inline Bootstrap 5 `.invalid-feedback` or small red text
+- `.is-invalid` class on the input when error exists (conditional via `$errors->has('field')`)
+
+### Specific Field Handling
+
+| Field | Input Type | HTML Attributes |
+|-------|-----------|-----------------|
+| NIK | `input type="text"` | `maxlength="16"`, `inputmode="numeric"`, `pattern="[0-9]{16}"` |
+| Nama | `input type="text"` | `maxlength="100"` |
+| Jenis Kelamin | radio group | Two radios with same `name="jenis_kelamin"` |
+| Tempat Lahir | `input type="text"` | `maxlength="100"` |
+| Tanggal Lahir | `input type="text"` | Flatpickr: `dateFormat: 'Y-m-d'`, `maxDate: 'today'` |
+| Alamat | `textarea` | `rows="3"`, `maxlength="1000"` |
+| No. Handphone | `input type="tel"` | `maxlength="15"` |
+| Username | `input type="text"` | `maxlength="100"` |
+| Email | `input type="email"` | |
+| Password | `input type="password"` | `minlength="6"` |
+| Konfirmasi Password | `input type="password"` | `name="password_confirmation"` |
+
+### Flatpickr Initialization
+```javascript
+flatpickr("#tanggal_lahir", {
+  dateFormat: "Y-m-d",
+  maxDate: "today",
+  allowInput: true
+});
+```
+
+### RadioGroup for Jenis Kelamin
+```html
+<div class="d-flex gap-4">
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="jenis_kelamin" value="Laki-laki" id="jk_l">
+    <label class="form-check-label" for="jk_l">Laki-laki</label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="jenis_kelamin" value="Perempuan" id="jk_p">
+    <label class="form-check-label" for="jk_p">Perempuan</label>
+  </div>
+</div>
+```
+
+---
 
 ## Implementation Steps
 
-1. Verify schema and model relationships
+### Step 1: Create branch
+```bash
+git checkout -b fix/auth-design-optimization
+```
 
-- Confirm `sampahs` table has `stok` column from `database/migrations/2026_03_17_181111_add_stok_to_sampahs_table.php`.
-- Confirm `Sampah` model allows reading/updating `stok`.
-- Confirm relationships used by penjualan and setoran tests are correct.
+### Step 2: Update AuthController.php
+- Expand `register()` validation with all nasabah fields
+- Add DB transaction to create User + Nasabah
+- Add error messages in Indonesian (e.g., "NIK harus 16 digit.", "Email sudah terdaftar.")
+- Add username unique validation (currently missing)
+- Keep login logic unchanged
 
-2. Fix setoran stock update
+### Step 3: Rewrite login.blade.php
+- Full HTML with Bootstrap 5 CDN (remove all SB Admin 2 assets)
+- Centered card, max-width 400px
+- Brand logo + title
+- Username + Password fields with validation feedback
+- Masuk button (green, full width)
+- "Belum punya akun? Daftar" link
+- SweetAlert2 toast for session('error') and validation errors
 
-- In `SetoranController::store`, keep validation requiring numeric positive weight.
-- After creating `setoran_details`, increment selected `Sampah::stok` by submitted `berat`.
-- Keep this inside `DB::beginTransaction()` / `DB::commit()`.
-- Prefer locking selected row if concurrent transactions can happen, for example `Sampah::whereKey($id)->lockForUpdate()->firstOrFail()` inside transaction.
+### Step 4: Rewrite register.blade.php
+- Full HTML with Bootstrap 5 CDN
+- Centered card, max-width 640px, scrollable (min-vh-100 with py-4)
+- BrandHeader
+- **Section 1 — Data Diri**: NIK, Nama, JK (radio), Tempat Lahir, Tanggal Lahir (Flatpickr), Alamat, No HP
+- **Section 2 — Akun**: Username, Email, Password, Confirm Password
+- Separator with `<hr>` + section heading
+- Daftar button (full width, green)
+- "Sudah punya akun? Masuk" link
+- Flatpickr CDN + initialization
+- SweetAlert2 toast for success/error
+- Old input preservation with `old()` on all fields
+- Radio button checked state via `old('jenis_kelamin')`
 
-3. Fix penjualan stock source
+### Step 5: Verify and commit
+- PHP syntax check: `php -l` on controller
+- Review both Blade files for consistency
+- Commit with appropriate message
 
-- In `PenjualanSampahController::create`, display available stock from `sampahs.stok`, not recalculated stock from setoran details minus sales details, unless repository convention explicitly requires recalculation.
-- Include `stok` in selected fields sent to Blade so form can display correct stock.
-- Keep view data stable for existing UI JavaScript.
+---
 
-4. Fix penjualan server-side validation
+## Success Criteria
 
-- Keep base validation:
-  - `pengepul_id` required and exists.
-  - `sampah_id` required array.
-  - each `sampah_id.*` exists.
-  - `berat` required array.
-  - each `berat.*` numeric and greater than zero.
-- Add custom validation after base validation and before creating records:
-  - Reject missing paired `berat` for each selected sampah.
-  - Reject `berat <= 0` with field-specific error like `berat.0`.
-  - Load each selected sampah from database and compare requested weight to current `stok`.
-  - Reject `berat > stok` with clear field-specific error message.
-- Return back with old input and validation errors so `admin/penjualan/create` shows errors.
+- [ ] Login page: card centered, clean white + green accent, shows validation toast on error
+- [ ] Register page: two sections with separator, all fields present and aligned to migrations
+- [ ] Register: NIK validated as 16-digit numeric unique
+- [ ] Register: Tanggal Lahir uses Flatpickr date picker
+- [ ] Register: Radio group for Jenis Kelamin (Laki-laki / Perempuan)
+- [ ] Register: Submitting creates both `User` (role='nasabah') and `Nasabah` records
+- [ ] Register: On success → redirect to login with toast "Register berhasil! Silakan login!"
+- [ ] Both pages: errors shown as SweetAlert2 toasts + inline field errors
+- [ ] Both pages: Bootstrap 5 CDN only (no local SB Admin 2 assets)
+- [ ] Both pages: old input preserved on validation failure
 
-5. Fix penjualan stock decrement
+---
 
-- Inside database transaction, for each detail row:
-  - Lock selected `sampahs` row.
-  - Re-check `berat > stok` after lock to prevent race condition.
-  - Create `DetailPenjualanSampah` only after stock passes validation.
-  - Decrement `stok` by `berat`.
-- If any item fails, roll back entire penjualan.
+## Suggested Validation Messages (Indonesian)
 
-6. Improve Blade error display if needed
+| Field | Error Message |
+|-------|--------------|
+| nik.required | NIK wajib diisi. |
+| nik.size | NIK harus 16 digit. |
+| nik.unique | NIK sudah terdaftar. |
+| nama.required | Nama lengkap wajib diisi. |
+| jenis_kelamin.required | Pilih jenis kelamin. |
+| jenis_kelamin.in | Jenis kelamin tidak valid. |
+| tempat_lahir.required | Tempat lahir wajib diisi. |
+| tanggal_lahir.required | Tanggal lahir wajib diisi. |
+| tanggal_lahir.before | Tanggal lahir harus sebelum hari ini. |
+| alamat.required | Alamat wajib diisi. |
+| no_hp.required | No. handphone wajib diisi. |
+| username.required | Username wajib diisi. |
+| username.unique | Username sudah digunakan. |
+| email.required | Email wajib diisi. |
+| email.email | Format email tidak valid. |
+| email.unique | Email sudah terdaftar. |
+| password.required | Password wajib diisi. |
+| password.min | Password minimal 6 karakter. |
+| password.confirmed | Konfirmasi password tidak cocok. |
 
-- In `resources/views/admin/transaksi/penjualan-sampah/create.blade.php`, make sure validation errors for `berat`, `berat.*`, and general `error` messages are visible.
-- Keep old input behavior so user does not lose form data after validation failure.
-- If client-side JavaScript blocks zero weight, keep it as helper only; server-side validation remains source of truth.
-
-7. Add or update automated tests
-
-- Add/adjust setoran feature test:
-  - Given sampah stock `10`, posting setoran with `berat = 2.5` results in stock `12.5`.
-- Add/adjust penjualan feature tests:
-  - Given sampah stock `10`, posting penjualan with `berat = 3` results in stock `7`.
-  - Posting penjualan with `berat = 0` fails validation and stock remains unchanged.
-  - Posting penjualan with `berat = 11` while stock is `10` fails validation and stock remains unchanged.
-  - Multi-item penjualan rolls back all changes if one item exceeds stock.
-- Run focused tests first, then broader suite if time allows.
-
-## Suggested Validation Messages
-
-Use Indonesian messages aligned with app style, for example:
-
-- `Berat sampah harus lebih dari 0.`
-- `Berat penjualan melebihi stok tersedia.`
-- `Stok sampah tidak mencukupi.`
-
-Keep messages tied to correct field keys so Blade can show them beside related input.
-
-## Acceptance Criteria
-
-- AI Agent works on a new branch.
-- Setoran sampah increases `sampahs.stok` by submitted `berat`.
-- Penjualan sampah decreases `sampahs.stok` by submitted `berat`.
-- Penjualan with `berat = 0` fails validation and does not create records.
-- Penjualan with `berat > stok` fails validation and does not create records.
-- Failed penjualan does not change any stock values.
-- Stock cannot become negative, including concurrent request path handled by transaction row lock or equivalent database-safe check.
-- Tests cover stock increment, stock decrement, zero weight validation, insufficient stock validation, and rollback behavior.
-
-## Manual Verification
-
-1. Create or choose one sampah with known stock.
-2. Create setoran for that sampah.
-3. Confirm stock increases on admin stok sampah page or database.
-4. Create penjualan for part of available stock.
-5. Confirm stock decreases.
-6. Try penjualan with `berat = 0`; confirm error appears and no transaction is saved.
-7. Try penjualan with `berat` above stock; confirm error appears and no transaction is saved.
+---
 
 ## Notes for AI Agent
 
-- Keep change scoped to transaction stock logic and validation.
-- Do not rewrite unrelated dashboard, report PDF, or layout code.
-- Preserve existing route names and view names.
-- Prefer Laravel validation and transaction patterns already used in controllers.
-- If existing tests use factories, extend those tests instead of creating unrelated setup style.
+- Do NOT modify any routes or add new controllers — only update AuthController methods
+- Keep login controller logic exactly as-is (no changes needed)
+- The old input should be preserved via `old('field_name')` on every form field
+- Radio buttons need manual `checked` attribute: `{{ old('jenis_kelamin') === 'Laki-laki' ? 'checked' : '' }}`
+- Flatpickr only needed on register page
+- SweetAlert2 toast configuration: `{ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true }`
+- Both views are standalone (not extending any layout) — complete `<html>` documents
+- Keep the favicon: `<link rel="icon" href="{{ asset('favicon1.svg') }}">`

@@ -126,6 +126,7 @@ class AuthController extends Controller
                 'tanggal_lahir'  => $request->tanggal_lahir,
                 'alamat'         => $request->alamat,
                 'no_hp'          => $request->no_hp,
+                'email'          => $request->email,
             ]);
 
             DB::commit();
