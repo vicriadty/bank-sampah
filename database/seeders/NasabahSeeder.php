@@ -18,10 +18,10 @@ class NasabahSeeder extends Seeder
     {
         $nasabahs = [
             [
-                'nik' => '3201021204990011',
-                'nama' => 'MOH VICRI ADITIYA',
-                'username' => 'vicri',
-                'email' => 'vicri@gmail.com',
+                'nik' => '3201021204990018',
+                'nama' => 'RAFFA PRADIPTA',
+                'username' => 'raffa',
+                'email' => 'raffa@gmail.com',
                 'password' => '123456',
                 'jenis_kelamin' => 'Laki-laki',
                 'tempat_lahir' => 'Bogor',
@@ -167,6 +167,7 @@ class NasabahSeeder extends Seeder
                     'tempat_lahir' => $data['tempat_lahir'],
                     'alamat' => $data['alamat'],
                     'no_hp' => $data['no_hp'],
+                    'email' => $data['email'],
                     'saldo' => $data['saldo'] ?? 0,
                 ]);
             });

@@ -26,6 +26,7 @@ class NasabahFactory extends Factory
             'tempat_lahir'  => $this->faker->city(),
             'alamat'        => $this->faker->address(),
             'no_hp'         => $this->faker->numerify('08##########'),
+            'email'         => $this->faker->unique()->safeEmail(),
             'saldo'         => 0,
         ];
     }
