@@ -9,7 +9,7 @@
 
     <div class="row">
         <div class="col">
-            <form action="/nasabah/{{ $nasabah->id }}" method="post">
+            <form action="{{ route('admin.nasabah.update', $nasabah->id) }}" method="post">
                 @csrf
                 @method('PUT')
                 <div class="card">
@@ -35,30 +35,17 @@
                             @enderror
                         </div>
                         <div class="form-group mb-3">
-                            <label for="nik">Jenis Kelamin</label>
+                            <label for="jenis_kelamin">Jenis Kelamin</label>
                             <select name="jenis_kelamin" id="jenis_kelamin"
                                 class="form-control 
                             @error('jenis_kelamin') is-invalid @enderror">
-                                @error('jenis_kelamin')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                                <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
-                                @foreach ([
-            (object)
-    [
-                'label' => 'Laki-laki',
-                'value' => 'laki-laki',
-            ],
-            (object) [
-                'label' => 'Perempuan',
-                'value' => 'perempuan',
-            ],
-        ] as $item)
-                                    <option value="{{ $item->value }}" @selected(old('jenis_kelamin', $nasabah->jenis_kelamin))>{{ $item->label }}
-                                    </option>
-                                @endforeach
-
+                                <option value="" disabled {{ old('jenis_kelamin', $nasabah->jenis_kelamin) ? '' : 'selected' }}>-- Pilih Jenis Kelamin --</option>
+                                <option value="Laki-laki" @selected(old('jenis_kelamin', $nasabah->jenis_kelamin) == 'Laki-laki')>Laki-laki</option>
+                                <option value="Perempuan" @selected(old('jenis_kelamin', $nasabah->jenis_kelamin) == 'Perempuan')>Perempuan</option>
                             </select>
+                            @error('jenis_kelamin')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="form-group mb-3">
                             <label for="nama">Tanggal Lahir</label>

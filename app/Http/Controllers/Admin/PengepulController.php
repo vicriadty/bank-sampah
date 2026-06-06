@@ -27,9 +27,9 @@ class PengepulController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required',
-            'alamat' => 'required',
-            'no_hp' => 'required',
+            'nama' => ['required', 'max:100'],
+            'alamat' => ['required', 'max:255'],
+            'no_hp' => ['required', 'max:15'],
         ]);
 
         Pengepul::create($request->all());
@@ -49,9 +49,9 @@ class PengepulController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nama' => 'required',
-            'alamat' => 'required',
-            'no_hp' => 'required',
+            'nama' => ['required', 'max:100'],
+            'alamat' => ['required', 'max:255'],
+            'no_hp' => ['required', 'max:15'],
         ]);
 
         $pengepul = Pengepul::findOrFail($id);

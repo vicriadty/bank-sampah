@@ -27,18 +27,6 @@ class SampahController extends Controller
         return view('admin.sampah.index', compact('sampah', 'jenis_sampahs'));
     }
 
-    // public function indexStokSampah()
-    // {
-    //     $stokSampah = Setoran::with('sampah, nasabah')
-    //         ->select('sampah_id', DB::raw('SUM(berat) as total_berat'))
-    //         ->groupBy('sampah_id')
-    //         ->get();
-
-    //     return view('admin.stok-sampah.index', [
-    //         'stokSampah' => $stokSampah,
-    //     ]);
-    // }
-
     public function create()
     {
         $jenisSampahs = JenisSampah::all();
@@ -48,9 +36,9 @@ class SampahController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'jenis_sampah_id' => 'required|exists:jenis_sampahs,id',
-            'nama_sampah' => 'required|string|max:255',
-            'harga_per_kg' => 'required|numeric|min:0',
+            'jenis_sampah_id' => ['required', 'exists:jenis_sampahs,id'],
+            'nama_sampah' => ['required', 'max:100'],
+            'harga_per_kg' => ['required', 'numeric'],
         ]);
 
         Sampah::create($request->all());
@@ -62,16 +50,18 @@ class SampahController extends Controller
     public function edit($id)
     {
         $sampah = Sampah::findOrFail($id);
+        $jenisSampahs = JenisSampah::all();
 
         return view('admin.sampah.edit', [
             'sampah' => $sampah,
+            'jenisSampahs' => $jenisSampahs,
         ]);
     }
 
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'jenis_sampah_id' => ['required', 'min:16', 'max:16'],
+            'jenis_sampah_id' => ['required', 'exists:jenis_sampahs,id'],
             'nama_sampah' => ['required', 'max:100'],
             'harga_per_kg' => ['required', 'numeric'],
         ]);

@@ -73,9 +73,9 @@ class SetoranController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nasabah_id' => 'required|exists:nasabahs,id',
-            'sampah_id' => 'required|exists:sampahs,id',
-            'berat' => 'required|numeric|min:0.1',
+            'nasabah_id' => ['required', 'exists:nasabahs,id'],
+            'sampah_id' => ['required', 'exists:sampahs,id'],
+            'berat' => ['required', 'numeric', 'min:0.1'],
         ]);
 
         DB::beginTransaction();
@@ -106,24 +106,4 @@ class SetoranController extends Controller
             return back()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
-
-    // public function laporanPDF()
-    // {
-    //     $setorans = Setoran::with(['nasabah', 'details.sampah'])->latest()->get();
-    //     $pdf = Pdf::loadView('admin.transaksi.setor-sampah.laporan_pdf', compact('setorans'));
-    //     return $pdf->download('laporan-setoran.pdf');
-    // }
-
-    //     public function laporanPDF()
-    //     {
-    //         $setorans = Setoran::with(['nasabah', 'details.sampah'])->latest()->get();
-
-    //         $pdf = Pdf::loadView('admin.transaksi.setor-sampah.laporan_pdf', compact('setorans'));
-
-    //         $tanggal = now()->format('d-m-y');
-
-    //         $namaFile = 'laporan-setoran-' . $tanggal . '.pdf';
-
-    //         return $pdf->download($namaFile);
-    //     }
 }

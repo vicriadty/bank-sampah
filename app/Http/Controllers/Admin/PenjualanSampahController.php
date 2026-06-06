@@ -56,23 +56,6 @@ class PenjualanSampahController extends Controller
         return view('admin.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepulId'));
     }
 
-    // public function index(Request $request)
-    // {
-    //     $pengepulId = $request->get('pengepul_id');
-
-    //     $pengepuls = Pengepul::all();
-
-    //     $penjualans = PenjualanSampah::with('pengepul')
-    //         ->when($pengepulId, function ($query) use ($pengepulId) {
-    //             $query->where('pengepul_id', $pengepulId);
-    //         })
-    //         ->latest()
-    //         ->get();
-
-    //     return view('admin.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepuls', 'pengepulId'));
-    // }
-
-
     public function create()
     {
         $pengepuls = Pengepul::all();
@@ -86,11 +69,11 @@ class PenjualanSampahController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'pengepul_id' => 'required|exists:pengepuls,id',
-            'sampah_id' => 'required|array',
-            'sampah_id.*' => 'required|exists:sampahs,id',
-            'berat' => 'required|array',
-            'berat.*' => 'required|numeric|min:0.1',
+            'pengepul_id' => ['required', 'exists:pengepuls,id'],
+            'sampah_id' => ['required', 'array'],
+            'sampah_id.*' => ['required', 'exists:sampahs,id'],
+            'berat' => ['required', 'array'],
+            'berat.*' => ['required', 'numeric', 'min:0.1'],
         ]);
 
         $errors = [];

@@ -32,7 +32,7 @@ class NasabahController extends Controller
     {
         // 1. Validasi input dari form admin
         $request->validate([
-            'nik' => ['required', 'min:16', 'max:100'],
+            'nik' => ['required', 'min:16', 'max:16'],
             'nama' => ['required', 'max:100'],
             'username' => ['required', 'max:100'],
             'email' => ['required', 'email', 'unique:users,email'], // Validasi email untuk tabel users
@@ -95,7 +95,7 @@ class NasabahController extends Controller
             'tanggal_lahir' => ['required', 'string'],
             'tempat_lahir' => ['required', 'max:100'],
             'alamat' => ['required', 'max:255'],
-            'no_hp' => ['max:15'],
+            'no_hp' => ['required', 'max:15'],
         ]);
 
         Nasabah::findOrFail($id)->update($validatedData);
