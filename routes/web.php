@@ -9,7 +9,6 @@ use App\Http\Controllers\Admin\PenjualanSampahController;
 use App\Http\Controllers\Admin\SampahController;
 use App\Http\Controllers\Admin\SetoranController;
 // use App\Http\Controllers\Admin\StokSampahController;
-// use App\Http\Controllers\Admin\TarikSaldoController;
 use App\Http\Controllers\Admin\GoldExchangeController as AdminGoldExchangeController;
 use App\Http\Controllers\UserController;
 use App\Models\JenisSampah;
@@ -49,11 +48,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/get-sampah-by-jenis/{id}', [SetoranController::class, 'getSampahByJenis']);
     Route::get('/setoran/laporan/pdf', [SetoranController::class, 'laporanPDF'])->name('setoran.laporan.pdf');
 
-    // Route::resource('tarik-saldo', TarikSaldoController::class);
-    // Route::get('/tarik-saldo-laporan/pdf', [TarikSaldoController::class, 'laporanPDF'])->name('tarik-saldo.laporan.pdf');
-    // Route::post('/tarik-saldo/{id}/approve', [TarikSaldoController::class, 'approve'])->name('tarik-saldo.approve');
-    // Route::post('/tarik-saldo/{id}/reject', [TarikSaldoController::class, 'reject'])->name('tarik-saldo.reject');
-
     Route::resource('penjualan', PenjualanSampahController::class);
     Route::get('/penjualan/laporan', [PenjualanSampahController::class, 'laporanPDF'])->name('penjualan.laporan');
 
@@ -70,10 +64,6 @@ Route::middleware(['auth', 'role:nasabah'])->prefix('nasabah')->name('nasabah.')
     // Riwayat & Saldo
     Route::get('/riwayat-transaksi', [App\Http\Controllers\Nasabah\TransaksiController::class, 'index'])->name('riwayat-transaksi');
     Route::get('/info-saldo', [App\Http\Controllers\Nasabah\DashboardController::class, 'infoSaldo'])->name('info-saldo');
-
-    // Request Pencairan
-    Route::get('/request-pencairan', [App\Http\Controllers\Nasabah\PencairanController::class, 'create'])->name('pencairan.create');
-    Route::post('/request-pencairan', [App\Http\Controllers\Nasabah\PencairanController::class, 'store'])->name('pencairan.store');
 
     // Tukar Emas
     Route::get('/tukar-emas', [App\Http\Controllers\Nasabah\GoldExchangeController::class, 'index'])->name('gold-exchange.index');

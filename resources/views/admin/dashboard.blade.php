@@ -60,19 +60,6 @@
                 </div>
             </div>
 
-            <!-- Total Tarik Tunai -->
-            <div class="col-md-6 col-lg-4 mb-3">
-                <div class="card shadow-sm d-flex flex-row align-items-center p-3">
-                    <div class="me-3 text-danger fs-2 mr-3">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                    <div>
-                        <h5 class="mb-0">Rp {{ number_format($totalSaldoDitarik, 0, ',', '.') }}</h5>
-                        <small class="text-muted">Total Saldo Ditarik</small>
-                    </div>
-                </div>
-            </div>
-
             <!-- Total Sampah Dijual -->
             <div class="col-md-6 col-lg-4 mb-3">
                 <div class="card shadow-sm d-flex flex-row align-items-center p-3">
@@ -195,41 +182,22 @@
 
 @section('scripts')
 <script>
-    // Setoran & Penarikan per Bulan (Bar Chart)
+    // Setoran per Bulan (Bar Chart)
     var setoranData = @json($setoranPerBulan);
-    var penarikanData = @json($penarikanPerBulan);
 
-    var allLabels = [...new Set([
-        ...setoranData.map(i => i.bulan),
-        ...penarikanData.map(i => i.bulan)
-    ])].sort();
-
-    var setoranValues = allLabels.map(label => {
-        var found = setoranData.find(i => i.bulan === label);
-        return found ? parseFloat(found.total) : 0;
-    });
-    var penarikanValues = allLabels.map(label => {
-        var found = penarikanData.find(i => i.bulan === label);
-        return found ? parseFloat(found.total) : 0;
-    });
+    var setoranLabels = setoranData.map(i => i.bulan);
+    var setoranValues = setoranData.map(i => parseFloat(i.total));
 
     new Chart(document.getElementById('setoranPenarikanChart'), {
         type: 'bar',
         data: {
-            labels: allLabels,
+            labels: setoranLabels,
             datasets: [
                 {
                     label: 'Setoran (Rp)',
                     data: setoranValues,
                     backgroundColor: 'rgba(78, 115, 223, 0.7)',
                     borderColor: 'rgba(78, 115, 223, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Penarikan (Rp)',
-                    data: penarikanValues,
-                    backgroundColor: 'rgba(231, 74, 59, 0.7)',
-                    borderColor: 'rgba(231, 74, 59, 1)',
                     borderWidth: 1
                 }
             ]

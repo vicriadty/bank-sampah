@@ -60,12 +60,6 @@
             <i class="fas fa-fw fa-upload"></i>
             <span>Setor Sampah</span></a>
     </li>
-    <!-- Nav Item - Tables -->
-    {{-- <li class="nav-item {{ request()->routeIs('admin.tarik-saldo.*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('admin.tarik-saldo.index') }}">
-            <i class="fas fa-fw fa-download"></i>
-            <span>Tarik Saldo</span></a>
-    </li> --}}
     <li class="nav-item {{ request()->routeIs('admin.penjualan.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.penjualan.index') }}">
             <i class="fas fa-fw fa-cash-register"></i>

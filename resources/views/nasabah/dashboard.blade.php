@@ -47,24 +47,6 @@
         </div>
     </div>
 
-    <!-- Total Penarikan Card -->
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                            Penarikan Berhasil</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalTarik }} Kali</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Total Emas Card -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-warning shadow h-100 py-2">
@@ -132,18 +114,6 @@
         </div>
     </div>
 
-    <!-- Bar Chart: Penarikan per Bulan -->
-    <div class="col-lg-6 mb-4">
-        <div class="card shadow">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Penarikan per Bulan</h6>
-            </div>
-            <div class="card-body">
-                <canvas id="penarikanChart" height="250"></canvas>
-            </div>
-        </div>
-    </div>
-
 </div>
 
 <!-- Welcome Card -->
@@ -154,14 +124,8 @@
                 <h6 class="m-0 font-weight-bold text-primary">Selamat Datang, {{ $nasabah->nama }}!</h6>
             </div>
             <div class="card-body">
-                <p>Melalui dashboard ini, Anda dapat memantau saldo tabungan sampah Anda, melihat riwayat transaksi, melakukan permintaan pencairan saldo menjadi uang tunai, atau menukarkan saldo menjadi emas.</p>
+                <p>Melalui dashboard ini, Anda dapat memantau saldo tabungan sampah Anda, melihat riwayat transaksi, atau menukarkan saldo menjadi emas.</p>
                 <div class="mt-4">
-                    <a href="{{ route('nasabah.pencairan.create') }}" class="btn btn-success btn-icon-split mr-2">
-                        <span class="icon text-white-50">
-                            <i class="fas fa-hand-holding-usd"></i>
-                        </span>
-                        <span class="text">Request Pencairan Saldo</span>
-                    </a>
                     <a href="{{ route('nasabah.gold-exchange.create') }}" class="btn btn-warning btn-icon-split">
                         <span class="icon text-white-50">
                             <i class="fas fa-coins"></i>
@@ -209,35 +173,5 @@
         }
     });
 
-    // Penarikan per Bulan (Bar Chart)
-    var penarikanData = @json($penarikanPerBulan);
-
-    new Chart(document.getElementById('penarikanChart'), {
-        type: 'bar',
-        data: {
-            labels: penarikanData.map(i => i.bulan),
-            datasets: [{
-                label: 'Penarikan (Rp)',
-                data: penarikanData.map(i => parseFloat(i.total)),
-                backgroundColor: 'rgba(54, 185, 204, 0.7)',
-                borderColor: 'rgba(54, 185, 204, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return 'Rp ' + value.toLocaleString('id-ID');
-                        }
-                    }
-                }
-            }
-        }
-    });
 </script>
 @endsection
