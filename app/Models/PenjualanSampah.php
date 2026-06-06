@@ -9,7 +9,11 @@ class PenjualanSampah extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['pengepul_id', 'tanggal', 'total_harga', 'keterangan'];
+    protected $fillable = ['pengepul_id', 'tanggal', 'total_harga', 'keterangan', 'status', 'alasan_batal'];
+
+    protected $casts = [
+        'status' => 'string',
+    ];
 
     public function pengepul()
     {

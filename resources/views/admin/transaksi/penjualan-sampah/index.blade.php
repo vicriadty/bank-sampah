@@ -95,6 +95,8 @@
                     <th>Pengepul</th>
                     <th>Total Harga</th>
                     <th>Sampah</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -110,11 +112,28 @@
                                 @endforeach
                             </ul>
                         </td>
+                        <td>
+                            @if ($jual->status == 'dibatalkan')
+                                <span class="badge badge-danger">Dibatalkan</span>
+                            @else
+                                <span class="badge badge-success">Berhasil</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if ($jual->status == 'berhasil')
+                                <button type="button" class="btn btn-sm btn-danger btn-void-penjualan"
+                                    data-id="{{ $jual->id }}"
+                                    data-pengepul="{{ $jual->pengepul->nama }}">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="text-center">Tidak ada data penjualan sampah.</td>
+                        <td colspan="6" class="text-center">Tidak ada data penjualan sampah.</td>
                     </tr>
                 @endforelse
 
@@ -122,4 +141,47 @@
         </table>
     </div>
 
+    {{-- Modal Void Penjualan --}}
+    <div class="modal fade" id="voidModalPenjualan" tabindex="-1" aria-labelledby="voidModalPenjualanLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="" method="POST" id="formVoidPenjualan">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="voidModalPenjualanLabel">Batalkan Transaksi Penjualan</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Apakah Anda yakin ingin membatalkan transaksi penjualan atas nama pengepul <strong id="pengepulNamePenjualan"></strong>?</p>
+                        <div class="mb-3">
+                            <label for="alasan_batal_penjualan" class="form-label">Alasan Pembatalan <span class="text-danger">*</span></label>
+                            <textarea name="alasan_batal" id="alasan_batal_penjualan" class="form-control" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">Ya, Batalkan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const voidButtons = document.querySelectorAll('.btn-void-penjualan');
+        voidButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const nama = this.dataset.pengepul;
+                document.getElementById('formVoidPenjualan').action = '/admin/penjualan/' + id + '/void';
+                document.getElementById('pengepulNamePenjualan').textContent = nama;
+                var modal = new bootstrap.Modal(document.getElementById('voidModalPenjualan'));
+                modal.show();
+            });
+        });
+    });
+</script>
 @endsection
