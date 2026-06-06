@@ -11,13 +11,20 @@ use Illuminate\Http\Request;
 
 class SampahController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $sampah = Sampah::all();
+        $query = Sampah::with('jenisSampah');
 
-        return view('admin.sampah.index', [
-            'sampah' => $sampah,
-        ]);
+        if ($request->filled('nama_jenis')) {
+            $query->whereHas('jenisSampah', function ($q) use ($request) {
+                $q->where('nama_jenis', $request->nama_jenis);
+            });
+        }
+
+        $sampah = $query->get();
+        $jenis_sampahs = JenisSampah::all();
+
+        return view('admin.sampah.index', compact('sampah', 'jenis_sampahs'));
     }
 
     // public function indexStokSampah()

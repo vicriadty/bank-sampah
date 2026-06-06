@@ -6,26 +6,51 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-coins text-primary"></i> Data Penukaran Emas</h1>
 
-        @if (session('success'))
-            <script>
-                Swal.fire({
-                    position: "top-end",
-                    text: "{{ session('success') }}",
-                    icon: "success",
-                    width: 600,
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            </script>
-        @endif
-        @if (session('error'))
-            <script>
-                Swal.fire({
-                    text: "{{ session('error') }}",
-                    icon: "error"
-                });
-            </script>
-        @endif
+         {{-- Toast: Success --}}
+            @if (session('success'))
+                <script>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '{{ session('success') }}',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
+                    });
+                </script>
+            @endif
+
+            {{-- Toast: Error from session --}}
+            @if (session('error'))
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{{ session('error') }}',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 4000,
+                        timerProgressBar: true
+                    });
+                </script>
+            @endif
+
+            {{-- Toast: Validation errors --}}
+            @if ($errors->any())
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan',
+                        html: `{!! implode('<br>', $errors->all()) !!}`,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 5000,
+                        timerProgressBar: true
+                    });
+                </script>
+            @endif
     </div>
 
     {{-- Form Filter --}}

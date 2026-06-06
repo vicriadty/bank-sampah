@@ -43,7 +43,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/pengepul-search', [PengepulController::class, 'search'])->name('pengepul.search');
 
     Route::resource('sampah', SampahController::class);
-    // Route::get('/stok-sampah', [StokSampahController::class, 'index'])->name('stok-sampah.index');
+    Route::get('/sampah-search', [SampahController::class, 'search'])->name('sampah.search');
 
     Route::resource('setoran', SetoranController::class);
     Route::get('/get-sampah-by-jenis/{id}', [SetoranController::class, 'getSampahByJenis']);

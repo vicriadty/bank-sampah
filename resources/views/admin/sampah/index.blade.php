@@ -5,9 +5,9 @@
 @section('content')
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-trash text-primary"></i> Data Sampah</h1>
-        <a href="{{ route('admin.sampah.create') }}" class="btn btn-sm btn-primary">
+        {{-- <a href="{{ route('admin.sampah.create') }}" class="btn btn-sm btn-primary">
             <i class="fas fa-plus"></i> Tambah Sampah
-        </a>
+        </a> --}}
     </div>
 
     {{-- Toast: Success --}}
@@ -55,6 +55,29 @@
             });
         </script>
     @endif
+
+    <form action="{{ route('admin.sampah.index') }}" method="GET" class="row mb-3">
+        <div class="col-md-3">
+            <select name="nama_jenis" id="nama_jenis" class="form-control">
+                <option value="">-- Semua Jenis Sampah --</option>
+                @foreach ($jenis_sampahs as $jenis)
+                    <option value="{{ $jenis->nama_jenis }}"
+                        {{ request('nama_jenis') == $jenis->nama_jenis ? 'selected' : '' }}>
+                        {{ $jenis->nama_jenis }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{{ route('admin.sampah.index') }}" class="btn btn-secondary">Reset</a>
+        </div>
+        <div class="col-md-6 d-flex justify-content-end">
+            <a href="{{ route('admin.sampah.create') }}" class="btn btn-primary"><i
+                    class="fas fa-plus fa-sm text-white-50"></i> Tambah
+                Sampah</a>
+        </div>
+    </form>
 
     <div class="card shadow mb-4">
         <div class="card-body">
