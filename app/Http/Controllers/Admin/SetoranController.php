@@ -106,4 +106,52 @@ class SetoranController extends Controller
             return back()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
+
+    public function void(Request $request, $id)
+    {
+        $request->validate([
+            'alasan_batal' => 'required|string|max:500',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $setoran = Setoran::where('id', $id)->lockForUpdate()->firstOrFail();
+
+            if ($setoran->status !== 'berhasil') {
+                DB::rollBack();
+                return back()->with('error', 'Transaksi ini sudah dibatalkan sebelumnya.');
+            }
+
+            // Reversal: kurangi stok sampah (kembalikan ke sebelum setoran)
+            foreach ($setoran->details as $detail) {
+                $sampah = Sampah::where('id', $detail->sampah_id)->lockForUpdate()->firstOrFail();
+
+                if ($sampah->stok < $detail->berat) {
+                    throw new \Exception("Stok sampah {$sampah->nama_sampah} tidak mencukupi untuk reversal.");
+                }
+
+                $sampah->decrement('stok', $detail->berat);
+            }
+
+            // Reversal: kurangi saldo nasabah
+            $nasabah = Nasabah::where('id', $setoran->nasabah_id)->lockForUpdate()->firstOrFail();
+
+            if ($nasabah->saldo < $setoran->total_harga) {
+                throw new \Exception('Saldo nasabah tidak mencukupi untuk reversal.');
+            }
+
+            $nasabah->decrement('saldo', $setoran->total_harga);
+
+            $setoran->update([
+                'status' => 'dibatalkan',
+                'alasan_batal' => $request->alasan_batal,
+            ]);
+
+            DB::commit();
+            return redirect()->route('admin.setoran.index')->with('success', 'Transaksi setoran berhasil dibatalkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal membatalkan transaksi: ' . $e->getMessage());
+        }
+    }
 }

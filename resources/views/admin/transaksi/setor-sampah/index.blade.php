@@ -94,6 +94,8 @@
                     <th>Harga/Kg</th>
                     <th>Berat(Kg)</th>
                     <th>Subtotal</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -101,12 +103,34 @@
                     @if ($setoran->details->count() > 0)
                         @foreach ($setoran->details as $detail)
                             <tr>
-                                <td>{{ $setoran->nasabah->nama }}</td>
-                                <td>{{ $setoran->created_at->format('d-m-Y') }}</td>
+                                @if ($loop->first)
+                                    <td rowspan="{{ $setoran->details->count() }}">{{ $setoran->nasabah->nama }}</td>
+                                    <td rowspan="{{ $setoran->details->count() }}">{{ $setoran->created_at->format('d-m-Y') }}</td>
+                                @endif
                                 <td>{{ $detail->sampah->nama_sampah }}</td>
                                 <td>Rp{{ number_format($detail->harga_per_kg, 0, ',', '.') }}</td>
                                 <td>{{ $detail->berat }}</td>
                                 <td>Rp{{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                                @if ($loop->first)
+                                    <td rowspan="{{ $setoran->details->count() }}">
+                                        @if ($setoran->status == 'dibatalkan')
+                                            <span class="badge badge-danger">Dibatalkan</span>
+                                        @else
+                                            <span class="badge badge-success">Berhasil</span>
+                                        @endif
+                                    </td>
+                                    <td rowspan="{{ $setoran->details->count() }}">
+                                        @if ($setoran->status == 'berhasil')
+                                            <button type="button" class="btn btn-sm btn-danger btn-void-setoran"
+                                                data-id="{{ $setoran->id }}"
+                                                data-nasabah="{{ $setoran->nasabah->nama }}">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                @endif
                             </tr>
                         @endforeach
                     @else
@@ -114,14 +138,76 @@
                             <td>{{ $setoran->nasabah->nama }}</td>
                             <td>{{ $setoran->created_at->format('d-m-Y') }}</td>
                             <td colspan="4" class="text-center">Tidak ada detail setoran</td>
+                            <td>
+                                @if ($setoran->status == 'dibatalkan')
+                                    <span class="badge badge-danger">Dibatalkan</span>
+                                @else
+                                    <span class="badge badge-success">Berhasil</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if ($setoran->status == 'berhasil')
+                                    <button type="button" class="btn btn-sm btn-danger btn-void-setoran"
+                                        data-id="{{ $setoran->id }}"
+                                        data-nasabah="{{ $setoran->nasabah->nama }}">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
                         </tr>
                     @endif
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center">Tidak ada data setoran.</td>
+                        <td colspan="8" class="text-center">Tidak ada data setoran.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+
+    {{-- Modal Void Setoran --}}
+    <div class="modal fade" id="voidModalSetoran" tabindex="-1" aria-labelledby="voidModalSetoranLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="" method="POST" id="formVoidSetoran">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="voidModalSetoranLabel">Batalkan Transaksi Setoran</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Apakah Anda yakin ingin membatalkan transaksi setoran atas nama <strong id="nasabahNameSetoran"></strong>?</p>
+                        <div class="mb-3">
+                            <label for="alasan_batal_setoran" class="form-label">Alasan Pembatalan <span class="text-danger">*</span></label>
+                            <textarea name="alasan_batal" id="alasan_batal_setoran" class="form-control" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">Ya, Batalkan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const voidButtons = document.querySelectorAll('.btn-void-setoran');
+        voidButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const nama = this.dataset.nasabah;
+                document.getElementById('formVoidSetoran').action = '/admin/setoran/' + id + '/void';
+                document.getElementById('nasabahNameSetoran').textContent = nama;
+                var modal = new bootstrap.Modal(document.getElementById('voidModalSetoran'));
+                modal.show();
+            });
+        });
+    });
+</script>
 @endsection

@@ -9,7 +9,11 @@ class Setoran extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nasabah_id', 'total_harga'];
+    protected $fillable = ['nasabah_id', 'total_harga', 'status', 'alasan_batal'];
+
+    protected $casts = [
+        'status' => 'string',
+    ];
 
 
     public function nasabah()

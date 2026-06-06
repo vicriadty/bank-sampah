@@ -47,9 +47,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('setoran', SetoranController::class);
     Route::get('/get-sampah-by-jenis/{id}', [SetoranController::class, 'getSampahByJenis']);
     Route::get('/setoran/laporan/pdf', [SetoranController::class, 'laporanPDF'])->name('setoran.laporan.pdf');
+    Route::post('/setoran/{id}/void', [SetoranController::class, 'void'])->name('setoran.void');
 
     Route::resource('penjualan', PenjualanSampahController::class);
     Route::get('/penjualan/laporan', [PenjualanSampahController::class, 'laporanPDF'])->name('penjualan.laporan');
+    Route::post('/penjualan/{id}/void', [PenjualanSampahController::class, 'void'])->name('penjualan.void');
 
     // Gold Exchange
     Route::get('/gold-exchange', [AdminGoldExchangeController::class, 'index'])->name('gold-exchange.index');

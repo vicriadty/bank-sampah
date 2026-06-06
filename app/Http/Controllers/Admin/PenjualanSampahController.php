@@ -148,6 +148,40 @@ class PenjualanSampahController extends Controller
     }
 
 
+    public function void(Request $request, $id)
+    {
+        $request->validate([
+            'alasan_batal' => 'required|string|max:500',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $penjualan = PenjualanSampah::where('id', $id)->lockForUpdate()->firstOrFail();
+
+            if ($penjualan->status !== 'berhasil') {
+                DB::rollBack();
+                return back()->with('error', 'Transaksi ini sudah dibatalkan sebelumnya.');
+            }
+
+            // Reversal: kembalikan stok sampah
+            foreach ($penjualan->detail_penjualan as $detail) {
+                $sampah = Sampah::where('id', $detail->sampah_id)->lockForUpdate()->firstOrFail();
+                $sampah->increment('stok', $detail->berat);
+            }
+
+            $penjualan->update([
+                'status' => 'dibatalkan',
+                'alasan_batal' => $request->alasan_batal,
+            ]);
+
+            DB::commit();
+            return redirect()->route('admin.penjualan.index')->with('success', 'Transaksi penjualan berhasil dibatalkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal membatalkan transaksi: ' . $e->getMessage());
+        }
+    }
+
     // public function laporanPDF(Request $request)
     // {
     //     $request->validate([
