@@ -11,7 +11,6 @@ use App\Models\Pengepul;
 use App\Models\PenjualanSampah;
 use App\Models\Setoran;
 use App\Models\SetoranDetail;
-use App\Models\TarikSaldo;
 use App\Services\GoldPriceService;
 use Illuminate\Support\Facades\DB;
 
@@ -24,7 +23,6 @@ class DashboardController extends Controller
         $jumlahPengepul = Pengepul::count();
         $totalSampahDisetorkan = SetoranDetail::sum('berat');
         $totalTabunganNasabah = Nasabah::sum('saldo');
-        $totalSaldoDitarik = TarikSaldo::sum('jumlah_tarik');
         $totalPenjualanSampah = DetailPenjualanSampah::sum('berat');
         $totalPenjualan = PenjualanSampah::sum('total_harga');
 
@@ -38,17 +36,6 @@ class DashboardController extends Controller
                 DB::raw("DATE_FORMAT(created_at, '%Y-%m') as bulan"),
                 DB::raw('SUM(total_harga) as total')
             )
-            ->where('created_at', '>=', now()->subMonths(6))
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->get();
-
-        // Chart: Penarikan per bulan
-        $penarikanPerBulan = TarikSaldo::select(
-                DB::raw("DATE_FORMAT(created_at, '%Y-%m') as bulan"),
-                DB::raw('SUM(jumlah_tarik) as total')
-            )
-            ->where('status', 'approved')
             ->where('created_at', '>=', now()->subMonths(6))
             ->groupBy('bulan')
             ->orderBy('bulan')
@@ -88,14 +75,12 @@ class DashboardController extends Controller
             'jumlahPengepul',
             'totalSampahDisetorkan',
             'totalTabunganNasabah',
-            'totalSaldoDitarik',
             'totalPenjualanSampah',
             'totalPenjualan',
             'goldPrice',
             'totalGoldExchanged',
             'pendingGoldExchanges',
             'setoranPerBulan',
-            'penarikanPerBulan',
             'nasabahBaruPerBulan',
             'komposisiSampah',
             'goldPerBulan'

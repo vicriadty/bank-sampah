@@ -39,13 +39,7 @@
                         </td>
                         <td>{{ number_format($item->jumlah, 0, ',', '.') }}</td>
                         <td>
-                            @if($item->tipe == 'Penarikan')
-                                <span class="badge {{ $item->status == 'approved' ? 'badge-success' : ($item->status == 'pending' ? 'badge-warning' : 'badge-danger') }}">
-                                    {{ ucfirst($item->status) }}
-                                </span>
-                            @else
-                                <span class="badge badge-success">Selesai</span>
-                            @endif
+                            <span class="badge badge-success">Selesai</span>
                         </td>
                         <td>{{ $item->keterangan ?? '-' }}</td>
                     </tr>

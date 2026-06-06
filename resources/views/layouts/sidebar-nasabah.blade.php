@@ -40,12 +40,6 @@
             <span>Info Saldo</span></a>
     </li>
 
-    <li class="nav-item {{ request()->routeIs('nasabah.pencairan.*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('nasabah.pencairan.create') }}">
-            <i class="fas fa-fw fa-hand-holding-usd"></i>
-            <span>Request Pencairan</span></a>
-    </li>
-
     <li class="nav-item {{ request()->routeIs('nasabah.gold-exchange.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('nasabah.gold-exchange.create') }}">
             <i class="fas fa-fw fa-coins"></i>
