@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
+use App\Models\DompetNasabah;
 use App\Models\JenisSampah;
 use App\Models\Nasabah;
 use App\Models\Sampah;
@@ -97,7 +98,7 @@ class SetoranController extends Controller
 
             $sampah->increment('stok', $request->berat);
 
-            $setoran->nasabah->increment('saldo', $subtotal);
+            $setoran->nasabah->dompet->increment('saldo_rupiah', $subtotal);
 
             DB::commit();
             return redirect()->route('admin.setoran.index')->with('success', 'Data Setoran berhasil ditambahkan');
@@ -133,14 +134,14 @@ class SetoranController extends Controller
                 $sampah->decrement('stok', $detail->berat);
             }
 
-            // Reversal: kurangi saldo nasabah
-            $nasabah = Nasabah::where('id', $setoran->nasabah_id)->lockForUpdate()->firstOrFail();
+            // Reversal: kurangi saldo rupiah nasabah
+            $dompet = DompetNasabah::where('nasabah_id', $setoran->nasabah_id)->lockForUpdate()->firstOrFail();
 
-            if ($nasabah->saldo < $setoran->total_harga) {
-                throw new \Exception('Saldo nasabah tidak mencukupi untuk reversal.');
+            if ($dompet->saldo_rupiah < $setoran->total_harga) {
+                throw new \Exception('Saldo rupiah nasabah tidak mencukupi untuk reversal.');
             }
 
-            $nasabah->decrement('saldo', $setoran->total_harga);
+            $dompet->decrement('saldo_rupiah', $setoran->total_harga);
 
             $setoran->update([
                 'status' => 'dibatalkan',

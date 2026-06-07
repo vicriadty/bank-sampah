@@ -27,17 +27,6 @@ class NasabahFactory extends Factory
             'alamat'        => $this->faker->address(),
             'no_hp'         => $this->faker->numerify('08##########'),
             'email'         => $this->faker->unique()->safeEmail(),
-            'saldo'         => 0,
         ];
-    }
-
-    /**
-     * State dengan saldo tertentu.
-     */
-    public function withSaldo(int $saldo): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'saldo' => $saldo,
-        ]);
     }
 }

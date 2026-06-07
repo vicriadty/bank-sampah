@@ -8,6 +8,7 @@ use App\Services\GoldPriceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Nasabah;
 
 class GoldExchangeController extends Controller
 {
@@ -33,8 +34,10 @@ class GoldExchangeController extends Controller
     {
         $nasabah = Auth::user()->nasabah;
 
+        $dompet = $nasabah->dompet;
+
         $request->validate([
-            'jumlah_saldo' => 'required|numeric|min:10000|max:' . $nasabah->saldo,
+            'jumlah_saldo' => 'required|numeric|min:10000|max:' . ($dompet->saldo_rupiah ?? 0),
         ], [
             'jumlah_saldo.max' => 'Saldo tidak mencukupi untuk jumlah penukaran ini.',
             'jumlah_saldo.min' => 'Minimal penukaran adalah Rp 10.000.',
@@ -50,20 +53,22 @@ class GoldExchangeController extends Controller
         $hargaPerGram = $goldPrice['price_per_gram'];
         $jumlahGram = $jumlahSaldo / $hargaPerGram;
 
-        DB::transaction(function () use ($nasabah, $jumlahSaldo, $hargaPerGram, $jumlahGram, $request) {
-            $nasabah->decrement('saldo', $jumlahSaldo);
+        DB::transaction(function () use ($nasabah, $dompet, $jumlahSaldo, $hargaPerGram, $jumlahGram, $request) {
+            // Auto-convert: kurangi saldo rupiah, tambah saldo emas
+            $dompet->decrement('saldo_rupiah', $jumlahSaldo);
+            $dompet->increment('saldo_emas_gram', $jumlahGram);
 
             GoldExchange::create([
                 'nasabah_id' => $nasabah->id,
                 'jumlah_saldo' => $jumlahSaldo,
                 'harga_emas_per_gram' => $hargaPerGram,
                 'jumlah_gram' => $jumlahGram,
-                'status' => 'pending',
+                'status' => 'completed',
                 'catatan' => $request->catatan,
             ]);
         });
 
         return redirect()->route('nasabah.gold-exchange.index')
-            ->with('success', 'Permintaan penukaran emas berhasil dikirim dan sedang menunggu persetujuan admin.');
+            ->with('success', 'Penukaran saldo ke emas berhasil!');
     }
 }

@@ -54,19 +54,19 @@
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info">
-                        <strong>Saldo Aktif: Rp {{ number_format($nasabah->saldo, 0, ',', '.') }}</strong>
+                        <strong>Saldo Aktif: Rp {{ number_format($nasabah->dompet->saldo_rupiah ?? 0, 0, ',', '.') }}</strong>
                         <br>
                         <small>* Minimal penukaran Rp 10.000</small>
                     </div>
 
-                    @if ($goldPrice['price_per_gram'] > 0 && $nasabah->saldo >= 10000)
+                    @if ($goldPrice['price_per_gram'] > 0 && ($nasabah->dompet->saldo_rupiah ?? 0) >= 10000)
                         <form action="{{ route('nasabah.gold-exchange.store') }}" method="POST">
                             @csrf
                             <div class="form-group">
                                 <label for="jumlah_saldo">Jumlah Saldo yang Ditukarkan (Rp)</label>
                                 <input type="number" name="jumlah_saldo" id="jumlah_saldo"
                                     class="form-control @error('jumlah_saldo') is-invalid @enderror"
-                                    value="{{ old('jumlah_saldo') }}" required min="10000" max="{{ $nasabah->saldo }}">
+                                    value="{{ old('jumlah_saldo') }}" required min="10000" max="{{ $nasabah->dompet->saldo_rupiah ?? 0 }}">
                                 @error('jumlah_saldo')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -89,7 +89,7 @@
                                 </button>
                             </div>
                         </form>
-                    @elseif($nasabah->saldo < 10000)
+                        @elseif(($nasabah->dompet->saldo_rupiah ?? 0) < 10000)
                         <div class="alert alert-danger mb-0">
                             Saldo Anda tidak mencukupi untuk melakukan penukaran emas. Minimal saldo Rp 10.000.
                         </div>

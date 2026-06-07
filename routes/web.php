@@ -55,8 +55,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Gold Exchange
     Route::get('/gold-exchange', [AdminGoldExchangeController::class, 'index'])->name('gold-exchange.index');
-    Route::post('/gold-exchange/{id}/approve', [AdminGoldExchangeController::class, 'approve'])->name('gold-exchange.approve');
-    Route::post('/gold-exchange/{id}/reject', [AdminGoldExchangeController::class, 'reject'])->name('gold-exchange.reject');
 });
 
 // Nasabah Routes

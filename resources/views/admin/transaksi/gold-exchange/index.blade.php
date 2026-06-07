@@ -84,7 +84,6 @@
                     <th>Jumlah Gram</th>
                     <th>Status</th>
                     <th>Tanggal</th>
-                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -105,29 +104,10 @@
                             </span>
                         </td>
                         <td>{{ $exchange->created_at->format('d/m/Y H:i') }}</td>
-                        <td>
-                            @if ($exchange->status == 'pending')
-                                <div class="d-flex">
-                                    <form action="{{ route('admin.gold-exchange.approve', $exchange->id) }}" method="POST"
-                                        class="mr-1">
-                                        @csrf
-                                        <button type="submit" class="btn btn-success btn-sm"
-                                            onclick="return confirm('Setujui penukaran emas ini?')">Approve</button>
-                                    </form>
-                                    <button type="button" class="btn btn-danger btn-sm btn-reject-gold"
-                                        data-id="{{ $exchange->id }}"
-                                        data-url="{{ route('admin.gold-exchange.reject', $exchange->id) }}">
-                                        Reject
-                                    </button>
-                                </div>
-                            @else
-                                <span class="text-muted">-</span>
-                            @endif
-                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center">Tidak ada data.</td>
+                        <td colspan="6" class="text-center">Tidak ada data.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -138,49 +118,4 @@
     </div>
 @endsection
 
-@section('scripts')
-    <script>
-        $(document).on('click', '.btn-reject-gold', function() {
-            const url = $(this).data('url');
-
-            Swal.fire({
-                title: 'Tolak Penukaran Emas',
-                text: "Masukkan alasan penolakan:",
-                input: 'textarea',
-                inputPlaceholder: 'Tulis alasan di sini...',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Ya, Tolak!',
-                cancelButtonText: 'Batal',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return 'Alasan penolakan wajib diisi!'
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = url;
-
-                    const csrfInput = document.createElement('input');
-                    csrfInput.type = 'hidden';
-                    csrfInput.name = '_token';
-                    csrfInput.value = '{{ csrf_token() }}';
-                    form.appendChild(csrfInput);
-
-                    const catatanInput = document.createElement('input');
-                    catatanInput.type = 'hidden';
-                    catatanInput.name = 'catatan';
-                    catatanInput.value = result.value;
-                    form.appendChild(catatanInput);
-
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        });
-    </script>
 @endsection

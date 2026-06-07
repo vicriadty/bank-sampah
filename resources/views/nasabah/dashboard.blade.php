@@ -19,10 +19,30 @@
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                             Saldo Aktif</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">Rp {{ number_format($nasabah->saldo, 0, ',', '.') }}</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">Rp {{ number_format($nasabah->dompet->saldo_rupiah ?? 0, 0, ',', '.') }}</div>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-wallet fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saldo Emas Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Saldo Emas</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ number_format($nasabah->dompet->saldo_emas_gram ?? 0, 4, ',', '.') }} g
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-coins fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>

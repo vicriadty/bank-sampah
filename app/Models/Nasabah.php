@@ -15,6 +15,21 @@ class Nasabah extends Model
 
     protected $guarded = [];
 
+    protected static function booted()
+    {
+        static::created(function ($nasabah) {
+            $nasabah->dompet()->create([
+                'saldo_rupiah'    => 0,
+                'saldo_emas_gram' => 0,
+            ]);
+        });
+    }
+
+    public function dompet()
+    {
+        return $this->hasOne(DompetNasabah::class);
+    }
+
     public function setorans()
     {
         return $this->hasMany(Setoran::class);

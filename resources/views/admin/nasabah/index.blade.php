@@ -117,7 +117,7 @@
                                     <td>{{ $item->tempat_lahir }}, {{ $item->tanggal_lahir }}</td>
                                     <td>{{ $item->alamat }}</td>
                                     <td>{{ $item->no_hp }}</td>
-                                    <td>Rp {{ number_format($item->saldo, 2, ',', '.') }}</td>
+                                    <td>Rp {{ number_format($item->dompet->saldo_rupiah ?? 0, 2, ',', '.') }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center">
                                             <a href="{{ route('admin.nasabah.edit', $item->id) }}"

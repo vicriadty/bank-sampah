@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 
 use App\Models\DetailPenjualanSampah;
+use App\Models\DompetNasabah;
 use App\Models\GoldExchange;
 use App\Models\Nasabah;
 use App\Models\Pengepul;
@@ -22,7 +23,7 @@ class DashboardController extends Controller
         $jumlahNasabah = Nasabah::count();
         $jumlahPengepul = Pengepul::count();
         $totalSampahDisetorkan = SetoranDetail::sum('berat');
-        $totalTabunganNasabah = Nasabah::sum('saldo');
+        $totalTabunganNasabah = DompetNasabah::sum('saldo_rupiah');
         $totalPenjualanSampah = DetailPenjualanSampah::sum('berat');
         $totalPenjualan = PenjualanSampah::sum('total_harga');
 

@@ -42,7 +42,6 @@ class NasabahController extends Controller
             'tempat_lahir' => ['required', 'max:100'],
             'alamat' => ['required', 'max:255'],
             'no_hp' => ['required', 'max:13'],
-            'saldo' => ['nullable', 'numeric'],
         ]);
 
         try {
@@ -57,6 +56,7 @@ class NasabahController extends Controller
             ]);
 
             // 3. Buat profil di tabel nasabah menggunakan user_id yang baru lahir
+            // Dompet otomatis terbuat via Nasabah::created event
             Nasabah::create([
                 'user_id' => $user->id,
                 'nik' => $request->nik,
@@ -66,7 +66,6 @@ class NasabahController extends Controller
                 'tempat_lahir' => $request->tempat_lahir,
                 'alamat' => $request->alamat,
                 'no_hp' => $request->no_hp,
-                'saldo' => $request->saldo,
             ]);
 
             DB::commit();
