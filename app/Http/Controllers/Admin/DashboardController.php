@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $jumlahNasabah = Nasabah::count();
         $jumlahPengepul = Pengepul::count();
         $totalSampahDisetorkan = SetoranDetail::sum('berat');
-        $totalTabunganNasabah = Nasabah::sum('saldo');
+        $totalTabunganNasabah = DompetNasabah::sum('saldo_rupiah');
         $totalPenjualanSampah = DetailPenjualanSampah::sum('berat');
         $totalPenjualan = PenjualanSampah::sum('total_harga');
 
