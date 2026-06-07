@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 
 use App\Models\DetailPenjualanSampah;
+use App\Models\DompetNasabah;
 use App\Models\GoldExchange;
 use App\Models\Nasabah;
 use App\Models\Pengepul;
