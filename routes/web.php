@@ -43,6 +43,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::resource('sampah', SampahController::class);
     Route::get('/sampah-search', [SampahController::class, 'search'])->name('sampah.search');
+    Route::post('/jenis-sampah/quick-create', [SampahController::class, 'quickCreateJenis'])->name('jenis-sampah.quick-create');
 
     Route::resource('setoran', SetoranController::class);
     Route::get('/get-sampah-by-jenis/{id}', [SetoranController::class, 'getSampahByJenis']);

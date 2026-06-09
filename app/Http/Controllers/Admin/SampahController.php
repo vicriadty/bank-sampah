@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 
-
 use App\Models\JenisSampah;
 use App\Models\Sampah;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SampahController extends Controller
 {
@@ -77,5 +77,27 @@ class SampahController extends Controller
         $sampah->delete();
 
         return redirect()->route('admin.sampah.index')->with('success', 'Sampah berhasil dihapus');
+    }
+
+    public function quickCreateJenis(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama_jenis' => 'required|string|max:100|unique:jenis_sampahs,nama_jenis',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first('nama_jenis'),
+            ], 422);
+        }
+
+        $jenis = JenisSampah::create(['nama_jenis' => $request->nama_jenis]);
+
+        return response()->json([
+            'success' => true,
+            'id' => $jenis->id,
+            'nama_jenis' => $jenis->nama_jenis,
+        ]);
     }
 }
