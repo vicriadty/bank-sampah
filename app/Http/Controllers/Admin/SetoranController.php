@@ -62,7 +62,8 @@ class SetoranController extends Controller
     {
         $nasabahs = Nasabah::all();
         $jenisSampah = JenisSampah::all();
-        return view('admin.transaksi.setor-sampah.create', compact('nasabahs', 'jenisSampah'));
+        $sampahs = Sampah::with('jenisSampah')->get();
+        return view('admin.transaksi.setor-sampah.create', compact('nasabahs', 'jenisSampah', 'sampahs'));
     }
 
     public function getSampahByJenis($id)
@@ -75,30 +76,39 @@ class SetoranController extends Controller
     {
         $request->validate([
             'nasabah_id' => ['required', 'exists:nasabahs,id'],
-            'sampah_id' => ['required', 'exists:sampahs,id'],
-            'berat' => ['required', 'numeric', 'min:0.1'],
+            'sampah_id' => ['required', 'array'],
+            'sampah_id.*' => ['required', 'exists:sampahs,id'],
+            'berat' => ['required', 'array'],
+            'berat.*' => ['required', 'numeric', 'min:0.1'],
         ]);
 
         DB::beginTransaction();
         try {
-            $sampah = Sampah::where('id', $request->sampah_id)->lockForUpdate()->firstOrFail();
-            $subtotal = $sampah->harga_per_kg * $request->berat;
+            $totalHarga = 0;
 
             $setoran = Setoran::create([
                 'nasabah_id' => $request->nasabah_id,
-                'total_harga' => $subtotal
+                'total_harga' => 0,
             ]);
 
-            $setoran->details()->create([
-                'sampah_id' => $sampah->id,
-                'berat' => $request->berat,
-                'harga_per_kg' => $sampah->harga_per_kg,
-                'subtotal' => $subtotal,
-            ]);
+            foreach ($request->sampah_id as $index => $sampahId) {
+                $berat = $request->berat[$index];
+                $sampah = Sampah::where('id', $sampahId)->lockForUpdate()->firstOrFail();
+                $subtotal = $sampah->harga_per_kg * $berat;
+                $totalHarga += $subtotal;
 
-            $sampah->increment('stok', $request->berat);
+                $setoran->details()->create([
+                    'sampah_id' => $sampah->id,
+                    'berat' => $berat,
+                    'harga_per_kg' => $sampah->harga_per_kg,
+                    'subtotal' => $subtotal,
+                ]);
 
-            $setoran->nasabah->dompet->increment('saldo_rupiah', $subtotal);
+                $sampah->increment('stok', $berat);
+            }
+
+            $setoran->update(['total_harga' => $totalHarga]);
+            $setoran->nasabah->dompet->increment('saldo_rupiah', $totalHarga);
 
             DB::commit();
             return redirect()->route('admin.setoran.index')->with('success', 'Data Setoran berhasil ditambahkan');
