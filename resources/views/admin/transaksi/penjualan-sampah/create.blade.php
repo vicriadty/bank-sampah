@@ -3,7 +3,6 @@
 @section('title', 'Bank Sampah - Penjualan')
 
 @section('content')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @if (session('error'))
         <script>
             Swal.fire({
@@ -66,7 +65,8 @@
                                         <option value="">-- Pilih Sampah --</option>
                                         @foreach ($sampahs as $sampah)
                                             <option value="{{ $sampah->id }}" data-harga="{{ $sampah->harga_per_kg }}">
-                                                {{ $sampah->nama_sampah }} - (Stok: {{ number_format($sampah->stok, 2) }} kg)
+                                                {{ $sampah->nama_sampah }} - (Stok: {{ number_format($sampah->stok, 2) }}
+                                                kg)
                                             </option>
                                         @endforeach
                                     </select>

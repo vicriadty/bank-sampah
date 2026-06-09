@@ -3,8 +3,6 @@
 @section('title', 'Bank Sampah - Pengepul')
 
 @section('content')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Tambah Pengepul</h1>
     </div>
@@ -86,24 +84,24 @@
 @endsection
 
 @section('scripts')
-<script>
-    $(document).ready(function() {
-        $('form').on('submit', function(e) {
-            e.preventDefault();
-            var form = this;
-            Swal.fire({
-                title: 'Konfirmasi',
-                text: 'Yakin ingin menyimpan data ini?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Simpan!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $(form).off('submit').submit();
-                }
+    <script>
+        $(document).ready(function() {
+            $('form').on('submit', function(e) {
+                e.preventDefault();
+                var form = this;
+                Swal.fire({
+                    title: 'Konfirmasi',
+                    text: 'Yakin ingin menyimpan data ini?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Simpan!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $(form).off('submit').submit();
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
 @endsection

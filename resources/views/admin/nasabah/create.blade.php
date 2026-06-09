@@ -3,8 +3,6 @@
 @section('title', 'Bank Sampah - Nasabah')
 
 @section('content')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Tambah Nasabah</h1>
     </div>

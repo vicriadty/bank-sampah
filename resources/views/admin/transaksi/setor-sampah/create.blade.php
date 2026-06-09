@@ -3,7 +3,6 @@
 @section('title', 'Bank Sampah - Setoran')
 
 @section('content')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {{-- Toast: Error from session --}}
     @if (session('error'))
@@ -82,7 +81,8 @@
                                     <input type="number" name="berat[]" class="form-control" step="0.01" required>
                                 </div>
                                 <div class="col-md-1 d-flex align-items-end">
-                                    <button type="button" class="btn btn-danger btn-remove-row mb-0" style="margin-bottom: 0 !important;">
+                                    <button type="button" class="btn btn-danger btn-remove-row mb-0"
+                                        style="margin-bottom: 0 !important;">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -105,90 +105,93 @@
 @endsection
 
 @section('scripts')
-<script>
-    $(document).ready(function() {
-        $('#nasabah_id').select2({
-            placeholder: "Pilih Nasabah",
-            allowClear: true,
-            width: '100%'
-        });
+    <script>
+        $(document).ready(function() {
+            $('#nasabah_id').select2({
+                placeholder: "Pilih Nasabah",
+                allowClear: true,
+                width: '100%'
+            });
 
-        // Inisialisasi Select2 untuk jenis sampah di setiap row
-        $('.jenis-sampah-select').select2({
-            placeholder: "Pilih Jenis Sampah",
-            width: '100%'
-        });
-
-        // Load sampah when jenis_sampah changes
-        $(document).on('change', '.jenis-sampah-select', function() {
-            const row = $(this).closest('.sampah-row');
-            const jenisID = $(this).val();
-            const sampahSelect = row.find('.sampah-select');
-
-            if (jenisID) {
-                $.ajax({
-                    url: '/admin/get-sampah-by-jenis/' + jenisID,
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(data) {
-                        sampahSelect.empty().append('<option value="">-- Pilih Nama Sampah --</option>');
-                        $.each(data, function(key, value) {
-                            sampahSelect.append(
-                                '<option value="' + value.id + '">' +
-                                value.nama_sampah + ' - Rp' + parseInt(value.harga_per_kg).toLocaleString() + '/kg' +
-                                '</option>'
-                            );
-                        });
-                    },
-                    error: function() {
-                        alert('Gagal memuat nama sampah');
-                    }
-                });
-            } else {
-                sampahSelect.empty().append('<option value="">-- Pilih Nama Sampah --</option>');
-            }
-        });
-
-        // Tambah baris baru
-        $('#add-row').click(function() {
-            const row = $('.sampah-row').first().clone();
-            row.find('select, input').val('');
-            row.find('.sampah-select').empty().append('<option value="">-- Pilih Nama Sampah --</option>');
-            // Re-init Select2 on the cloned select
-            row.find('.jenis-sampah-select').select2({
+            // Inisialisasi Select2 untuk jenis sampah di setiap row
+            $('.jenis-sampah-select').select2({
                 placeholder: "Pilih Jenis Sampah",
                 width: '100%'
             });
-            $('#sampah-container').append(row);
-        });
 
-        // Hapus baris
-        $(document).on('click', '.btn-remove-row', function() {
-            if ($('.sampah-row').length > 1) {
+            // Load sampah when jenis_sampah changes
+            $(document).on('change', '.jenis-sampah-select', function() {
                 const row = $(this).closest('.sampah-row');
-                // Destroy Select2 before removing DOM
-                row.find('.jenis-sampah-select').select2('destroy');
-                row.remove();
-            }
-        });
+                const jenisID = $(this).val();
+                const sampahSelect = row.find('.sampah-select');
 
-        // Konfirmasi sebelum submit
-        $('form').on('submit', function(e) {
-            e.preventDefault();
-            var form = this;
-            Swal.fire({
-                title: 'Konfirmasi',
-                text: 'Yakin ingin menyimpan data ini?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Simpan!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $(form).off('submit').submit();
+                if (jenisID) {
+                    $.ajax({
+                        url: '/admin/get-sampah-by-jenis/' + jenisID,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(data) {
+                            sampahSelect.empty().append(
+                                '<option value="">-- Pilih Nama Sampah --</option>');
+                            $.each(data, function(key, value) {
+                                sampahSelect.append(
+                                    '<option value="' + value.id + '">' +
+                                    value.nama_sampah + ' - Rp' + parseInt(value
+                                        .harga_per_kg).toLocaleString() + '/kg' +
+                                    '</option>'
+                                );
+                            });
+                        },
+                        error: function() {
+                            alert('Gagal memuat nama sampah');
+                        }
+                    });
+                } else {
+                    sampahSelect.empty().append('<option value="">-- Pilih Nama Sampah --</option>');
                 }
             });
+
+            // Tambah baris baru
+            $('#add-row').click(function() {
+                const row = $('.sampah-row').first().clone();
+                row.find('select, input').val('');
+                row.find('.sampah-select').empty().append(
+                    '<option value="">-- Pilih Nama Sampah --</option>');
+                // Re-init Select2 on the cloned select
+                row.find('.jenis-sampah-select').select2({
+                    placeholder: "Pilih Jenis Sampah",
+                    width: '100%'
+                });
+                $('#sampah-container').append(row);
+            });
+
+            // Hapus baris
+            $(document).on('click', '.btn-remove-row', function() {
+                if ($('.sampah-row').length > 1) {
+                    const row = $(this).closest('.sampah-row');
+                    // Destroy Select2 before removing DOM
+                    row.find('.jenis-sampah-select').select2('destroy');
+                    row.remove();
+                }
+            });
+
+            // Konfirmasi sebelum submit
+            $('form').on('submit', function(e) {
+                e.preventDefault();
+                var form = this;
+                Swal.fire({
+                    title: 'Konfirmasi',
+                    text: 'Yakin ingin menyimpan data ini?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Simpan!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $(form).off('submit').submit();
+                    }
+                });
+            });
         });
-    });
-</script>
+    </script>
 @endsection
