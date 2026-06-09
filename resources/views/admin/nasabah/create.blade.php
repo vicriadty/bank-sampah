@@ -134,3 +134,23 @@
         </div>
     </div>
 @endsection
+
+@section('scripts')
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Konfirmasi',
+            text: 'Yakin ingin menyimpan data ini?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Simpan!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.submit();
+            }
+        });
+    });
+</script>
+@endsection
