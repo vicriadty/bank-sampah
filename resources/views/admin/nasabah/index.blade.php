@@ -93,7 +93,7 @@
                             <th>NIK</th>
                             <th>Nama</th>
                             <th>Jenis Kelamin</th>
-                            <th>Tempat Tanggal Lahir</th>
+                            <th>Tempat, Tanggal Lahir</th>
                             <th>Alamat</th>
                             <th>No. Handphone</th>
                             <th>Saldo</th>

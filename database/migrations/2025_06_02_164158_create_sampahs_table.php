@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sampahs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('jenis_sampah_id')->constrained()->onDelete('cascade');
-            $table->string('nama_sampah');
+            $table->string('nama_sampah')->unique();
             $table->decimal('harga_per_kg', 10, 2);
             $table->timestamps();
         });

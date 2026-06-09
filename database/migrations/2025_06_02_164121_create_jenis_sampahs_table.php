@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('jenis_sampahs', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_jenis');
+            $table->string('nama_jenis')->unique();
             $table->timestamps();
         });
     }
