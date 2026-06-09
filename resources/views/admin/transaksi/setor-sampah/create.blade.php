@@ -3,6 +3,7 @@
 @section('title', 'Bank Sampah - Setoran')
 
 @section('content')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {{-- Toast: Error from session --}}
     @if (session('error'))
@@ -104,12 +105,17 @@
 @endsection
 
 @section('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
         $('#nasabah_id').select2({
             placeholder: "Pilih Nasabah",
             allowClear: true,
+            width: '100%'
+        });
+
+        // Inisialisasi Select2 untuk jenis sampah di setiap row
+        $('.jenis-sampah-select').select2({
+            placeholder: "Pilih Jenis Sampah",
             width: '100%'
         });
 
@@ -148,19 +154,28 @@
             const row = $('.sampah-row').first().clone();
             row.find('select, input').val('');
             row.find('.sampah-select').empty().append('<option value="">-- Pilih Nama Sampah --</option>');
+            // Re-init Select2 on the cloned select
+            row.find('.jenis-sampah-select').select2({
+                placeholder: "Pilih Jenis Sampah",
+                width: '100%'
+            });
             $('#sampah-container').append(row);
         });
 
         // Hapus baris
         $(document).on('click', '.btn-remove-row', function() {
             if ($('.sampah-row').length > 1) {
-                $(this).closest('.sampah-row').remove();
+                const row = $(this).closest('.sampah-row');
+                // Destroy Select2 before removing DOM
+                row.find('.jenis-sampah-select').select2('destroy');
+                row.remove();
             }
         });
 
         // Konfirmasi sebelum submit
-        document.querySelector('form').addEventListener('submit', function(e) {
+        $('form').on('submit', function(e) {
             e.preventDefault();
+            var form = this;
             Swal.fire({
                 title: 'Konfirmasi',
                 text: 'Yakin ingin menyimpan data ini?',
@@ -170,7 +185,7 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    this.submit();
+                    $(form).off('submit').submit();
                 }
             });
         });

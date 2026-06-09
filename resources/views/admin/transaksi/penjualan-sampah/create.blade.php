@@ -3,18 +3,34 @@
 @section('title', 'Bank Sampah - Penjualan')
 
 @section('content')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @if (session('error'))
-        <div class="alert alert-danger mb-4">{{ session('error') }}</div>
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: '{{ session('error') }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true
+            });
+        </script>
     @endif
 
     @if ($errors->any())
-        <div class="alert alert-danger mb-4">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true
+            });
+        </script>
     @endif
 
     <div class="row">
@@ -115,8 +131,9 @@
         });
 
         // Konfirmasi sebelum submit
-        document.querySelector('form').addEventListener('submit', function(e) {
+        $('form').on('submit', function(e) {
             e.preventDefault();
+            var form = this;
             Swal.fire({
                 title: 'Konfirmasi',
                 text: 'Yakin ingin menyimpan data ini?',
@@ -126,7 +143,7 @@
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    this.submit();
+                    $(form).off('submit').submit();
                 }
             });
         });

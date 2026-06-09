@@ -71,89 +71,90 @@
 
 @section('scripts')
 <script>
-    $(document).ready(function() {
-        // Inisialisasi Select2 untuk dropdown jenis sampah
-        $('#jenis_sampah_id').select2({
-            placeholder: "-- Pilih Jenis Sampah --",
-            allowClear: true,
-            width: '100%'
-        });
+    var jenisSelect = $('#jenis_sampah_id');
 
-        // Tangani pilihan "Tambah Jenis Baru"
-        $('#jenis_sampah_id').on('change', function() {
-            const val = $(this).val();
-            if (val === '__new__') {
-                Swal.fire({
-                    title: 'Tambah Jenis Baru',
-                    text: 'Masukkan nama jenis sampah baru:',
-                    input: 'text',
-                    inputPlaceholder: 'Nama jenis sampah...',
-                    showCancelButton: true,
-                    confirmButtonText: 'Simpan',
-                    cancelButtonText: 'Batal',
-                    preConfirm: (value) => {
-                        if (!value) {
-                            Swal.showValidationMessage('Nama jenis sampah wajib diisi');
-                        }
-                        return value;
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '{{ route("admin.jenis-sampah.quick-create") }}',
-                            method: 'POST',
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                nama_jenis: result.value
-                            },
-                            success: function(res) {
-                                if (res.success) {
-                                    // Tambah option baru dan pilih
-                                    const newOption = new Option(res.nama_jenis, res.id, true, true);
-                                    $('#jenis_sampah_id').append(newOption).trigger('change');
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Berhasil!',
-                                        text: 'Jenis "' + res.nama_jenis + '" berhasil ditambahkan.',
-                                        timer: 1500,
-                                        showConfirmButton: false
-                                    });
-                                }
-                            },
-                            error: function(xhr) {
-                                const msg = xhr.responseJSON?.message || 'Gagal menyimpan jenis sampah.';
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal',
-                                    text: msg
-                                });
-                                // Kembalikan ke pilihan sebelumnya
-                                $('#jenis_sampah_id').val('').trigger('change');
-                            }
-                        });
-                    } else {
-                        // Kembalikan ke pilihan sebelumnya
-                        $('#jenis_sampah_id').val('').trigger('change');
-                    }
-                });
-            }
-        });
+    // Inisialisasi Select2 untuk dropdown jenis sampah
+    jenisSelect.select2({
+        placeholder: "-- Pilih Jenis Sampah --",
+        allowClear: true,
+        width: '100%'
+    });
 
-        // Konfirmasi sebelum submit
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
+    // Tangani pilihan "Tambah Jenis Baru" via select2:select event
+    jenisSelect.on('select2:select', function(e) {
+        var data = e.params.data;
+        if (data.id === '__new__') {
+            // Prevent Select2 from selecting __new__
+            jenisSelect.val(null).trigger('change');
+
             Swal.fire({
-                title: 'Konfirmasi',
-                text: 'Yakin ingin menyimpan data ini?',
-                icon: 'question',
+                title: 'Tambah Jenis Baru',
+                text: 'Masukkan nama jenis sampah baru:',
+                input: 'text',
+                inputPlaceholder: 'Nama jenis sampah...',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Simpan!',
-                cancelButtonText: 'Batal'
+                confirmButtonText: 'Simpan',
+                cancelButtonText: 'Batal',
+                preConfirm: (value) => {
+                    if (!value) {
+                        Swal.showValidationMessage('Nama jenis sampah wajib diisi');
+                    }
+                    return value;
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    this.submit();
+                    $.ajax({
+                        url: '{{ route("admin.jenis-sampah.quick-create") }}',
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            nama_jenis: result.value
+                        },
+                        success: function(res) {
+                            if (res.success) {
+                                // Tambah option baru ke native select
+                                var newOption = new Option(res.nama_jenis, res.id, true, true);
+                                jenisSelect.append(newOption);
+                                // Trigger Select2 to refresh and select the new option
+                                jenisSelect.val(res.id).trigger('change');
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: 'Jenis "' + res.nama_jenis + '" berhasil ditambahkan.',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Gagal menyimpan jenis sampah.';
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: msg
+                            });
+                        }
+                    });
                 }
             });
+        }
+    });
+
+    // Konfirmasi sebelum submit - prevent double handler
+    $('form').on('submit', function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Konfirmasi',
+            text: 'Yakin ingin menyimpan data ini?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Simpan!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Unbind this handler and submit natively
+                $('form').off('submit').submit();
+            }
         });
     });
 </script>
