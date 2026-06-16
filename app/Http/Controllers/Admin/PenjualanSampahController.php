@@ -91,8 +91,9 @@ class PenjualanSampahController extends Controller
             }
         }
 
+        // Return JSON 422 untuk AJAX agar form tidak reset
         if (!empty($errors)) {
-            return back()->withErrors($errors)->withInput();
+            return response()->json(['errors' => $errors], 422);
         }
 
         DB::beginTransaction();
@@ -133,10 +134,17 @@ class PenjualanSampahController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.penjualan.index')->with('success', 'Data Penjualan berhasil ditambahkan');
+            // Return JSON sukses untuk AJAX — redirect dilakukan oleh frontend
+            return response()->json([
+                'success' => true,
+                'redirect' => route('admin.penjualan.index'),
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Gagal menyimpan penjualan: ' . $e->getMessage()]);
+            // Return JSON error agar modal/error ditampilkan tanpa reload halaman
+            return response()->json([
+                'error' => 'Gagal menyimpan penjualan: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
