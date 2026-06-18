@@ -53,8 +53,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/penjualan/laporan', [PenjualanSampahController::class, 'laporanPDF'])->name('penjualan.laporan');
     Route::post('/penjualan/{id}/void', [PenjualanSampahController::class, 'void'])->name('penjualan.void');
 
-    // Gold Exchange
+    // Gold Exchange — riwayat auto-convert emas
     Route::get('/gold-exchange', [AdminGoldExchangeController::class, 'index'])->name('gold-exchange.index');
+    Route::post('/gold-exchange/toggle', [AdminGoldExchangeController::class, 'toggleMasterSwitch'])->name('gold-exchange.toggle');
 });
 
 // Nasabah Routes
