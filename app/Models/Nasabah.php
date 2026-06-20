@@ -40,13 +40,8 @@ class Nasabah extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function goldExchanges()
-    {
-        return $this->hasMany(GoldExchange::class);
-    }
-
     public function totalGoldGrams()
     {
-        return $this->goldExchanges()->where('status', 'completed')->sum('jumlah_gram');
+        return $this->dompet->saldo_emas_gram ?? 0;
     }
 }

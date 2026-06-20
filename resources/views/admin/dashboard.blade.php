@@ -4,7 +4,6 @@
 
 @section('content')
     <div class="container">
-        <h2 class="mb-4">Dashboard Bank Sampah</h2>
 
         <div class="row g-4">
 
@@ -93,7 +92,7 @@
                         <i class="fas fa-coins"></i>
                     </div>
                     <div>
-                        @if($goldPrice['price_per_gram'] > 0)
+                        @if ($goldPrice['price_per_gram'] > 0)
                             <h5 class="mb-0">Rp {{ number_format($goldPrice['price_per_gram'], 0, ',', '.') }}/g</h5>
                         @else
                             <h5 class="mb-0">N/A</h5>
@@ -110,11 +109,10 @@
                         <i class="fas fa-exchange-alt"></i>
                     </div>
                     <div>
-                        <h5 class="mb-0">{{ number_format($totalGoldExchanged, 4) }} g</h5>
+                        <h5 class="mb-0">{{ rtrim(rtrim(number_format($totalGoldExchanged, 4, ',', '.'), '0'), ',') }} g
+                        </h5>
                         <small class="text-muted">Total Emas Ditukar</small>
-                        @if($pendingGoldExchanges > 0)
-                            <br><small class="text-warning"><i class="fas fa-clock"></i> {{ $pendingGoldExchanges }} pending</small>
-                        @endif
+
                     </div>
                 </div>
             </div>
@@ -181,128 +179,130 @@
 @endsection
 
 @section('scripts')
-<script>
-    // Setoran per Bulan (Bar Chart)
-    var setoranData = @json($setoranPerBulan);
+    <script>
+        // Setoran per Bulan (Bar Chart)
+        var setoranData = @json($setoranPerBulan);
 
-    var setoranLabels = setoranData.map(i => i.bulan);
-    var setoranValues = setoranData.map(i => parseFloat(i.total));
+        var setoranLabels = setoranData.map(i => i.bulan);
+        var setoranValues = setoranData.map(i => parseFloat(i.total));
 
-    new Chart(document.getElementById('setoranPenarikanChart'), {
-        type: 'bar',
-        data: {
-            labels: setoranLabels,
-            datasets: [
-                {
+        new Chart(document.getElementById('setoranPenarikanChart'), {
+            type: 'bar',
+            data: {
+                labels: setoranLabels,
+                datasets: [{
                     label: 'Setoran (Rp)',
                     data: setoranValues,
                     backgroundColor: 'rgba(78, 115, 223, 0.7)',
                     borderColor: 'rgba(78, 115, 223, 1)',
                     borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return 'Rp ' + value.toLocaleString('id-ID');
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'Rp ' + value.toLocaleString('id-ID');
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
 
-    // Komposisi Jenis Sampah (Doughnut)
-    var komposisiData = @json($komposisiSampah);
-    var komposisiColors = [
-        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
-        '#858796', '#5a5c69', '#2e59d9', '#17a673', '#2c9faf'
-    ];
+        // Komposisi Jenis Sampah (Doughnut)
+        var komposisiData = @json($komposisiSampah);
+        var komposisiColors = [
+            '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
+            '#858796', '#5a5c69', '#2e59d9', '#17a673', '#2c9faf'
+        ];
 
-    new Chart(document.getElementById('komposisiSampahChart'), {
-        type: 'doughnut',
-        data: {
-            labels: komposisiData.map(i => i.nama_jenis),
-            datasets: [{
-                data: komposisiData.map(i => parseFloat(i.total_berat)),
-                backgroundColor: komposisiColors.slice(0, komposisiData.length),
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: { boxWidth: 12 }
-                }
-            }
-        }
-    });
-
-    // Nasabah Baru per Bulan (Line Chart)
-    var nasabahData = @json($nasabahBaruPerBulan);
-
-    new Chart(document.getElementById('nasabahBaruChart'), {
-        type: 'line',
-        data: {
-            labels: nasabahData.map(i => i.bulan),
-            datasets: [{
-                label: 'Nasabah Baru',
-                data: nasabahData.map(i => parseInt(i.total)),
-                borderColor: '#1cc88a',
-                backgroundColor: 'rgba(28, 200, 138, 0.1)',
-                tension: 0.3,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 }
-                }
-            }
-        }
-    });
-
-    // Penukaran Emas per Bulan (Bar Chart)
-    var goldData = @json($goldPerBulan);
-
-    new Chart(document.getElementById('goldExchangeChart'), {
-        type: 'bar',
-        data: {
-            labels: goldData.map(i => i.bulan),
-            datasets: [{
-                label: 'Emas (gram)',
-                data: goldData.map(i => parseFloat(i.total_gram)),
-                backgroundColor: 'rgba(212, 160, 23, 0.7)',
-                borderColor: 'rgba(212, 160, 23, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return value + ' g';
+        new Chart(document.getElementById('komposisiSampahChart'), {
+            type: 'doughnut',
+            data: {
+                labels: komposisiData.map(i => i.nama_jenis),
+                datasets: [{
+                    data: komposisiData.map(i => parseFloat(i.total_berat)),
+                    backgroundColor: komposisiColors.slice(0, komposisiData.length),
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12
                         }
                     }
                 }
             }
-        }
-    });
-</script>
+        });
+
+        // Nasabah Baru per Bulan (Line Chart)
+        var nasabahData = @json($nasabahBaruPerBulan);
+
+        new Chart(document.getElementById('nasabahBaruChart'), {
+            type: 'line',
+            data: {
+                labels: nasabahData.map(i => i.bulan),
+                datasets: [{
+                    label: 'Nasabah Baru',
+                    data: nasabahData.map(i => parseInt(i.total)),
+                    borderColor: '#1cc88a',
+                    backgroundColor: 'rgba(28, 200, 138, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Penukaran Emas per Bulan (Bar Chart)
+        var goldData = @json($goldPerBulan);
+
+        new Chart(document.getElementById('goldExchangeChart'), {
+            type: 'bar',
+            data: {
+                labels: goldData.map(i => i.bulan),
+                datasets: [{
+                    label: 'Emas (gram)',
+                    data: goldData.map(i => parseFloat(i.total_gram)),
+                    backgroundColor: 'rgba(212, 160, 23, 0.7)',
+                    borderColor: 'rgba(212, 160, 23, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + ' g';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 @endsection
