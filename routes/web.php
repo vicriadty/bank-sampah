@@ -66,11 +66,6 @@ Route::middleware(['auth', 'role:nasabah'])->prefix('nasabah')->name('nasabah.')
     Route::get('/riwayat-transaksi', [App\Http\Controllers\Nasabah\TransaksiController::class, 'index'])->name('riwayat-transaksi');
     Route::get('/info-saldo', [App\Http\Controllers\Nasabah\DashboardController::class, 'infoSaldo'])->name('info-saldo');
 
-    // Tukar Emas
-    Route::get('/tukar-emas', [App\Http\Controllers\Nasabah\GoldExchangeController::class, 'index'])->name('gold-exchange.index');
-    Route::get('/tukar-emas/create', [App\Http\Controllers\Nasabah\GoldExchangeController::class, 'create'])->name('gold-exchange.create');
-    Route::post('/tukar-emas', [App\Http\Controllers\Nasabah\GoldExchangeController::class, 'store'])->name('gold-exchange.store');
-
     // Profil
     Route::get('/profile', [App\Http\Controllers\Nasabah\ProfileController::class, 'index'])->name('profile');
     Route::put('/profile', [App\Http\Controllers\Nasabah\ProfileController::class, 'update'])->name('profile.update');

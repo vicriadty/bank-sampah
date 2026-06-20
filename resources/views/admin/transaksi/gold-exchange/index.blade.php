@@ -7,18 +7,18 @@
         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-history text-primary"></i> Riwayat Konversi Emas</h1>
 
         <div class="text-right">
-            <button type="button" id="btnToggleSwitch"
-                class="btn {{ $masterSwitch === '1' ? 'btn-success' : 'btn-danger' }}"
+            <button type="button" id="btnToggleSwitch" class="btn {{ $masterSwitch === '1' ? 'btn-success' : 'btn-danger' }}"
                 style="min-width: 220px;">
                 <i class="fas {{ $masterSwitch === '1' ? 'fa-check-circle' : 'fa-stop-circle' }}"></i>
-                <strong>Master Switch: {{ $masterSwitch === '1' ? 'AKTIF' : 'MATI' }}</strong>
+                <strong>Master Switch: {{ $masterSwitch === '1' ? 'AKTIF' : 'NON-AKTIF' }}</strong>
                 <br>
                 <small>
                     {{ $masterSwitch === '1' ? 'Status: Aktif berjalan otomatis' : 'Status: Dijeda / Sistem Dimatikan' }}
                 </small>
             </button>
 
-            <form id="formToggleSwitch" action="{{ route('admin.gold-exchange.toggle') }}" method="POST" style="display:none">
+            <form id="formToggleSwitch" action="{{ route('admin.gold-exchange.toggle') }}" method="POST"
+                style="display:none">
                 @csrf
             </form>
         </div>
@@ -97,9 +97,9 @@
                         <td>{{ $item->nasabah->nama }}</td>
                         <td>Rp{{ number_format($item->saldo_terpakai, 0, ',', '.') }}</td>
                         <td>Rp{{ number_format($item->harga_emas_per_gram, 0, ',', '.') }}</td>
-                        <td>{{ number_format($item->jumlah_gram, 4, ',', '.') }} g</td>
+                        <td>{{ rtrim(rtrim(number_format($item->jumlah_gram, 4, ',', '.'), '0'), ',') }} g</td>
                         <td>Rp{{ number_format($item->sisa_saldo_rupiah, 0, ',', '.') }}</td>
-                        <td>{{ number_format($item->total_saldo_emas, 4, ',', '.') }} g</td>
+                        <td>{{ rtrim(rtrim(number_format($item->total_saldo_emas, 4, ',', '.'), '0'), ',') }} g</td>
                         <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
                     </tr>
                 @empty
@@ -116,43 +116,43 @@
 @endsection
 
 @section('scripts')
-<script>
-    $(document).ready(function() {
-        $('#btnToggleSwitch').click(function() {
-            let isOn = "{{ $masterSwitch }}" === '1';
+    <script>
+        $(document).ready(function() {
+            $('#btnToggleSwitch').click(function() {
+                let isOn = "{{ $masterSwitch }}" === '1';
 
-            if (isOn) {
-                Swal.fire({
-                    title: 'Peringatan',
-                    text: 'Mematikan fitur ini akan menghentikan konversi emas otomatis untuk seluruh nasabah malam ini. Apakah Anda yakin ingin menjeda sistem?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Ya, Matikan',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $('#formToggleSwitch').submit();
-                    }
-                });
-            } else {
-                Swal.fire({
-                    title: 'Aktifkan Auto-Convert?',
-                    text: 'Sistem akan kembali mengkonversi saldo nasabah menjadi emas secara otomatis setiap malam.',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#28a745',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Ya, Aktifkan',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $('#formToggleSwitch').submit();
-                    }
-                });
-            }
+                if (isOn) {
+                    Swal.fire({
+                        title: 'Peringatan',
+                        text: 'Mematikan fitur ini akan menghentikan konversi emas otomatis untuk seluruh nasabah malam ini. Apakah Anda yakin ingin menjeda sistem?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Matikan',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#formToggleSwitch').submit();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Aktifkan Auto-Convert?',
+                        text: 'Sistem akan kembali mengkonversi saldo nasabah menjadi emas secara otomatis setiap malam.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#28a745',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Aktifkan',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#formToggleSwitch').submit();
+                        }
+                    });
+                }
+            });
         });
-    });
-</script>
+    </script>
 @endsection

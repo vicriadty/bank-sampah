@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Nasabah;
 
 use App\Http\Controllers\Controller;
-use App\Models\GoldExchange;
 use App\Services\GoldPriceService;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Setoran;
