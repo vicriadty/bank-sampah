@@ -10,6 +10,7 @@ use App\Models\RiwayatKonversiEmas;
 use App\Models\Nasabah;
 use App\Models\Pengepul;
 use App\Models\PenjualanSampah;
+use App\Models\Sampah;
 use App\Models\Setoran;
 use App\Models\SetoranDetail;
 use App\Services\GoldPriceService;
@@ -19,9 +20,10 @@ class DashboardController extends Controller
 {
     public function index(GoldPriceService $goldPriceService)
     {
-        // Summary cards (existing)
+        // Summary cards
         $jumlahNasabah = Nasabah::count();
         $jumlahPengepul = Pengepul::count();
+        $jumlahSampah = Sampah::count();
         $totalSampahDisetorkan = SetoranDetail::sum('berat');
         $totalTabunganNasabah = DompetNasabah::sum('saldo_rupiah');
         $totalPenjualanSampah = DetailPenjualanSampah::sum('berat');
@@ -29,6 +31,7 @@ class DashboardController extends Controller
 
         // Gold stats
         $goldPrice = $goldPriceService->getPrice();
+        $totalRupiahDiKonversi = RiwayatKonversiEmas::sum('saldo_terpakai');
         $totalGoldExchanged = RiwayatKonversiEmas::sum('jumlah_gram');
 
         // Chart: Setoran per bulan (6 bulan terakhir)
@@ -72,11 +75,13 @@ class DashboardController extends Controller
         return view('admin.dashboard', compact(
             'jumlahNasabah',
             'jumlahPengepul',
+            'jumlahSampah',
             'totalSampahDisetorkan',
             'totalTabunganNasabah',
             'totalPenjualanSampah',
             'totalPenjualan',
             'goldPrice',
+            'totalRupiahDiKonversi',
             'totalGoldExchanged',
             'setoranPerBulan',
             'nasabahBaruPerBulan',
