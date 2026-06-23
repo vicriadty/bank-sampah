@@ -134,14 +134,14 @@ class GoldPriceService
 
     protected function extractFiatRate(array $rates, string $code): float
     {
-        $directKey = 'USD' . $code;
-
-        if (isset($rates[$directKey]) && is_numeric($rates[$directKey]) && (float) $rates[$directKey] > 0) {
-            return (float) $rates[$directKey];
-        }
-
         if (isset($rates[$code]) && is_numeric($rates[$code]) && (float) $rates[$code] > 0) {
             return (float) $rates[$code];
+        }
+
+        $prefixKey = 'USD' . $code;
+
+        if (isset($rates[$prefixKey]) && is_numeric($rates[$prefixKey]) && (float) $rates[$prefixKey] > 0) {
+            return 1 / (float) $rates[$prefixKey];
         }
 
         return 0.0;

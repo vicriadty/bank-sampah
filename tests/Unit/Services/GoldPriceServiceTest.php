@@ -34,7 +34,7 @@ class GoldPriceServiceTest extends TestCase
                 'timestamp' => 1710000000,
                 'rates' => [
                     'USDXAU' => 2000.0,
-                    'USDIDR' => 16000.0,
+                    'IDR' => 16000.0,
                 ],
             ]),
         ]);
@@ -54,6 +54,29 @@ class GoldPriceServiceTest extends TestCase
             CarbonImmutable::createFromTimestampUTC(1710000000)->toIso8601String(),
             $price['timestamp']
         );
+    }
+
+    public function test_get_price_uses_usdidr_reciprocal_when_idr_key_is_missing(): void
+    {
+        Http::fake([
+            'api.metalpriceapi.com/v1/latest*' => Http::response([
+                'success' => true,
+                'timestamp' => 1710000000,
+                'rates' => [
+                    'USDXAU' => 2000.0,
+                    'USDIDR' => 0.0000625,
+                ],
+            ]),
+        ]);
+
+        $service = new GoldPriceService;
+        $price = $service->getPrice();
+
+        $expectedIdrRate = 1 / 0.0000625;
+        $expectedIdrPerOunce = 2000.0 * $expectedIdrRate;
+
+        $this->assertSame('IDR', $price['currency']);
+        $this->assertEqualsWithDelta($expectedIdrPerOunce, $price['price_per_ounce'], 0.01);
     }
 
     public function test_get_price_uses_reciprocal_rate_when_usdxau_is_missing(): void
@@ -127,7 +150,7 @@ class GoldPriceServiceTest extends TestCase
                     'timestamp' => 1710000000,
                     'rates' => [
                         'USDXAU' => 2000.0,
-                        'USDIDR' => 16000.0,
+                        'IDR' => 16000.0,
                     ],
                 ]);
             },
