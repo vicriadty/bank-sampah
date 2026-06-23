@@ -42,9 +42,4 @@ return [
         'default_currency' => 'IDR',
     ],
 
-    'exchangerate' => [
-        'key' => env('EXCHANGE_RATE_API_KEY'),
-        'base_url' => 'https://v6.exchangerate-api.com/v6',
-    ],
-
 ];

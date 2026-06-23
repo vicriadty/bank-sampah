@@ -15,22 +15,15 @@ class GoldPriceService
     protected string $baseUrl;
     protected string $defaultMetal;
     protected string $defaultCurrency;
-    protected ExchangeRateService $exchangeRateService;
 
-    public function __construct(ExchangeRateService $exchangeRateService)
+    public function __construct()
     {
         $this->apiKey = config('services.metalpriceapi.key', '');
         $this->baseUrl = rtrim(config('services.metalpriceapi.base_url', 'https://api.metalpriceapi.com/v1'), '/');
         $this->defaultMetal = config('services.metalpriceapi.default_metal', 'XAU');
         $this->defaultCurrency = config('services.metalpriceapi.default_currency', 'IDR');
-        $this->exchangeRateService = $exchangeRateService;
     }
 
-    /**
-     * Get gold price from MetalpriceAPI with conversion and caching.
-     *
-     * @return array{price_per_gram: float, price_per_ounce: float, currency: string, timestamp: string}
-     */
     public function getPrice(?string $metal = null, ?string $currency = null): array
     {
         $metal = strtoupper($metal ?? $this->defaultMetal);
@@ -39,46 +32,22 @@ class GoldPriceService
         $cacheKey = "gold_price_{$metal}_{$currency}";
 
         return Cache::remember($cacheKey, now()->addMinutes(15), function () use ($metal, $currency) {
-            return $this->fetchWithConversion($metal, $currency);
+            return $this->fetchPrice($metal, $currency);
         });
     }
 
-    /**
-     * Fetch from API and handle USD to IDR conversion if needed.
-     */
-    protected function fetchWithConversion(string $metal, string $currency): array
-    {
-        $basePriceData = $this->fetchFromApi($metal);
-
-        if ($currency !== 'IDR') {
-            $basePriceData['currency'] = 'USD';
-            return $basePriceData;
-        }
-
-        if ($basePriceData['price_per_gram'] <= 0) {
-            $basePriceData['currency'] = 'IDR';
-            return $basePriceData;
-        }
-
-        $rate = $this->exchangeRateService->getUsdToIdrRate();
-
-        $basePriceData['price_per_gram'] *= $rate;
-        $basePriceData['price_per_ounce'] *= $rate;
-        $basePriceData['currency'] = 'IDR';
-
-        return $basePriceData;
-    }
-
-    /**
-     * Fetch price directly from MetalpriceAPI.
-     */
-    protected function fetchFromApi(string $metal): array
+    protected function fetchPrice(string $metal, string $currency): array
     {
         try {
+            $currenciesParam = $metal;
+            if ($currency === 'IDR') {
+                $currenciesParam .= ',IDR';
+            }
+
             $response = Http::get("{$this->baseUrl}/latest", [
                 'api_key' => $this->apiKey,
                 'base' => 'USD',
-                'currencies' => $metal,
+                'currencies' => $currenciesParam,
             ]);
 
             if ($response->failed()) {
@@ -86,8 +55,7 @@ class GoldPriceService
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
-
-                return $this->fallbackPrice('USD');
+                return $this->fallbackPrice($currency);
             }
 
             $data = $response->json() ?: [];
@@ -96,8 +64,7 @@ class GoldPriceService
                 Log::error('MetalpriceAPI returned an error payload', [
                     'body' => $data,
                 ]);
-
-                return $this->fallbackPrice('USD');
+                return $this->fallbackPrice($currency);
             }
 
             $rates = $data['rates'] ?? [];
@@ -112,28 +79,34 @@ class GoldPriceService
                     'metal' => $metal,
                     'response_keys' => array_keys($rates),
                 ]);
+                return $this->fallbackPrice($currency);
+            }
 
-                return $this->fallbackPrice('USD');
+            $multiplier = 1.0;
+            $targetCurrency = 'USD';
+
+            if ($currency === 'IDR') {
+                $idrRate = $this->extractFiatRate($rates, 'IDR');
+                if ($idrRate > 0) {
+                    $multiplier = $idrRate;
+                    $targetCurrency = 'IDR';
+                }
             }
 
             $pricePerGramUsd = $pricePerOunceUsd / self::OUNCE_TO_GRAM;
 
             return [
-                'price_per_gram' => $pricePerGramUsd,
-                'price_per_ounce' => $pricePerOunceUsd,
-                'currency' => 'USD',
+                'price_per_gram' => $pricePerGramUsd * $multiplier,
+                'price_per_ounce' => $pricePerOunceUsd * $multiplier,
+                'currency' => $targetCurrency,
                 'timestamp' => $timestamp,
             ];
         } catch (\Exception $e) {
             Log::error('MetalpriceAPI request exception', ['message' => $e->getMessage()]);
-
-            return $this->fallbackPrice('USD');
+            return $this->fallbackPrice($currency);
         }
     }
 
-    /**
-     * Return a fallback structure when API is unavailable.
-     */
     protected function fallbackPrice(string $currency): array
     {
         return [
@@ -144,9 +117,6 @@ class GoldPriceService
         ];
     }
 
-    /**
-     * Extract the gold price per ounce from a MetalpriceAPI response.
-     */
     protected function extractPricePerOunce(array $rates, string $metal): float
     {
         $directKey = 'USD' . $metal;
@@ -162,9 +132,21 @@ class GoldPriceService
         return 0.0;
     }
 
-    /**
-     * Clear cached gold price.
-     */
+    protected function extractFiatRate(array $rates, string $code): float
+    {
+        $directKey = 'USD' . $code;
+
+        if (isset($rates[$directKey]) && is_numeric($rates[$directKey]) && (float) $rates[$directKey] > 0) {
+            return (float) $rates[$directKey];
+        }
+
+        if (isset($rates[$code]) && is_numeric($rates[$code]) && (float) $rates[$code] > 0) {
+            return (float) $rates[$code];
+        }
+
+        return 0.0;
+    }
+
     public function clearCache(?string $metal = null, ?string $currency = null): void
     {
         $metal = strtoupper($metal ?? $this->defaultMetal);
