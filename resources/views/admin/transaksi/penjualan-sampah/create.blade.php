@@ -64,7 +64,8 @@
                                         <option value="">-- Pilih Sampah --</option>
                                         @foreach ($sampahs as $sampah)
                                             <option value="{{ $sampah->id }}" data-harga="{{ $sampah->harga_per_kg }}">
-                                                {{ $sampah->nama_sampah }} - (Stok: {{ number_format($sampah->stok, 2) }} kg)
+                                                {{ $sampah->nama_sampah }} - (Stok: {{ number_format($sampah->stok, 2) }}
+                                                kg)
                                             </option>
                                         @endforeach
                                     </select>
@@ -77,7 +78,8 @@
 
                                 <div class="col-md-2">
                                     <label>Berat (kg)</label>
-                                    <input type="number" name="berat[]" class="form-control berat-input" step="0.01" min="0.1" required>
+                                    <input type="number" name="berat[]" class="form-control berat-input" step="0.01"
+                                        min="0.1" required>
                                 </div>
 
                                 <div class="col-md-2">
@@ -104,7 +106,8 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text font-weight-bold">Total</span>
                                     </div>
-                                    <input type="text" id="total-harga" class="form-control font-weight-bold text-primary" readonly value="Rp0">
+                                    <input type="text" id="total-harga"
+                                        class="form-control font-weight-bold text-primary" readonly value="Rp0">
                                 </div>
                             </div>
                         </div>
@@ -181,7 +184,10 @@
                 let items = $('.sampah-row').length;
 
                 if (!$('#pengepul_id').val()) {
-                    Swal.fire({ icon: 'warning', title: 'Pilih pengepul terlebih dahulu' });
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Pilih pengepul terlebih dahulu'
+                    });
                     return;
                 }
 
@@ -194,7 +200,10 @@
                 });
 
                 if (!valid) {
-                    Swal.fire({ icon: 'warning', title: 'Lengkapi semua item sampah' });
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Lengkapi semua item sampah'
+                    });
                     return;
                 }
 
@@ -218,7 +227,8 @@
 
                     // Kirim via AJAX agar tidak reload & form tidak hilang
                     let $btn = $('#btn-simpan');
-                    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
+                    $btn.prop('disabled', true).html(
+                        '<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
 
                     $.ajax({
                         url: $('#formPenjualan').attr('action'),
@@ -229,19 +239,26 @@
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Data Penjualan berhasil disimpan!',
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
                                     timer: 1500,
-                                    showConfirmButton: false
+                                    timerProgressBar: true
                                 }).then(() => window.location.href = res.redirect);
                             }
                         },
                         error: function(xhr) {
                             // Tampilkan error tanpa me-reset form
-                            let msg = xhr.responseJSON?.error || 'Terjadi kesalahan server';
+                            let msg = xhr.responseJSON?.error ||
+                                'Terjadi kesalahan server';
                             let errObj = xhr.responseJSON?.errors;
                             if (errObj) {
                                 msg = Object.values(errObj).flat().join('<br>');
                             }
-                            Swal.fire({ icon: 'error', html: msg });
+                            Swal.fire({
+                                icon: 'error',
+                                html: msg
+                            });
                         },
                         complete: function() {
                             $btn.prop('disabled', false).text('Simpan');

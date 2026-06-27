@@ -12,15 +12,15 @@ class TransaksiController extends Controller
     public function index()
     {
         $nasabahId = Auth::user()->nasabah->id;
-        
-        $transaksi = Setoran::where('nasabah_id', $nasabahId)->latest()->get()->map(function($item) {
+
+        $transaksi = Setoran::where('nasabah_id', $nasabahId)->latest()->get()->map(function ($item) {
             $item->tipe = 'Setoran';
             $item->jumlah = $item->total_harga;
-            $item->status = 'selesai';
-            $item->keterangan = $item->keterangan ?? '-';
+            $item->status = $item->status;
+            $item->keterangan = $item->alasan_batal ?? '-';
             return $item;
         });
-        
+
         return view('nasabah.riwayat-transaksi', compact('transaksi'));
     }
 }
