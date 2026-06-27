@@ -16,8 +16,8 @@ class GoldAutoConvert extends Command
     protected $signature = 'gold:auto-convert';
     protected $description = 'Konversi saldo rupiah nasabah ke emas secara otomatis berdasarkan aturan ambang batas, kelipatan, dan holding';
 
-    // Threshold dalam gram emas — minimal 0.5 gram untuk bisa dikonversi
-    private const THRESHOLD_GRAM = 0.5;
+    // Threshold dalam gram emas — minimal 0.05 gram untuk bisa dikonversi
+    private const THRESHOLD_GRAM = 0.05;
 
     public function handle(GoldPriceService $goldPriceService): int
     {
@@ -42,7 +42,7 @@ class GoldAutoConvert extends Command
         // Langkah 3: Hitung Target Rupiah (threshold 0.5 gram)
         $targetRupiah = self::THRESHOLD_GRAM * $hargaEmasPerGram;
 
-        $this->info("Target rupiah (0.5 gram): Rp " . number_format($targetRupiah, 2, ',', '.') . "");
+        $this->info("Target rupiah (0.05 gram): Rp " . number_format($targetRupiah, 2, ',', '.') . "");
 
         // Statistik untuk log summary
         $totalNasabahDiproses = 0;
