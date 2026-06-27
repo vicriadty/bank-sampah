@@ -28,10 +28,25 @@
     <!-- Divider -->
     <hr class="sidebar-divider">
 
-    <li class="nav-item {{ request()->routeIs('nasabah.riwayat-transaksi') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('nasabah.riwayat-transaksi') }}">
+    <!-- Riwayat Transaksi Dropdown -->
+    <li class="nav-item {{ request()->routeIs('nasabah.riwayat-transaksi') || request()->routeIs('nasabah.riwayat-konversi') ? 'active' : '' }}">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRiwayat"
+            aria-expanded="true" aria-controls="collapseRiwayat">
             <i class="fas fa-fw fa-history"></i>
-            <span>Riwayat Transaksi</span></a>
+            <span>Riwayat Transaksi</span>
+        </a>
+        <div id="collapseRiwayat" class="collapse" aria-labelledby="headingRiwayat" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item {{ request()->routeIs('nasabah.riwayat-transaksi') ? 'active' : '' }}"
+                    href="{{ route('nasabah.riwayat-transaksi') }}">
+                    <i class="fas fa-fw fa-upload"></i> Setoran
+                </a>
+                <a class="collapse-item {{ request()->routeIs('nasabah.riwayat-konversi') ? 'active' : '' }}"
+                    href="{{ route('nasabah.riwayat-konversi') }}">
+                    <i class="fas fa-fw fa-coins"></i> Konversi Emas
+                </a>
+            </div>
+        </div>
     </li>
 
     <li class="nav-item {{ request()->routeIs('nasabah.info-saldo') ? 'active' : '' }}">
