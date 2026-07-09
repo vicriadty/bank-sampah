@@ -64,6 +64,7 @@ Route::middleware(['auth', 'role:nasabah'])->prefix('nasabah')->name('nasabah.')
 
     // Riwayat & Saldo
     Route::get('/riwayat-transaksi', [App\Http\Controllers\Nasabah\TransaksiController::class, 'index'])->name('riwayat-transaksi');
+    Route::get('/riwayat-konversi', [App\Http\Controllers\Nasabah\TransaksiController::class, 'riwayatKonversi'])->name('riwayat-konversi');
     Route::get('/info-saldo', [App\Http\Controllers\Nasabah\DashboardController::class, 'infoSaldo'])->name('info-saldo');
 
     // Profil

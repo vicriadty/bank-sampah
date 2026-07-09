@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Nasabah;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\RiwayatKonversiEmas;
 use App\Models\Setoran;
 
 class TransaksiController extends Controller
@@ -22,5 +22,16 @@ class TransaksiController extends Controller
         });
 
         return view('nasabah.riwayat-transaksi', compact('transaksi'));
+    }
+
+    public function riwayatKonversi()
+    {
+        $nasabahId = Auth::user()->nasabah->id;
+
+        $konversi = RiwayatKonversiEmas::where('nasabah_id', $nasabahId)
+            ->latest()
+            ->get();
+
+        return view('nasabah.riwayat-konversi', compact('konversi'));
     }
 }
