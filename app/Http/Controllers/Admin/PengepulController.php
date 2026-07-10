@@ -34,6 +34,13 @@ class PengepulController extends Controller
 
         Pengepul::create($request->all());
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'redirect' => route('admin.pengepul.index'),
+            ]);
+        }
+
         return redirect()->route('admin.pengepul.index')->with('success', 'Pengepul berhasil ditambahkan');
     }
 

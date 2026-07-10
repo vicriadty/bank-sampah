@@ -77,10 +77,10 @@
             <button type="submit" name="action" value="cetak" class="btn btn-danger mr-2"><i class="fas fa-file-pdf"></i>
                 Cetak
                 Laporan</button>
-            <a href="{{ route('admin.penjualan.create') }}" class="btn btn-primary"><i
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPenjualan"><i
                     class="fas fa-plus fa-sm text-white-50"></i>
                 Tambah
-                Penjualan</a>
+                Penjualan</button>
         </div>
     </form>
 
@@ -166,11 +166,34 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal Tambah Penjualan --}}
+    <div class="modal fade" id="modalPenjualan" tabindex="-1" aria-labelledby="modalPenjualanLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalPenjualanLabel">POS Penjualan Sampah</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formPenjualan" action="{{ route('admin.penjualan.store') }}" method="post">
+                    @csrf
+                    <div class="modal-body">
+                        @include('admin.transaksi.penjualan-sampah._form')
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" id="btn-simpan" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Void handler
         const voidButtons = document.querySelectorAll('.btn-void-penjualan');
         voidButtons.forEach(btn => {
             btn.addEventListener('click', function() {
@@ -180,6 +203,164 @@
                 document.getElementById('pengepulNamePenjualan').textContent = nama;
                 var modal = new bootstrap.Modal(document.getElementById('voidModalPenjualan'));
                 modal.show();
+            });
+        });
+
+        // Penjualan form handlers
+        function formatRupiah(angka) {
+            return 'Rp' + parseInt(angka).toLocaleString('id-ID');
+        }
+
+        function hitungTotal() {
+            let total = 0;
+            document.querySelectorAll('.subtotal').forEach(el => {
+                let val = parseFloat(el.dataset.nilai) || 0;
+                total += val;
+            });
+            document.getElementById('total-harga').value = formatRupiah(total);
+        }
+
+        function updateSubtotal(row) {
+            let sampahSelect = row.querySelector('.sampah-select');
+            let hargaOption = sampahSelect.options[sampahSelect.selectedIndex];
+            let harga = parseFloat(hargaOption?.dataset?.harga) || 0;
+            let berat = parseFloat(row.querySelector('.berat-input').value) || 0;
+            let subtotal = harga * berat;
+            row.querySelector('.harga-per-kg').value = harga ? formatRupiah(harga) : '';
+            let subEl = row.querySelector('.subtotal');
+            subEl.value = subtotal ? formatRupiah(subtotal) : '';
+            subEl.dataset.nilai = subtotal;
+            hitungTotal();
+        }
+
+        // Reset form on modal close
+        document.getElementById('modalPenjualan').addEventListener('hidden.bs.modal', function() {
+            document.getElementById('formPenjualan').reset();
+            let container = document.getElementById('sampah-container');
+            let rows = container.querySelectorAll('.sampah-row');
+            rows.forEach((row, i) => { if (i > 0) row.remove(); });
+            let firstRow = container.querySelector('.sampah-row');
+            if (firstRow) {
+                firstRow.querySelectorAll('select, input').forEach(el => el.value = '');
+                firstRow.querySelector('.subtotal') && (firstRow.querySelector('.subtotal').dataset.nilai = 0);
+                firstRow.querySelector('.harga-per-kg') && (firstRow.querySelector('.harga-per-kg').value = '');
+                firstRow.querySelector('.subtotal') && (firstRow.querySelector('.subtotal').value = '');
+            }
+            document.getElementById('total-harga').value = 'Rp0';
+        });
+
+        // Dynamic row events (delegated)
+        document.getElementById('sampah-container').addEventListener('change', function(e) {
+            if (e.target.classList.contains('sampah-select')) {
+                updateSubtotal(e.target.closest('.sampah-row'));
+            }
+        });
+
+        document.getElementById('sampah-container').addEventListener('input', function(e) {
+            if (e.target.classList.contains('berat-input')) {
+                updateSubtotal(e.target.closest('.sampah-row'));
+            }
+        });
+
+        document.getElementById('add-row').addEventListener('click', function() {
+            let rows = document.querySelectorAll('.sampah-row');
+            let row = rows[0].cloneNode(true);
+            row.querySelectorAll('select, input').forEach(el => el.value = '');
+            let subEl = row.querySelector('.subtotal');
+            subEl.dataset.nilai = 0;
+            row.querySelector('.harga-per-kg').value = '';
+            subEl.value = '';
+            document.getElementById('sampah-container').appendChild(row);
+        });
+
+        document.getElementById('sampah-container').addEventListener('click', function(e) {
+            if (e.target.closest('.btn-remove-row')) {
+                let rows = document.querySelectorAll('.sampah-row');
+                if (rows.length > 1) {
+                    e.target.closest('.sampah-row').remove();
+                    hitungTotal();
+                }
+            }
+        });
+
+        // Submit handler
+        document.getElementById('btn-simpan').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            let pengepulSelect = document.getElementById('pengepul_id');
+            let pengepul = pengepulSelect.options[pengepulSelect.selectedIndex]?.text || '';
+            let total = document.getElementById('total-harga').value;
+            let items = document.querySelectorAll('.sampah-row').length;
+
+            if (!pengepulSelect.value) {
+                Swal.fire({ icon: 'warning', title: 'Pilih pengepul terlebih dahulu' });
+                return;
+            }
+
+            let valid = true;
+            document.querySelectorAll('.sampah-select').forEach(el => { if (!el.value) valid = false; });
+            document.querySelectorAll('.berat-input').forEach(el => { if (!el.value) valid = false; });
+
+            if (!valid) {
+                Swal.fire({ icon: 'warning', title: 'Lengkapi semua item sampah' });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Konfirmasi Penjualan',
+                html: `<div style="text-align: left;">
+                    <p><strong>Pengepul:</strong> ${pengepul}</p>
+                    <p><strong>Jenis Sampah:</strong> ${items} item</p>
+                    <p><strong>Total Harga:</strong> ${total}</p>
+                </div>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                let btn = this;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+                fetch(document.getElementById('formPenjualan').action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: new FormData(document.getElementById('formPenjualan'))
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        return res.json().then(data => Promise.reject(data));
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Data Penjualan berhasil disimpan!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true
+                        }).then(() => window.location.href = data.redirect);
+                    }
+                })
+                .catch(err => {
+                    let msg = err.error || (err.errors ? Object.values(err.errors).flat().join('<br>') : 'Terjadi kesalahan server');
+                    Swal.fire({ icon: 'error', html: msg });
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Simpan';
+                });
             });
         });
     });
