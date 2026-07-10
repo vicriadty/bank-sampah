@@ -61,6 +61,7 @@ class NasabahController extends Controller
                 'user_id' => $user->id,
                 'nik' => $request->nik,
                 'nama' => $request->nama,
+                'email' => $request->email,
                 'jenis_kelamin' => $request->jenis_kelamin,
                 'tanggal_lahir' => $request->tanggal_lahir,
                 'tempat_lahir' => $request->tempat_lahir,
@@ -69,9 +70,24 @@ class NasabahController extends Controller
             ]);
 
             DB::commit();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'redirect' => route('admin.nasabah.index'),
+                ]);
+            }
+
             return redirect()->route('admin.nasabah.index')->with('success', 'Nasabah & Akun Login berhasil dibuat!');
         } catch (\Exception $e) {
             DB::rollback();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'error' => 'Terjadi kesalahan: ' . $e->getMessage(),
+                ], 500);
+            }
+
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }

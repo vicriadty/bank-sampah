@@ -76,9 +76,9 @@
             <a href="{{ route('admin.nasabah.search') }}" class="btn btn-secondary">Reset</a>
         </div>
         <div class="col-md-6 d-flex justify-content-end">
-            <a href="{{ route('admin.nasabah.create') }}" class="btn btn-primary"><i
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNasabah"><i
                     class="fas fa-plus fa-sm text-white-50"></i> Tambah
-                Nasabah</a>
+                Nasabah</button>
         </div>
     </form>
 
@@ -146,8 +146,31 @@
 
         </div>
     </div>
+
+    {{-- Modal Tambah Nasabah --}}
+    <div class="modal fade" id="modalNasabah" tabindex="-1" aria-labelledby="modalNasabahLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalNasabahLabel">Tambah Nasabah</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formNasabah" action="{{ route('admin.nasabah.store') }}" method="post">
+                    @csrf
+                    <div class="modal-body">
+                        @include('admin.nasabah._form')
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" id="btn-simpan-nasabah" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
+@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -173,5 +196,70 @@
                 });
             });
         });
+
+        document.getElementById('btn-simpan-nasabah').addEventListener('click', function(e) {
+            e.preventDefault();
+            let form = document.getElementById('formNasabah');
+
+            let data = new FormData(form);
+            let nama = data.get('nama') || '-';
+
+            Swal.fire({
+                title: 'Konfirmasi Data Nasabah',
+                html: `<div style="text-align: left;">
+                    <p><strong>Nama:</strong> ${nama}</p>
+                    <p style="margin-bottom:0">Data nasabah beserta akun login akan dibuat.</p>
+                </div>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                let btn = this;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: new FormData(form)
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        return res.json().then(data => Promise.reject(data));
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Nasabah & Akun Login berhasil dibuat!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true
+                        }).then(() => window.location.href = data.redirect);
+                    }
+                })
+                .catch(err => {
+                    let msg = err.error || (err.errors ? Object.values(err.errors).flat().join('<br>') : 'Terjadi kesalahan server');
+                    Swal.fire({ icon: 'error', html: msg });
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Simpan';
+                });
+            });
+        });
     });
 </script>
+@endsection

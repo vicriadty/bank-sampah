@@ -29,7 +29,8 @@
     <hr class="sidebar-divider">
 
     <!-- Riwayat Transaksi Dropdown -->
-    <li class="nav-item {{ request()->routeIs('nasabah.riwayat-transaksi') || request()->routeIs('nasabah.riwayat-konversi') ? 'active' : '' }}">
+    <li
+        class="nav-item {{ request()->routeIs('nasabah.riwayat-transaksi') || request()->routeIs('nasabah.riwayat-konversi') ? 'active' : '' }}">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRiwayat"
             aria-expanded="true" aria-controls="collapseRiwayat">
             <i class="fas fa-fw fa-history"></i>

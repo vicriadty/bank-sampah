@@ -43,6 +43,13 @@ class SampahController extends Controller
 
         Sampah::create($request->all());
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'redirect' => route('admin.sampah.index'),
+            ]);
+        }
+
         return redirect()->route('admin.sampah.index')->with('success', 'Data sampah berhasil ditambahkan.');
     }
 

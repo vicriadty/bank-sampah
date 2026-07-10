@@ -55,7 +55,11 @@ class SetoranController extends Controller
         // Default tampil data
         $setorans = $query->paginate(10);
         $nasabahs = Nasabah::all();
-        return view('admin.transaksi.setor-sampah.index', compact('setorans', 'nasabahs'));
+        $jenisSampah = JenisSampah::all();
+        $sampahs = Sampah::with(['jenisSampah'])
+            ->select('id', 'nama_sampah', 'jenis_sampah_id', 'harga_per_kg', 'stok')
+            ->get();
+        return view('admin.transaksi.setor-sampah.index', compact('setorans', 'nasabahs', 'jenisSampah', 'sampahs'));
     }
 
     public function create()

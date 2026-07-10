@@ -52,8 +52,11 @@ class PenjualanSampahController extends Controller
 
         // Default tampil data
         $penjualans = $query->paginate(10);
-        $nasabahs = PenjualanSampah::all();
-        return view('admin.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepulId'));
+        $pengepuls = Pengepul::all();
+        $sampahs = Sampah::with(['jenisSampah'])
+            ->select('id', 'nama_sampah', 'jenis_sampah_id', 'harga_per_kg', 'stok')
+            ->get();
+        return view('admin.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepuls', 'sampahs'));
     }
 
     public function create()
