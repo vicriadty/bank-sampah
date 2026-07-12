@@ -72,6 +72,9 @@ class DashboardController extends Controller
             ->orderBy('bulan')
             ->get();
 
+        // Nasabah terbaru
+        $nasabahTerbaru = Nasabah::latest()->take(5)->get();
+
         return view('admin.dashboard', compact(
             'jumlahNasabah',
             'jumlahPengepul',
@@ -86,7 +89,8 @@ class DashboardController extends Controller
             'setoranPerBulan',
             'nasabahBaruPerBulan',
             'komposisiSampah',
-            'goldPerBulan'
+            'goldPerBulan',
+            'nasabahTerbaru'
         ));
     }
 }

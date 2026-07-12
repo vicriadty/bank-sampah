@@ -91,6 +91,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
+                    <th>Kode</th>
                     <th>Tanggal</th>
                     <th>Pengepul</th>
                     <th>Total Harga</th>
@@ -102,6 +103,7 @@
             <tbody>
                 @forelse ($penjualans as $jual)
                     <tr>
+                        <td>{{ $jual->kode_penjualan ?? '-' }}</td>
                         <td>{{ $jual->tanggal }}</td>
                         <td>{{ $jual->pengepul->nama }}</td>
                         <td>Rp {{ number_format($jual->total_harga, 0, ',', '.') }}</td>

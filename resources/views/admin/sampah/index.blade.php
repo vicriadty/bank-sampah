@@ -60,7 +60,7 @@
         <div class="col-md-3">
             <select name="nama_jenis" id="nama_jenis" class="form-control">
                 <option value="">-- Semua Jenis Sampah --</option>
-                @foreach ($jenis_sampahs as $jenis)
+                @foreach ($jenisSampahs as $jenis)
                     <option value="{{ $jenis->nama_jenis }}"
                         {{ request('nama_jenis') == $jenis->nama_jenis ? 'selected' : '' }}>
                         {{ $jenis->nama_jenis }}

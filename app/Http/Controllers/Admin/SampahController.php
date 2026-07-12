@@ -22,9 +22,9 @@ class SampahController extends Controller
         }
 
         $sampah = $query->get();
-        $jenis_sampahs = JenisSampah::all();
+        $jenisSampahs = JenisSampah::all();
 
-        return view('admin.sampah.index', compact('sampah', 'jenis_sampahs'));
+        return view('admin.sampah.index', compact('sampah', 'jenisSampahs'));
     }
 
     public function create()

@@ -27,8 +27,11 @@ class SetoranController extends Controller
         $query = Setoran::with(['nasabah', 'details.sampah'])->latest();
 
         if ($request->filled('nasabah')) {
-            $query->whereHas('nasabah', function ($q) use ($request) {
-                $q->where('nama', 'like', '%' . $request->nasabah . '%');
+            $search = $request->nasabah;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('nasabah', function ($q2) use ($search) {
+                    $q2->where('nama', 'like', '%' . $search . '%');
+                })->orWhere('kode_setoran', 'like', '%' . $search . '%');
             });
         }
 
