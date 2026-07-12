@@ -88,6 +88,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
+                    <th>Kode</th>
                     <th>Nasabah</th>
                     <th>Tanggal</th>
                     <th>Nama Sampah</th>
@@ -104,6 +105,7 @@
                         @foreach ($setoran->details as $detail)
                             <tr>
                                 @if ($loop->first)
+                                    <td rowspan="{{ $setoran->details->count() }}">{{ $setoran->kode_setoran ?? '-' }}</td>
                                     <td rowspan="{{ $setoran->details->count() }}">{{ $setoran->nasabah->nama }}</td>
                                     <td rowspan="{{ $setoran->details->count() }}">{{ $setoran->created_at->format('d-m-Y') }}</td>
                                 @endif

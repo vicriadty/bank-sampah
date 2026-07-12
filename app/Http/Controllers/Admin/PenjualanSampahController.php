@@ -25,8 +25,11 @@ class PenjualanSampahController extends Controller
         $query = PenjualanSampah::with('pengepul')->latest();
 
         if ($request->filled('pengepul')) {
-            $query->whereHas('pengepul', function ($q) use ($request) {
-                $q->where('nama', 'like', '%' . $request->pengepul . '%');
+            $search = $request->pengepul;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('pengepul', function ($q2) use ($search) {
+                    $q2->where('nama', 'like', '%' . $search . '%');
+                })->orWhere('kode_penjualan', 'like', '%' . $search . '%');
             });
         }
 

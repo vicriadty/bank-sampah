@@ -25,6 +25,13 @@ class DashboardController extends Controller
         // Gold price
         $goldPrice = $goldPriceService->getPrice();
 
+        // Transaksi terbaru
+        $transaksiTerbaru = Setoran::with('details.sampah')
+            ->where('nasabah_id', $nasabah->id)
+            ->latest()
+            ->take(5)
+            ->get();
+
         // Chart: Setoran per bulan (6 bulan terakhir)
         $setoranPerBulan = Setoran::select(
                 DB::raw("DATE_FORMAT(created_at, '%Y-%m') as bulan"),
@@ -52,7 +59,8 @@ class DashboardController extends Controller
             'user', 'nasabah',
             'saldoAktif', 'saldoEmas', 'saldoDiKonversi', 'totalSetoran',
             'goldPrice',
-            'setoranPerBulan', 'konversiPerBulan'
+            'setoranPerBulan', 'konversiPerBulan',
+            'transaksiTerbaru'
         ));
     }
 

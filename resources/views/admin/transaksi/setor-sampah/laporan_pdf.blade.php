@@ -111,6 +111,7 @@
         <thead>
             <tr>
                 <th>No</th>
+                <th>Kode</th>
                 <th>Nasabah</th>
                 <th>Tanggal</th>
                 <th>Nama Sampah</th>
@@ -129,6 +130,7 @@
                 @foreach ($setoran->details as $detail)
                     <tr>
                         <td>{{ $key + 1 }}</td>
+                        <td>{{ $setoran->kode_setoran ?? '-' }}</td>
                         <td>{{ $setoran->nasabah->nama }}</td>
                         <td>{{ $setoran->created_at->format('d-m-Y') }}</td>
                         <td>{{ $detail->sampah->nama_sampah }}</td>
@@ -146,7 +148,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4" class="text-right"><strong>Total:</strong></td>
+                <td colspan="5" class="text-right"><strong>Total:</strong></td>
                 <td class="text-right"><strong>Rp{{ number_format($totalHargaPerKg, 0, ',', '.') }}</strong></td>
                 <td class="text-right"><strong>{{ $totalBerat }}.00</strong></td>
                 <td class="text-right"><strong>Rp{{ number_format($totalSubtotal, 0, ',', '.') }}</strong></td>

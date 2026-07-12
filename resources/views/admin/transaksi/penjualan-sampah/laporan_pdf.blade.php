@@ -111,6 +111,7 @@
         <thead>
             <tr>
                 <th>No</th>
+                <th>Kode</th>
                 <th>Nama Pengepul</th>
                 <th>Sampah</th>
                 <th>Berat (kg)</th>
@@ -128,6 +129,7 @@
                 @foreach ($penjualan->detail_penjualan as $detail)
                     <tr>
                         <td>{{ $key + 1 }}</td>
+                        <td>{{ $penjualan->kode_penjualan ?? '-' }}</td>
                         <td>{{ $penjualan->pengepul->nama }}</td>
                         <td>{{ $detail->sampah->nama_sampah ?? '-' }}</td>
                         <td>{{ $detail->berat }}</td>
@@ -144,7 +146,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="3" class="text-right"><strong>Total:</strong></td>
+                <td colspan="4" class="text-right"><strong>Total:</strong></td>
                 <td class="text-right"><strong>{{ $totalBerat }}.00kg</strong></td>
                 <td class="text-right"><strong>Rp{{ number_format($totalHargaPerKg, 0, ',', '.') }}</strong></td>
                 <td class="text-right"><strong>Rp{{ number_format($totalSubtotal, 0, ',', '.') }}</strong></td>
