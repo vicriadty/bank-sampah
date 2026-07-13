@@ -37,12 +37,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Master Data & Transaksi
     Route::resource('nasabah', NasabahController::class);
     Route::get('/nasabah-search', [NasabahController::class, 'search'])->name('nasabah.search');
+    Route::get('/nasabah/{id}/edit-data', [NasabahController::class, 'getForEdit'])->name('nasabah.edit-data');
 
     Route::resource('pengepul', PengepulController::class);
     Route::get('/pengepul-search', [PengepulController::class, 'search'])->name('pengepul.search');
+    Route::get('/pengepul/{id}/edit-data', [PengepulController::class, 'getForEdit'])->name('pengepul.edit-data');
 
     Route::resource('sampah', SampahController::class);
     Route::get('/sampah-search', [SampahController::class, 'search'])->name('sampah.search');
+    Route::get('/sampah/{id}/edit-data', [SampahController::class, 'getForEdit'])->name('sampah.edit-data');
 
     Route::resource('setoran', SetoranController::class);
     Route::get('/get-sampah-by-jenis/{id}', [SetoranController::class, 'getSampahByJenis']);

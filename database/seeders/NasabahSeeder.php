@@ -169,7 +169,35 @@ class NasabahSeeder extends Seeder
                     'no_hp' => $data['no_hp'],
                     'email' => $data['email'],
                 ]);
-                
+            });
+        }
+
+        // 50 data faker untuk test pagination
+        $faker = \Faker\Factory::create('id_ID');
+        for ($i = 1; $i <= 50; $i++) {
+            DB::transaction(function () use ($faker, $i) {
+                $nama = $faker->name();
+                $username = strtolower(str_replace(' ', '.', $nama)) . $i;
+                $email = $faker->unique()->safeEmail();
+
+                $user = User::create([
+                    'username' => $username,
+                    'email' => $email,
+                    'password' => Hash::make('123456'),
+                    'role' => 'nasabah',
+                ]);
+
+                Nasabah::create([
+                    'user_id' => $user->id,
+                    'nik' => $faker->numerify('################'),
+                    'nama' => $nama,
+                    'jenis_kelamin' => $faker->randomElement(['Laki-laki', 'Perempuan']),
+                    'tanggal_lahir' => $faker->date('Y-m-d', '-18 years'),
+                    'tempat_lahir' => $faker->city(),
+                    'alamat' => $faker->address(),
+                    'no_hp' => $faker->numerify('08##########'),
+                    'email' => $email,
+                ]);
             });
         }
     }

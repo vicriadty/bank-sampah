@@ -168,6 +168,9 @@
             </tbody>
         </table>
     </div>
+    <div class="d-flex justify-content-center">
+        {{ $setorans->links() }}
+    </div>
 
     {{-- Modal Void Setoran --}}
     <div class="modal fade" id="voidModalSetoran" tabindex="-1" aria-labelledby="voidModalSetoranLabel" aria-hidden="true">
