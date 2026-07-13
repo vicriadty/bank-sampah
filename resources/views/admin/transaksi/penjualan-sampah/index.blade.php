@@ -142,6 +142,9 @@
             </tbody>
         </table>
     </div>
+    <div class="d-flex justify-content-center">
+        {{ $penjualans->links() }}
+    </div>
 
     {{-- Modal Void Penjualan --}}
     <div class="modal fade" id="voidModalPenjualan" tabindex="-1" aria-labelledby="voidModalPenjualanLabel" aria-hidden="true">

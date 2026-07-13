@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 
-
 use App\Models\Nasabah;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,13 +13,17 @@ use Illuminate\Validation\Rule;
 
 class NasabahController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $nasabah = Nasabah::all();
+        $query = Nasabah::query();
 
-        return view('admin.nasabah.index', [
-            'nasabah' => $nasabah,
-        ]);
+        if ($request->filled('nasabah')) {
+            $query->where('nama', 'LIKE', '%' . $request->nasabah . '%');
+        }
+
+        $nasabah = $query->latest()->paginate(10)->withQueryString();
+
+        return view('admin.nasabah.index', compact('nasabah'));
     }
 
     public function create()
@@ -30,13 +33,12 @@ class NasabahController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validasi input dari form admin
         $request->validate([
             'nik' => ['required', 'min:16', 'max:16'],
             'nama' => ['required', 'max:100'],
             'username' => ['required', 'max:100'],
-            'email' => ['required', 'email', 'unique:users,email'], // Validasi email untuk tabel users
-            'password' => ['required', 'min:6'], // Validasi password untuk tabel users
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'min:6'],
             'jenis_kelamin' => ['required', Rule::in(['Laki-laki', 'Perempuan'])],
             'tanggal_lahir' => ['required', 'string'],
             'tempat_lahir' => ['required', 'max:100'],
@@ -45,18 +47,15 @@ class NasabahController extends Controller
         ]);
 
         try {
-            DB::beginTransaction(); // Gunakan Database Transaction agar jika salah satu gagal, data tidak akan tersimpan setengah-setengah.
+            DB::beginTransaction();
 
-            // 2. Buat akun di tabel users
             $user = User::create([
                 'username' => $request->username,
                 'email' => $request->email,
-                'password' => Hash::make($request->password), // Enkripsi password
-                'role' => 'nasabah', // Otomatis diset sebagai nasabah
+                'password' => Hash::make($request->password),
+                'role' => 'nasabah',
             ]);
 
-            // 3. Buat profil di tabel nasabah menggunakan user_id yang baru lahir
-            // Dompet otomatis terbuat via Nasabah::created event
             Nasabah::create([
                 'user_id' => $user->id,
                 'nik' => $request->nik,
@@ -96,13 +95,20 @@ class NasabahController extends Controller
     {
         $nasabah = Nasabah::findOrFail($id);
 
-        return view('admin.nasabah.edit', [
-            'nasabah' => $nasabah,
-        ]);
+        return view('admin.nasabah.edit', compact('nasabah'));
+    }
+
+    public function getForEdit($id)
+    {
+        $nasabah = Nasabah::findOrFail($id);
+
+        return response()->json($nasabah);
     }
 
     public function update(Request $request, $id)
     {
+        $nasabah = Nasabah::findOrFail($id);
+
         $validatedData = $request->validate([
             'nik' => ['required', 'min:16', 'max:16'],
             'nama' => ['required', 'max:100'],
@@ -113,7 +119,14 @@ class NasabahController extends Controller
             'no_hp' => ['required', 'max:15'],
         ]);
 
-        Nasabah::findOrFail($id)->update($validatedData);
+        $nasabah->update($validatedData);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'redirect' => route('admin.nasabah.index'),
+            ]);
+        }
 
         return redirect()->route('admin.nasabah.index')->with('success', 'Nasabah berhasil diupdate');
     }
@@ -128,22 +141,14 @@ class NasabahController extends Controller
 
     public function search(Request $request)
     {
-        // $search = $request->q;
+        $query = Nasabah::query();
 
-        // $nasabahs = Nasabah::where('nama', 'LIKE', "%{$search}%")
-        //     ->orderBy('nama')
-        //     ->limit(20)
-        //     ->get();
+        if ($request->filled('nasabah')) {
+            $query->where('nama', 'LIKE', '%' . $request->nasabah . '%');
+        }
 
-        // $formattedNasabahs = [];
+        $nasabah = $query->latest()->paginate(10)->withQueryString();
 
-        // foreach ($nasabahs as $nasabah) {
-        //     $formattedNasabahs[] = ['id' => $nasabah->id, 'text' => $nasabah->nama];
-        // }
-
-        // return response()->json($formattedNasabahs);
-
-        $nasabah = Nasabah::where('nama', 'LIKE', '%' . $request->nasabah . '%')->get();
         return view('admin.nasabah.index', compact('nasabah'));
     }
 }

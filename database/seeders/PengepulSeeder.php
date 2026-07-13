@@ -89,5 +89,17 @@ class PengepulSeeder extends Seeder
         foreach ($pengepuls as $pengepul) {
             Pengepul::create($pengepul);
         }
+
+        // 50 data faker untuk test pagination
+        $faker = \Faker\Factory::create('id_ID');
+        for ($i = 1; $i <= 50; $i++) {
+            Pengepul::create([
+                'nama' => $faker->company(),
+                'alamat' => $faker->address(),
+                'no_hp' => $faker->numerify('08##########'),
+                'status' => $faker->randomElement(['Aktif', 'Tidak Aktif']),
+                'keterangan' => $faker->sentence(6),
+            ]);
+        }
     }
 }
