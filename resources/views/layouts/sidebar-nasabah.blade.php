@@ -56,6 +56,12 @@
             <span>Info Saldo</span></a>
     </li>
 
+    <li class="nav-item {{ request()->routeIs('nasabah.data-sampah') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('nasabah.data-sampah') }}">
+            <i class="fas fa-fw fa-trash"></i>
+            <span>Data Sampah</span></a>
+    </li>
+
     <!-- Divider -->
     <hr class="sidebar-divider">
 

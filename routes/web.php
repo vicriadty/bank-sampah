@@ -69,6 +69,7 @@ Route::middleware(['auth', 'role:nasabah'])->prefix('nasabah')->name('nasabah.')
     Route::get('/riwayat-transaksi', [App\Http\Controllers\Nasabah\TransaksiController::class, 'index'])->name('riwayat-transaksi');
     Route::get('/riwayat-konversi', [App\Http\Controllers\Nasabah\TransaksiController::class, 'riwayatKonversi'])->name('riwayat-konversi');
     Route::get('/info-saldo', [App\Http\Controllers\Nasabah\DashboardController::class, 'infoSaldo'])->name('info-saldo');
+    Route::get('/data-sampah', [App\Http\Controllers\Nasabah\DashboardController::class, 'dataSampah'])->name('data-sampah');
 
     // Profil
     Route::get('/profile', [App\Http\Controllers\Nasabah\ProfileController::class, 'index'])->name('profile');
