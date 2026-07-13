@@ -91,7 +91,7 @@
                     <th>Kode</th>
                     <th>Nasabah</th>
                     <th>Tanggal</th>
-                    <th>Nama Sampah</th>
+                    <th>Nama Jenis</th>
                     <th>Harga/Kg</th>
                     <th>Berat(Kg)</th>
                     <th>Subtotal</th>
@@ -251,14 +251,14 @@
         function loadSampahByJenis(jenisSelect, sampahSelect, hargaInput) {
             let jenisID = jenisSelect.value;
             if (!jenisID) {
-                sampahSelect.innerHTML = '<option value="">Pilih Nama Sampah</option>';
+                sampahSelect.innerHTML = '<option value="">Pilih Nama Jenis</option>';
                 hargaInput.value = '';
                 return;
             }
             fetch('/admin/get-sampah-by-jenis/' + jenisID)
                 .then(res => res.json())
                 .then(data => {
-                    sampahSelect.innerHTML = '<option value="">Pilih Nama Sampah</option>';
+                    sampahSelect.innerHTML = '<option value="">Pilih Nama Jenis</option>';
                     data.forEach(item => {
                         let opt = document.createElement('option');
                         opt.value = item.id;
@@ -386,7 +386,7 @@
                 title: 'Konfirmasi Setoran',
                 html: `<div style="text-align: left;">
                     <p><strong>Nasabah:</strong> ${nasabah}</p>
-                    <p><strong>Jenis Sampah:</strong> ${items} item</p>
+                    <p><strong>Item Sampah:</strong> ${items} item</p>
                     <p><strong>Total Harga:</strong> ${total}</p>
                 </div>`,
                 icon: 'question',

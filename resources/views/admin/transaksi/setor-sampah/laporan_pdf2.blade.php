@@ -35,7 +35,7 @@
             <tr>
                 <th>Nasabah</th>
                 <th>Tanggal</th>
-                <th>Nama Sampah</th>
+                <th>Nama Jenis</th>
                 <th>Harga /Kg</th>
                 <th>Berat</th>
                 <th>Subtotal</th>

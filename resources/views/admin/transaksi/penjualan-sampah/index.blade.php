@@ -95,7 +95,7 @@
                     <th>Tanggal</th>
                     <th>Pengepul</th>
                     <th>Total Harga</th>
-                    <th>Sampah</th>
+                    <th>Nama Jenis</th>
                     <th>Status</th>
                     <th>Aksi</th>
                 </tr>
@@ -312,7 +312,7 @@
                 title: 'Konfirmasi Penjualan',
                 html: `<div style="text-align: left;">
                     <p><strong>Pengepul:</strong> ${pengepul}</p>
-                    <p><strong>Jenis Sampah:</strong> ${items} item</p>
+                    <p><strong>Item Sampah:</strong> ${items} item</p>
                     <p><strong>Total Harga:</strong> ${total}</p>
                 </div>`,
                 icon: 'question',

@@ -86,7 +86,7 @@
             function loadSampahByJenis(jenisSelect, sampahSelect, hargaInput) {
                 let jenisID = jenisSelect.val();
                 if (!jenisID) {
-                    sampahSelect.empty().append('<option value="">Pilih Nama Sampah</option>');
+                    sampahSelect.empty().append('<option value="">Pilih Nama Jenis</option>');
                     hargaInput.val('');
                     return;
                 }
@@ -95,7 +95,7 @@
                     type: 'GET',
                     dataType: 'json',
                     success: function(data) {
-                        sampahSelect.empty().append('<option value="">Pilih Nama Sampah</option>');
+                        sampahSelect.empty().append('<option value="">Pilih Nama Jenis</option>');
                         $.each(data, function(key, value) {
                             sampahSelect.append(
                                 '<option value="' + value.id + '" data-harga="' + value
@@ -193,7 +193,7 @@
                     html: `
                     <div style="text-align: left;">
                         <p><strong>Nasabah:</strong> ${nasabah}</p>
-                        <p><strong>Jenis Sampah:</strong> ${items} item</p>
+                        <p><strong>Item Sampah:</strong> ${items} item</p>
                         <p><strong>Total Harga:</strong> ${total}</p>
                     </div>
                 `,

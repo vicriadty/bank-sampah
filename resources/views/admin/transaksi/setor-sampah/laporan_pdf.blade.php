@@ -114,7 +114,7 @@
                 <th>Kode</th>
                 <th>Nasabah</th>
                 <th>Tanggal</th>
-                <th>Nama Sampah</th>
+                <th>Nama Jenis</th>
                 <th>Harga/kg (Rp)</th>
                 <th>Berat (kg)</th>
                 <th>Subtotal</th>

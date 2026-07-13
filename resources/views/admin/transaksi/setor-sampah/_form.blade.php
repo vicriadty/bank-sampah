@@ -14,18 +14,18 @@
 <div id="sampah-container">
     <div class="row sampah-row mb-3 align-items-end">
         <div class="col-md-3 col-sm-4">
-            <label>Jenis Sampah</label>
+            <label>Kategori</label>
             <select class="form-control jenis-sampah-select form-control-sm">
-                <option value="">Pilih Jenis</option>
+                <option value="">Pilih Kategori</option>
                 @foreach ($kategoriSampah as $kategori)
                     <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
                 @endforeach
             </select>
         </div>
         <div class="col-md-3 col-sm-4">
-            <label>Nama Sampah</label>
+            <label>Nama Jenis</label>
             <select name="sampah_id[]" class="form-control sampah-select form-control-sm" required>
-                <option value="">Pilih Nama Sampah</option>
+                <option value="">Pilih Nama Jenis</option>
             </select>
         </div>
         <div class="col-md-2 col-sm-4">

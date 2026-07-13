@@ -145,7 +145,7 @@
                     html: `
                         <div style="text-align: left;">
                             <p><strong>Pengepul:</strong> ${pengepul}</p>
-                            <p><strong>Jenis Sampah:</strong> ${items} item</p>
+                            <p><strong>Item Sampah:</strong> ${items} item</p>
                             <p><strong>Total Harga:</strong> ${total}</p>
                         </div>
                     `,

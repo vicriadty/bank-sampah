@@ -33,7 +33,7 @@
             <tr>
                 <th>No</th>
                 <th>Nama Pengepul</th>
-                <th>Sampah</th>
+                <th>Nama Jenis</th>
                 <th>Berat (kg)</th>
                 <th>Harga/kg</th>
                 <th>Subtotal</th>

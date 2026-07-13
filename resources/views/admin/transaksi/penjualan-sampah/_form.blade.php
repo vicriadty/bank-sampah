@@ -14,9 +14,9 @@
 <div id="sampah-container">
     <div class="row sampah-row mb-3 align-items-end">
         <div class="col-md-4 col-sm-6">
-            <label>Nama Sampah</label>
+            <label>Nama Jenis</label>
             <select name="sampah_id[]" class="form-control sampah-select form-control-sm" required>
-                <option value="">-- Pilih Sampah --</option>
+                <option value="">-- Pilih Jenis --</option>
                 @foreach ($jenisSampahs as $jenisSampah)
                     <option value="{{ $jenisSampah->id }}" data-harga="{{ $jenisSampah->harga_per_kg }}">
                         {{ $jenisSampah->nama_jenis }} - (Stok: {{ number_format($jenisSampah->stok, 2) }}
