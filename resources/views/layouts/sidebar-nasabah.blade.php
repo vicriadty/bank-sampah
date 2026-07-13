@@ -40,10 +40,20 @@
             <span>Konversi Emas</span></a>
     </li>
 
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading mt-3">
+        Informasi
+    </div>
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
     <li class="nav-item {{ request()->routeIs('nasabah.info-saldo') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('nasabah.info-saldo') }}">
             <i class="fas fa-fw fa-wallet"></i>
-            <span>Info Saldo</span></a>
+            <span>Dompet</span></a>
     </li>
 
     <li class="nav-item {{ request()->routeIs('nasabah.data-sampah') ? 'active' : '' }}">
