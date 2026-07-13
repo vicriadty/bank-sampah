@@ -113,7 +113,7 @@
                 <th>No</th>
                 <th>Kode</th>
                 <th>Nama Pengepul</th>
-                <th>Nama Jenis</th>
+                <th>Jenis Sampah</th>
                 <th>Berat (kg)</th>
                 <th>Harga/kg (Rp)</th>
                 <th>Subtotal (Rp)</th>

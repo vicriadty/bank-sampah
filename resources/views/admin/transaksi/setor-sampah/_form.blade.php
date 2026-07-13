@@ -23,9 +23,9 @@
             </select>
         </div>
         <div class="col-md-3 col-sm-4">
-            <label>Nama Jenis</label>
+            <label>Jenis Sampah</label>
             <select name="sampah_id[]" class="form-control sampah-select form-control-sm" required>
-                <option value="">Pilih Nama Jenis</option>
+                <option value="">Pilih Jenis Sampah</option>
             </select>
         </div>
         <div class="col-md-2 col-sm-4">

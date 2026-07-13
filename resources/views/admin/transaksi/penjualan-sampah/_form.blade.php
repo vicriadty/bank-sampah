@@ -14,9 +14,9 @@
 <div id="sampah-container">
     <div class="row sampah-row mb-3 align-items-end">
         <div class="col-md-4 col-sm-6">
-            <label>Nama Jenis</label>
+            <label>Jenis Sampah</label>
             <select name="sampah_id[]" class="form-control sampah-select form-control-sm" required>
-                <option value="">-- Pilih Jenis --</option>
+                <option value="">-- Pilih Jenis Sampah --</option>
                 @foreach ($jenisSampahs as $jenisSampah)
                     <option value="{{ $jenisSampah->id }}" data-harga="{{ $jenisSampah->harga_per_kg }}">
                         {{ $jenisSampah->nama_jenis }} - (Stok: {{ number_format($jenisSampah->stok, 2) }}
@@ -61,8 +61,8 @@
             <div class="input-group-prepend">
                 <span class="input-group-text font-weight-bold">Total</span>
             </div>
-            <input type="text" id="total-harga"
-                class="form-control font-weight-bold text-primary" readonly value="Rp0">
+            <input type="text" id="total-harga" class="form-control font-weight-bold text-primary" readonly
+                value="Rp0">
         </div>
     </div>
 </div>
