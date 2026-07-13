@@ -11,16 +11,16 @@ use App\Http\Controllers\Admin\SetoranController;
 // use App\Http\Controllers\Admin\StokSampahController;
 use App\Http\Controllers\Admin\GoldExchangeController as AdminGoldExchangeController;
 use App\Http\Controllers\UserController;
-use App\Models\JenisSampah;
+use App\Models\KategoriSampah;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    $jenisSampah = JenisSampah::all();
+    $kategoriSampah = KategoriSampah::all();
     $nasabah = null;
     if (Auth::check()) {
         $nasabah = Auth::user()?->nasabah;
     }
-    return view('landing', compact('jenisSampah', 'nasabah'));
+    return view('landing', compact('kategoriSampah', 'nasabah'));
 });
 
 // Auth Routes

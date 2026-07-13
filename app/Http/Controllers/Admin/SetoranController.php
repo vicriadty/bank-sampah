@@ -7,9 +7,9 @@ use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 use App\Models\DompetNasabah;
-use App\Models\JenisSampah;
+use App\Models\KategoriSampah;
 use App\Models\Nasabah;
-use App\Models\Sampah;
+use App\Models\JenisSampah;
 use App\Models\Setoran;
 use App\Models\SetoranDetail;
 use Illuminate\Http\Request;
@@ -58,27 +58,27 @@ class SetoranController extends Controller
         // Default tampil data
         $setorans = $query->paginate(10);
         $nasabahs = Nasabah::all();
-        $jenisSampah = JenisSampah::all();
-        $sampahs = Sampah::with(['jenisSampah'])
-            ->select('id', 'nama_sampah', 'jenis_sampah_id', 'harga_per_kg', 'stok')
+        $kategoriSampah = KategoriSampah::all();
+        $jenisSampahs = JenisSampah::with(['kategoriSampah'])
+            ->select('id', 'nama_jenis', 'kategori_id', 'harga_per_kg', 'stok')
             ->get();
-        return view('admin.transaksi.setor-sampah.index', compact('setorans', 'nasabahs', 'jenisSampah', 'sampahs'));
+        return view('admin.transaksi.setor-sampah.index', compact('setorans', 'nasabahs', 'kategoriSampah', 'jenisSampahs'));
     }
 
     public function create()
     {
         $nasabahs = Nasabah::all();
-        $jenisSampah = JenisSampah::all();
-        $sampahs = Sampah::with(['jenisSampah'])
-            ->select('id', 'nama_sampah', 'jenis_sampah_id', 'harga_per_kg', 'stok')
+        $kategoriSampah = KategoriSampah::all();
+        $jenisSampahs = JenisSampah::with(['kategoriSampah'])
+            ->select('id', 'nama_jenis', 'kategori_id', 'harga_per_kg', 'stok')
             ->get();
-        return view('admin.transaksi.setor-sampah.create', compact('nasabahs', 'jenisSampah', 'sampahs'));
+        return view('admin.transaksi.setor-sampah.create', compact('nasabahs', 'kategoriSampah', 'jenisSampahs'));
     }
 
     public function getSampahByJenis($id)
     {
-        $sampahs = Sampah::where('jenis_sampah_id', $id)->get();
-        return response()->json($sampahs);
+        $jenisSampahs = JenisSampah::where('kategori_id', $id)->get();
+        return response()->json($jenisSampahs);
     }
 
     public function store(Request $request)
@@ -86,7 +86,7 @@ class SetoranController extends Controller
         $request->validate([
             'nasabah_id' => ['required', 'exists:nasabahs,id'],
             'sampah_id' => ['required', 'array'],
-            'sampah_id.*' => ['required', 'exists:sampahs,id'],
+            'sampah_id.*' => ['required', 'exists:jenis_sampahs,id'],
             'berat' => ['required', 'array'],
             'berat.*' => ['required', 'numeric', 'min:0.1'],
         ]);
@@ -102,19 +102,19 @@ class SetoranController extends Controller
 
             foreach ($request->sampah_id as $index => $sampahId) {
                 $berat = $request->berat[$index];
-                $sampah = Sampah::where('id', $sampahId)->lockForUpdate()->firstOrFail();
+                $jenisSampah = JenisSampah::where('id', $sampahId)->lockForUpdate()->firstOrFail();
 
-                $subtotal = $sampah->harga_per_kg * $berat;
+                $subtotal = $jenisSampah->harga_per_kg * $berat;
                 $totalHarga += $subtotal;
 
                 $setoran->details()->create([
-                    'sampah_id' => $sampah->id,
+                    'sampah_id' => $jenisSampah->id,
                     'berat' => $berat,
-                    'harga_per_kg' => $sampah->harga_per_kg,
+                    'harga_per_kg' => $jenisSampah->harga_per_kg,
                     'subtotal' => $subtotal,
                 ]);
 
-                $sampah->increment('stok', $berat);
+                $jenisSampah->increment('stok', $berat);
             }
 
             $setoran->update(['total_harga' => $totalHarga]);
@@ -154,13 +154,13 @@ class SetoranController extends Controller
 
             // Reversal: kurangi stok sampah (kembalikan ke sebelum setoran)
             foreach ($setoran->details as $detail) {
-                $sampah = Sampah::where('id', $detail->sampah_id)->lockForUpdate()->firstOrFail();
+                $jenisSampah = JenisSampah::where('id', $detail->sampah_id)->lockForUpdate()->firstOrFail();
 
-                if ($sampah->stok < $detail->berat) {
-                    throw new \Exception("Stok sampah {$sampah->nama_sampah} tidak mencukupi untuk reversal.");
+                if ($jenisSampah->stok < $detail->berat) {
+                    throw new \Exception("Stok sampah {$jenisSampah->nama_jenis} tidak mencukupi untuk reversal.");
                 }
 
-                $sampah->decrement('stok', $detail->berat);
+                $jenisSampah->decrement('stok', $detail->berat);
             }
 
             // Reversal: kurangi saldo rupiah nasabah

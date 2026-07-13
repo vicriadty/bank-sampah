@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
-            JenisSampahSeeder::class,
+            KategoriSampahSeeder::class,
         ]);
 
         $this->call([

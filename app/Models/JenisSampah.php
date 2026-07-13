@@ -8,11 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class JenisSampah extends Model
 {
     use HasFactory;
-    protected $table = 'jenis_sampahs';
-    protected $fillable = ['nama_jenis'];
 
-    public function sampahs()
+    protected $fillable = ['kategori_id', 'nama_jenis', 'harga_per_kg', 'stok'];
+
+    public function kategoriSampah()
     {
-        return $this->hasMany(Sampah::class);
+        return $this->belongsTo(KategoriSampah::class, 'kategori_id');
+    }
+
+    public function setoranDetails()
+    {
+        return $this->hasMany(SetoranDetail::class, 'sampah_id');
+    }
+
+    public function penjualanSampahs()
+    {
+        return $this->hasMany(DetailPenjualanSampah::class, 'sampah_id');
     }
 }

@@ -18,8 +18,8 @@
                 @forelse ($stokSampah as $index => $stock)
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td>{{ $stock->sampah->jenisSampah->nama_jenis ?? '-' }}</td>
-                        <td>{{ $stock->sampah->nama_sampah ?? '-' }}</td>
+                        <td>{{ $stock->sampah->kategoriSampah->nama_kategori ?? '-' }}</td>
+                        <td>{{ $stock->sampah->nama_jenis ?? '-' }}</td>
                         <td>{{ number_format($stock->total_berat, 2) }}</td>
                     </tr>
                 @empty

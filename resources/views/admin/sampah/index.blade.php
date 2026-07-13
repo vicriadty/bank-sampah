@@ -58,12 +58,12 @@
 
     <form action="{{ route('admin.sampah.index') }}" method="GET" class="row mb-3">
         <div class="col-md-3">
-            <select name="nama_jenis" id="nama_jenis" class="form-control">
-                <option value="">-- Semua Jenis Sampah --</option>
-                @foreach ($jenisSampahs as $jenis)
-                    <option value="{{ $jenis->nama_jenis }}"
-                        {{ request('nama_jenis') == $jenis->nama_jenis ? 'selected' : '' }}>
-                        {{ $jenis->nama_jenis }}
+            <select name="nama_kategori" id="nama_kategori" class="form-control">
+                <option value="">-- Semua Kategori --</option>
+                @foreach ($kategoriSampahs as $kategori)
+                    <option value="{{ $kategori->nama_kategori }}"
+                        {{ request('nama_kategori') == $kategori->nama_kategori ? 'selected' : '' }}>
+                        {{ $kategori->nama_kategori }}
                     </option>
                 @endforeach
             </select>
@@ -86,8 +86,8 @@
                     <thead>
                         <tr>
                             <th>No</th>
+                            <th>Kategori</th>
                             <th>Jenis Sampah</th>
-                            <th>Nama Sampah</th>
                             <th>Harga per Kg</th>
                             <th>Stok</th>
                             <th>Aksi</th>
@@ -97,8 +97,8 @@
                         @forelse($sampah as $index => $item)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $item->jenisSampah->nama_jenis }}</td>
-                                <td>{{ $item->nama_sampah }}</td>
+                                <td>{{ $item->kategoriSampah->nama_kategori }}</td>
+                                <td>{{ $item->nama_jenis }}</td>
                                 <td>Rp{{ number_format($item->harga_per_kg, 0, ',', '.') }}</td>
                                 <td>{{ $item->stok }}</td>
                                 <td>
@@ -108,7 +108,7 @@
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <button type="button" class="d-inline-block btn btn-danger btn-delete"
-                                            data-id="{{ $item->id }}" data-nama="{{ $item->nama_sampah }}">
+                                            data-id="{{ $item->id }}" data-nama="{{ $item->nama_jenis }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                         <!-- Form hapus tersembunyi -->
@@ -155,76 +155,80 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const deleteButtons = document.querySelectorAll('.btn-delete');
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const deleteButtons = document.querySelectorAll('.btn-delete');
 
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
-                const namaSampah = this.getAttribute('data-nama');
-                Swal.fire({
-                    title: `Apakah Anda yakin ingin menghapus sampah <br> ${namaSampah}?`,
-                    text: "Data yang dihapus tidak dapat dikembalikan!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById('form-delete-' + id).submit();
-                    }
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const namaSampah = this.getAttribute('data-nama');
+                    Swal.fire({
+                        title: `Apakah Anda yakin ingin menghapus sampah <br> ${namaSampah}?`,
+                        text: "Data yang dihapus tidak dapat dikembalikan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('form-delete-' + id).submit();
+                        }
+                    });
                 });
             });
-        });
 
-        // Submit form via AJAX
-        document.getElementById('formSampah').addEventListener('submit', function(e) {
-            e.preventDefault();
-            let form = this;
-            let btn = form.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            // Submit form via AJAX
+            document.getElementById('formSampah').addEventListener('submit', function(e) {
+                e.preventDefault();
+                let form = this;
+                let btn = form.querySelector('button[type="submit"]');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
 
                 fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                    },
-                    body: new FormData(form)
-                })
-                .then(res => {
-                    if (!res.ok) {
-                        return res.json().then(data => Promise.reject(data));
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    if (data.success) {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                        body: new FormData(form)
+                    })
+                    .then(res => {
+                        if (!res.ok) {
+                            return res.json().then(data => Promise.reject(data));
+                        }
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Data sampah berhasil ditambahkan!',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 1500,
+                                timerProgressBar: true
+                            }).then(() => window.location.href = data.redirect);
+                        }
+                    })
+                    .catch(err => {
+                        let msg = err.error || (err.errors ? Object.values(err.errors).flat().join(
+                            '<br>') : 'Terjadi kesalahan server');
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Data sampah berhasil ditambahkan!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            timerProgressBar: true
-                        }).then(() => window.location.href = data.redirect);
-                    }
-                })
-                .catch(err => {
-                    let msg = err.error || (err.errors ? Object.values(err.errors).flat().join('<br>') : 'Terjadi kesalahan server');
-                    Swal.fire({ icon: 'error', html: msg });
-                })
-                .finally(() => {
-                    btn.disabled = false;
-                    btn.textContent = 'Simpan';
-                });
+                            icon: 'error',
+                            html: msg
+                        });
+                    })
+                    .finally(() => {
+                        btn.disabled = false;
+                        btn.textContent = 'Simpan';
+                    });
+            });
         });
-    });
-</script>
+    </script>
 @endsection

@@ -197,7 +197,7 @@
         new ApexCharts(document.getElementById('komposisiChart'), {
             chart: { type: 'pie', height: 300 },
             series: komposisiData.map(i => parseFloat(i.total_berat)),
-            labels: komposisiData.map(i => i.nama_jenis),
+            labels: komposisiData.map(i => i.nama_kategori),
             colors: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'],
             legend: { position: 'bottom' },
             responsive: [{ breakpoint: 480, options: { chart: { width: 200 } } }]

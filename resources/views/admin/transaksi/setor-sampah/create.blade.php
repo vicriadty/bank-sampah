@@ -100,7 +100,7 @@
                             sampahSelect.append(
                                 '<option value="' + value.id + '" data-harga="' + value
                                 .harga_per_kg + '">' +
-                                value.nama_sampah + ' - Rp' + parseInt(value.harga_per_kg)
+                                value.nama_jenis + ' - Rp' + parseInt(value.harga_per_kg)
                                 .toLocaleString('id-ID') + '/kg' +
                                 '</option>'
                             );

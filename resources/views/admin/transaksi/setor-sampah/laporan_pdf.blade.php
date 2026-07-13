@@ -133,7 +133,7 @@
                         <td>{{ $setoran->kode_setoran ?? '-' }}</td>
                         <td>{{ $setoran->nasabah->nama }}</td>
                         <td>{{ $setoran->created_at->format('d-m-Y') }}</td>
-                        <td>{{ $detail->sampah->nama_sampah }}</td>
+                        <td>{{ $detail->sampah->nama_jenis }}</td>
                         <td>{{ number_format($detail->harga_per_kg, 0, ',', '.') }}</td>
                         <td>{{ $detail->berat }}</td>
                         <td>{{ number_format($detail->subtotal, 0, ',', '.') }}</td>

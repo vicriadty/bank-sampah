@@ -10,7 +10,7 @@ use App\Models\RiwayatKonversiEmas;
 use App\Models\Nasabah;
 use App\Models\Pengepul;
 use App\Models\PenjualanSampah;
-use App\Models\Sampah;
+use App\Models\JenisSampah;
 use App\Models\Setoran;
 use App\Models\SetoranDetail;
 use App\Services\GoldPriceService;
@@ -23,7 +23,7 @@ class DashboardController extends Controller
         // Summary cards
         $jumlahNasabah = Nasabah::count();
         $jumlahPengepul = Pengepul::count();
-        $jumlahSampah = Sampah::count();
+        $jumlahSampah = JenisSampah::count();
         $totalSampahDisetorkan = SetoranDetail::sum('berat');
         $totalTabunganNasabah = DompetNasabah::sum('saldo_rupiah');
         $totalPenjualanSampah = DetailPenjualanSampah::sum('berat');
@@ -54,11 +54,11 @@ class DashboardController extends Controller
             ->orderBy('bulan')
             ->get();
 
-        // Chart: Komposisi jenis sampah
-        $komposisiSampah = SetoranDetail::join('sampahs', 'setoran_details.sampah_id', '=', 'sampahs.id')
-            ->join('jenis_sampahs', 'sampahs.jenis_sampah_id', '=', 'jenis_sampahs.id')
-            ->select('jenis_sampahs.nama_jenis', DB::raw('SUM(setoran_details.berat) as total_berat'))
-            ->groupBy('jenis_sampahs.nama_jenis')
+        // Chart: Komposisi kategori sampah
+        $komposisiSampah = SetoranDetail::join('jenis_sampahs', 'setoran_details.sampah_id', '=', 'jenis_sampahs.id')
+            ->join('kategori_sampahs', 'jenis_sampahs.kategori_id', '=', 'kategori_sampahs.id')
+            ->select('kategori_sampahs.nama_kategori', DB::raw('SUM(setoran_details.berat) as total_berat'))
+            ->groupBy('kategori_sampahs.nama_kategori')
             ->get();
 
         // Chart: Penukaran emas per bulan
