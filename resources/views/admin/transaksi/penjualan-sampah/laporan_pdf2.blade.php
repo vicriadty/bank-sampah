@@ -46,7 +46,7 @@
                     <tr>
                         <td>{{ $no++ }}</td>
                         <td>{{ $penjualan->pengepul->nama }}</td>
-                        <td>{{ $detail->sampah->nama_sampah ?? '-' }}</td>
+                        <td>{{ $detail->sampah->nama_jenis ?? '-' }}</td>
                         <td>{{ $detail->berat }}</td>
                         <td>Rp {{ number_format($detail->harga_per_kg, 0, ',', '.') }}</td>
                         <td>Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>

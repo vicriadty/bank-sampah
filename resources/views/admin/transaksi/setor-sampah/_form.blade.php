@@ -17,8 +17,8 @@
             <label>Jenis Sampah</label>
             <select class="form-control jenis-sampah-select form-control-sm">
                 <option value="">Pilih Jenis</option>
-                @foreach ($jenisSampah as $jenis)
-                    <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }}</option>
+                @foreach ($kategoriSampah as $kategori)
+                    <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
                 @endforeach
             </select>
         </div>

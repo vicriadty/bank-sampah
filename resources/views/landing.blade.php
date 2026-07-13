@@ -240,8 +240,8 @@
                                     <label for="jenis_sampah" class="form-label">Jenis Sampah</label>
                                     <select id="jenis_sampah" class="form-control" required>
                                         <option value="">Pilih Jenis Sampah</option>
-                                        @foreach ($jenisSampah ?? [] as $jenis)
-                                            <option value="{{ $jenis->id }}">{{ $jenis->nama_jenis }}</option>
+                                        @foreach ($kategoriSampah ?? [] as $kategori)
+                                            <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -325,11 +325,11 @@
                             $('#sampah_id').empty().append(
                                 '<option value="">-- Pilih Nama Sampah --</option>');
                             $.each(data, function(key, value) {
-                                $('#sampah_id').append(
-                                    '<option value="' + value.id + '">' +
-                                    value.nama_sampah + ' - Rp' + parseInt(value
-                                        .harga_per_kg).toLocaleString() + '/kg' +
-                                    '</option>'
+                                    $('#sampah_id').append(
+                                        '<option value="' + value.id + '">' +
+                                        value.nama_jenis + ' - Rp' + parseInt(value
+                                            .harga_per_kg).toLocaleString() + '/kg' +
+                                        '</option>'
                                 );
                             });
                         },

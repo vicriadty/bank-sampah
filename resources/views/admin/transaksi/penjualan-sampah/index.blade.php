@@ -110,7 +110,7 @@
                         <td>
                             <ul>
                                 @foreach ($jual->detail_penjualan as $detail)
-                                    <li>{{ $detail->sampah->nama_sampah }} ({{ $detail->berat }} kg)</li>
+                                    <li>{{ $detail->sampah->nama_jenis }} ({{ $detail->berat }} kg)</li>
                                 @endforeach
                             </ul>
                         </td>

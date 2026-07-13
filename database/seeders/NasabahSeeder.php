@@ -168,8 +168,8 @@ class NasabahSeeder extends Seeder
                     'alamat' => $data['alamat'],
                     'no_hp' => $data['no_hp'],
                     'email' => $data['email'],
-                    'saldo' => $data['saldo'] ?? 0,
                 ]);
+                
             });
         }
     }

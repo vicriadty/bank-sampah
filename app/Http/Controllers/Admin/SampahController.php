@@ -5,43 +5,43 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 
 
+use App\Models\KategoriSampah;
 use App\Models\JenisSampah;
-use App\Models\Sampah;
 use Illuminate\Http\Request;
 
 class SampahController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Sampah::with('jenisSampah');
+        $query = JenisSampah::with('kategoriSampah');
 
-        if ($request->filled('nama_jenis')) {
-            $query->whereHas('jenisSampah', function ($q) use ($request) {
-                $q->where('nama_jenis', $request->nama_jenis);
+        if ($request->filled('nama_kategori')) {
+            $query->whereHas('kategoriSampah', function ($q) use ($request) {
+                $q->where('nama_kategori', $request->nama_kategori);
             });
         }
 
         $sampah = $query->get();
-        $jenisSampahs = JenisSampah::all();
+        $kategoriSampahs = KategoriSampah::all();
 
-        return view('admin.sampah.index', compact('sampah', 'jenisSampahs'));
+        return view('admin.sampah.index', compact('sampah', 'kategoriSampahs'));
     }
 
     public function create()
     {
-        $jenisSampahs = JenisSampah::all();
-        return view('admin.sampah.create', compact('jenisSampahs'));
+        $kategoriSampahs = KategoriSampah::all();
+        return view('admin.sampah.create', compact('kategoriSampahs'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'jenis_sampah_id' => ['required', 'exists:jenis_sampahs,id'],
-            'nama_sampah' => ['required', 'max:100'],
+            'kategori_id' => ['required', 'exists:kategori_sampahs,id'],
+            'nama_jenis' => ['required', 'max:100'],
             'harga_per_kg' => ['required', 'numeric'],
         ]);
 
-        Sampah::create($request->all());
+        JenisSampah::create($request->all());
 
         if ($request->ajax()) {
             return response()->json([
@@ -56,31 +56,31 @@ class SampahController extends Controller
 
     public function edit($id)
     {
-        $sampah = Sampah::findOrFail($id);
-        $jenisSampahs = JenisSampah::all();
+        $sampah = JenisSampah::findOrFail($id);
+        $kategoriSampahs = KategoriSampah::all();
 
         return view('admin.sampah.edit', [
             'sampah' => $sampah,
-            'jenisSampahs' => $jenisSampahs,
+            'kategoriSampahs' => $kategoriSampahs,
         ]);
     }
 
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'jenis_sampah_id' => ['required', 'exists:jenis_sampahs,id'],
-            'nama_sampah' => ['required', 'max:100'],
+            'kategori_id' => ['required', 'exists:kategori_sampahs,id'],
+            'nama_jenis' => ['required', 'max:100'],
             'harga_per_kg' => ['required', 'numeric'],
         ]);
 
-        Sampah::findOrFail($id)->update($validatedData);
+        JenisSampah::findOrFail($id)->update($validatedData);
 
         return redirect()->route('admin.sampah.index')->with('success', 'Sampah berhasil di update');
     }
 
     public function destroy($id)
     {
-        $sampah = Sampah::findOrFail($id);
+        $sampah = JenisSampah::findOrFail($id);
         $sampah->delete();
 
         return redirect()->route('admin.sampah.index')->with('success', 'Sampah berhasil dihapus');

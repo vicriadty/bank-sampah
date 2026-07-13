@@ -5,29 +5,28 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 
 
-use App\Models\Sampah;
+use App\Models\JenisSampah;
 use Illuminate\Http\Request;
 
 class StokSampahController extends Controller
 {
     public function index()
     {
-        $stokSampah = Sampah::with(['jenisSampah'])
-            ->select('id', 'nama_sampah', 'jenis_sampah_id')
+        $stokSampah = JenisSampah::with(['kategoriSampah'])
+            ->select('id', 'nama_jenis', 'kategori_id')
             ->withSum('setoranDetails', 'berat')
             ->withSum('penjualanSampahs', 'berat')
             ->get()
-            ->map(function ($sampah) {
-                $totalBerat = ($sampah->setoran_details_sum_berat ?? 0) - ($sampah->penjualan_sampahs_sum_berat ?? 0);
-                $sampah->update(['stok' => $totalBerat]);
+            ->map(function ($jenisSampah) {
+                $totalBerat = ($jenisSampah->setoran_details_sum_berat ?? 0) - ($jenisSampah->penjualan_sampahs_sum_berat ?? 0);
+                $jenisSampah->update(['stok' => $totalBerat]);
 
                 return (object) [
-                    'sampah' => $sampah,
+                    'sampah' => $jenisSampah,
                     'total_berat' => $totalBerat,
                 ];
             });
 
-        // dd($stokSampah);
         return view('admin.stok-sampah.index', [
             'stokSampah' => $stokSampah,
         ]);

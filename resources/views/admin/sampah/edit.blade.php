@@ -20,27 +20,27 @@
                         @csrf
                         @method('PUT')
                         <div class="form-group mb-3">
-                            <label for="jenis_sampah_id">Jenis Sampah</label>
-                            <select name="jenis_sampah_id" id="jenis_sampah_id"
-                                class="form-control @error('jenis_sampah_id') is-invalid @enderror" required>
-                                <option value="">-- Pilih Jenis Sampah --</option>
-                                @foreach ($jenisSampahs as $jenis)
-                                    <option value="{{ $jenis->id }}" @selected(old('jenis_sampah_id', $sampah->jenis_sampah_id) == $jenis->id)>
-                                        {{ $jenis->nama_jenis }}</option>
+                            <label for="kategori_id">Kategori Sampah</label>
+                            <select name="kategori_id" id="kategori_id"
+                                class="form-control @error('kategori_id') is-invalid @enderror" required>
+                                <option value="">-- Pilih Kategori --</option>
+                                @foreach ($kategoriSampahs as $kategori)
+                                    <option value="{{ $kategori->id }}" @selected(old('kategori_id', $sampah->kategori_id) == $kategori->id)>
+                                        {{ $kategori->nama_kategori }}</option>
                                 @endforeach
                             </select>
-                            @error('jenis_sampah_id')
+                            @error('kategori_id')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <div class="form-group mb-3">
-                            <label for="nama_sampah">Nama Sampah</label>
-                            <input type="text" name="nama_sampah" id="nama_sampah"
+                            <label for="nama_jenis">Nama Jenis</label>
+                            <input type="text" name="nama_jenis" id="nama_jenis"
                                 class="form-control 
-                            @error('nama_sampah') is-invalid @enderror"
-                                value="{{ old('nama_sampah', $sampah->nama_sampah) }}">
-                            @error('nama_sampah')
+                            @error('nama_jenis') is-invalid @enderror"
+                                value="{{ old('nama_jenis', $sampah->nama_jenis) }}">
+                            @error('nama_jenis')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
                         </div>

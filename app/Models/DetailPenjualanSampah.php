@@ -15,6 +15,6 @@ class DetailPenjualanSampah extends Model
 
     public function sampah()
     {
-        return $this->belongsTo(Sampah::class);
+        return $this->belongsTo(JenisSampah::class, 'sampah_id');
     }
 }

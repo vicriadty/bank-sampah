@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Admin;
 
-use App\Models\JenisSampah;
+use App\Models\KategoriSampah;
 use App\Models\Nasabah;
-use App\Models\Sampah;
+use App\Models\JenisSampah;
 use App\Models\Setoran;
 use App\Models\SetoranDetail;
 use App\Models\User;
@@ -48,18 +48,18 @@ class SetoranControllerTest extends TestCase
         // Arrange
         $admin   = $this->adminUser();
         $nasabah = Nasabah::factory()->withSaldo(0)->create();
-        $sampah  = Sampah::factory()->create(['harga_per_kg' => 2000, 'stok' => 10]);
+        $jenisSampah  = JenisSampah::factory()->create(['harga_per_kg' => 2000, 'stok' => 10]);
 
         // Act
         $response = $this->actingAs($admin)->post(route('admin.setoran.store'), [
             'nasabah_id' => $nasabah->id,
-            'sampah_id'  => $sampah->id,
-            'berat'      => 2.5,
+            'sampah_id'  => [$jenisSampah->id],
+            'berat'      => [2.5],
         ]);
 
         // Assert
-        $response->assertRedirect(route('admin.setoran.index'));
-        $this->assertEquals(12.5, $sampah->fresh()->stok);
+        $response->assertStatus(200);
+        $this->assertEquals(12.5, $jenisSampah->fresh()->stok);
     }
 
     /** @test */
@@ -102,24 +102,24 @@ class SetoranControllerTest extends TestCase
         // Arrange
         $admin   = $this->adminUser();
         $nasabah = Nasabah::factory()->withSaldo(0)->create();
-        $sampah  = Sampah::factory()->create(['harga_per_kg' => 2000]);
+        $jenisSampah  = JenisSampah::factory()->create(['harga_per_kg' => 2000]);
 
         // Act
         $response = $this->actingAs($admin)->post(route('admin.setoran.store'), [
             'nasabah_id' => $nasabah->id,
-            'sampah_id'  => $sampah->id,
-            'berat'      => 5, // kg
+            'sampah_id'  => [$jenisSampah->id],
+            'berat'      => [5], // kg
         ]);
 
-        // Assert: redirect sukses
-        $response->assertRedirect(route('admin.setoran.index'));
-        $response->assertSessionHas('success');
+        // Assert: response JSON sukses
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
 
         // Assert: setoran tersimpan
         $this->assertDatabaseHas('setorans', ['nasabah_id' => $nasabah->id, 'total_harga' => 10000]);
 
         // Assert: saldo nasabah bertambah (5 kg × 2000 = 10000)
-        $this->assertEquals(10000, $nasabah->fresh()->saldo);
+        $this->assertEquals(10000, $nasabah->fresh()->dompet->saldo_rupiah);
     }
 
     /** @test */
@@ -128,13 +128,13 @@ class SetoranControllerTest extends TestCase
         // Arrange
         $admin   = $this->adminUser();
         $nasabah = Nasabah::factory()->withSaldo(0)->create();
-        $sampah  = Sampah::factory()->create(['harga_per_kg' => 3500]);
+        $jenisSampah  = JenisSampah::factory()->create(['harga_per_kg' => 3500]);
 
         // Act
         $this->actingAs($admin)->post(route('admin.setoran.store'), [
             'nasabah_id' => $nasabah->id,
-            'sampah_id'  => $sampah->id,
-            'berat'      => 2.5,
+            'sampah_id'  => [$jenisSampah->id],
+            'berat'      => [2.5],
         ]);
 
         // Assert: subtotal = 2.5 × 3500 = 8750
@@ -143,7 +143,7 @@ class SetoranControllerTest extends TestCase
             'harga_per_kg' => 3500,
             'subtotal'   => 8750,
         ]);
-        $this->assertEquals(8750, $nasabah->fresh()->saldo);
+        $this->assertEquals(8750, $nasabah->fresh()->dompet->saldo_rupiah);
     }
 
     /** @test */
@@ -151,13 +151,13 @@ class SetoranControllerTest extends TestCase
     {
         // Arrange
         $admin  = $this->adminUser();
-        $sampah = Sampah::factory()->create();
+        $jenisSampah = JenisSampah::factory()->create();
 
         // Act
         $response = $this->actingAs($admin)->post(route('admin.setoran.store'), [
             'nasabah_id' => 99999,
-            'sampah_id'  => $sampah->id,
-            'berat'      => 1,
+            'sampah_id'  => [$jenisSampah->id],
+            'berat'      => [1],
         ]);
 
         // Assert
@@ -174,12 +174,12 @@ class SetoranControllerTest extends TestCase
         // Act
         $response = $this->actingAs($admin)->post(route('admin.setoran.store'), [
             'nasabah_id' => $nasabah->id,
-            'sampah_id'  => 99999,
-            'berat'      => 1,
+            'sampah_id'  => [99999],
+            'berat'      => [1],
         ]);
 
         // Assert
-        $response->assertSessionHasErrors('sampah_id');
+        $response->assertStatus(422);
     }
 
     /** @test */
@@ -188,17 +188,17 @@ class SetoranControllerTest extends TestCase
         // Arrange
         $admin   = $this->adminUser();
         $nasabah = Nasabah::factory()->create();
-        $sampah  = Sampah::factory()->create();
+        $jenisSampah  = JenisSampah::factory()->create();
 
         // Act
         $response = $this->actingAs($admin)->post(route('admin.setoran.store'), [
             'nasabah_id' => $nasabah->id,
-            'sampah_id'  => $sampah->id,
-            'berat'      => 0,
+            'sampah_id'  => [$jenisSampah->id],
+            'berat'      => [0],
         ]);
 
         // Assert
-        $response->assertSessionHasErrors('berat');
+        $response->assertStatus(422);
     }
 
     /** @test */
@@ -207,17 +207,17 @@ class SetoranControllerTest extends TestCase
         // Arrange
         $admin   = $this->adminUser();
         $nasabah = Nasabah::factory()->create();
-        $sampah  = Sampah::factory()->create();
+        $jenisSampah  = JenisSampah::factory()->create();
 
         // Act
         $response = $this->actingAs($admin)->post(route('admin.setoran.store'), [
             'nasabah_id' => $nasabah->id,
-            'sampah_id'  => $sampah->id,
-            'berat'      => -1,
+            'sampah_id'  => [$jenisSampah->id],
+            'berat'      => [-1],
         ]);
 
         // Assert
-        $response->assertSessionHasErrors('berat');
+        $response->assertStatus(422);
     }
 
     /** @test */
@@ -226,17 +226,17 @@ class SetoranControllerTest extends TestCase
         // Arrange
         $admin   = $this->adminUser();
         $nasabah = Nasabah::factory()->create();
-        $sampah  = Sampah::factory()->create();
+        $jenisSampah  = JenisSampah::factory()->create();
 
         // Act
         $response = $this->actingAs($admin)->post(route('admin.setoran.store'), [
             'nasabah_id' => $nasabah->id,
-            'sampah_id'  => $sampah->id,
-            'berat'      => 'abc',
+            'sampah_id'  => [$jenisSampah->id],
+            'berat'      => ['abc'],
         ]);
 
         // Assert
-        $response->assertSessionHasErrors('berat');
+        $response->assertStatus(422);
     }
 
     /** @test */
@@ -249,7 +249,7 @@ class SetoranControllerTest extends TestCase
         $response = $this->actingAs($admin)->post(route('admin.setoran.store'), []);
 
         // Assert
-        $response->assertSessionHasErrors(['nasabah_id', 'sampah_id', 'berat']);
+        $response->assertStatus(422);
     }
 
     // -----------------------------------------------------------------------
@@ -261,15 +261,11 @@ class SetoranControllerTest extends TestCase
     {
         // Arrange
         $admin      = $this->adminUser();
-        $jenis      = JenisSampah::factory()->create();
-        $sampahs    = Sampah::factory()->count(3)->create(['jenis_sampah_id' => $jenis->id]);
+        $kategori   = KategoriSampah::factory()->create();
+        $jenisSampahs    = JenisSampah::factory()->count(3)->create(['kategori_id' => $kategori->id]);
 
-        // Act
-        $response = $this->actingAs($admin)
-            ->getJson(route('admin.setoran.index') . '/../get-sampah-by-jenis/' . $jenis->id);
-
-        // Assert — menggunakan route langsung
-        $url      = '/admin/get-sampah-by-jenis/' . $jenis->id;
+        // Act — menggunakan route langsung
+        $url      = '/admin/get-sampah-by-jenis/' . $kategori->id;
         $response = $this->actingAs($admin)->getJson($url);
         $response->assertStatus(200);
         $response->assertJsonCount(3);

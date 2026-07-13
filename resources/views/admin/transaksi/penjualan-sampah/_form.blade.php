@@ -17,9 +17,9 @@
             <label>Nama Sampah</label>
             <select name="sampah_id[]" class="form-control sampah-select form-control-sm" required>
                 <option value="">-- Pilih Sampah --</option>
-                @foreach ($sampahs as $sampah)
-                    <option value="{{ $sampah->id }}" data-harga="{{ $sampah->harga_per_kg }}">
-                        {{ $sampah->nama_sampah }} - (Stok: {{ number_format($sampah->stok, 2) }}
+                @foreach ($jenisSampahs as $jenisSampah)
+                    <option value="{{ $jenisSampah->id }}" data-harga="{{ $jenisSampah->harga_per_kg }}">
+                        {{ $jenisSampah->nama_jenis }} - (Stok: {{ number_format($jenisSampah->stok, 2) }}
                         kg)
                     </option>
                 @endforeach

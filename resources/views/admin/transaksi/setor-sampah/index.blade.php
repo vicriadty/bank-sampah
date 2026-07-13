@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-upload text-primary"></i> Data Setor Sampah</h1>
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-upload text-primary"></i> Data Setoran Sampah</h1>
 
          {{-- Toast: Success --}}
             @if (session('success'))
@@ -109,7 +109,7 @@
                                     <td rowspan="{{ $setoran->details->count() }}">{{ $setoran->nasabah->nama }}</td>
                                     <td rowspan="{{ $setoran->details->count() }}">{{ $setoran->created_at->format('d-m-Y') }}</td>
                                 @endif
-                                <td>{{ $detail->sampah->nama_sampah }}</td>
+                                <td>{{ $detail->sampah->nama_jenis }}</td>
                                 <td>Rp{{ number_format($detail->harga_per_kg, 0, ',', '.') }}</td>
                                 <td>{{ $detail->berat }}</td>
                                 <td>Rp{{ number_format($detail->subtotal, 0, ',', '.') }}</td>
@@ -263,7 +263,7 @@
                         let opt = document.createElement('option');
                         opt.value = item.id;
                         opt.dataset.harga = item.harga_per_kg;
-                        opt.textContent = item.nama_sampah + ' - Rp' + parseInt(item.harga_per_kg).toLocaleString('id-ID') + '/kg';
+                        opt.textContent = item.nama_jenis + ' - Rp' + parseInt(item.harga_per_kg).toLocaleString('id-ID') + '/kg';
                         sampahSelect.appendChild(opt);
                     });
                 })

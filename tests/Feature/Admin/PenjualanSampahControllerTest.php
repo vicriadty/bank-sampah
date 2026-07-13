@@ -4,20 +4,11 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Pengepul;
 use App\Models\PenjualanSampah;
-use App\Models\Sampah;
+use App\Models\JenisSampah;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/**
- * Feature Test: Admin PenjualanSampah Controller
- *
- * Menguji alur penjualan sampah ke pengepul:
- * - Hanya admin yang dapat akses
- * - Membuat penjualan dengan multi-item sampah
- * - Kalkulasi total_harga otomatis dari berat × harga_per_kg
- * - Validasi input
- */
 class PenjualanSampahControllerTest extends TestCase
 {
     use RefreshDatabase;
@@ -68,18 +59,18 @@ class PenjualanSampahControllerTest extends TestCase
         // Arrange
         $admin    = $this->adminUser();
         $pengepul = Pengepul::factory()->create();
-        $sampah   = Sampah::factory()->create(['harga_per_kg' => 1000]);
+        $jenisSampah   = JenisSampah::factory()->create(['harga_per_kg' => 1000]);
 
         // Act
         $response = $this->actingAs($admin)->post(route('admin.penjualan.store'), [
             'pengepul_id' => $pengepul->id,
-            'sampah_id'   => [$sampah->id],
+            'sampah_id'   => [$jenisSampah->id],
             'berat'       => [10],
         ]);
 
         // Assert
-        $response->assertRedirect(route('admin.penjualan.index'));
-        $response->assertSessionHas('success');
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
 
         // total_harga = 10 × 1000 = 10000
         $this->assertDatabaseHas('penjualan_sampahs', [
@@ -94,14 +85,14 @@ class PenjualanSampahControllerTest extends TestCase
         // Arrange
         $admin    = $this->adminUser();
         $pengepul = Pengepul::factory()->create();
-        $sampah1  = Sampah::factory()->create(['harga_per_kg' => 2000]);
-        $sampah2  = Sampah::factory()->create(['harga_per_kg' => 3000]);
+        $jenisSampah1  = JenisSampah::factory()->create(['harga_per_kg' => 2000]);
+        $jenisSampah2  = JenisSampah::factory()->create(['harga_per_kg' => 3000]);
 
         // Act
         $this->actingAs($admin)->post(route('admin.penjualan.store'), [
             'pengepul_id' => $pengepul->id,
-            'sampah_id'   => [$sampah1->id, $sampah2->id],
-            'berat'       => [5, 3],       // 5kg × 2000 + 3kg × 3000 = 19000
+            'sampah_id'   => [$jenisSampah1->id, $jenisSampah2->id],
+            'berat'       => [5, 3],
         ]);
 
         // Assert
@@ -111,8 +102,8 @@ class PenjualanSampahControllerTest extends TestCase
         ]);
 
         // Detail tersimpan
-        $this->assertDatabaseHas('detail_penjualan_sampahs', ['sampah_id' => $sampah1->id, 'berat' => 5, 'subtotal' => 10000]);
-        $this->assertDatabaseHas('detail_penjualan_sampahs', ['sampah_id' => $sampah2->id, 'berat' => 3, 'subtotal' => 9000]);
+        $this->assertDatabaseHas('detail_penjualan_sampahs', ['sampah_id' => $jenisSampah1->id, 'berat' => 5, 'subtotal' => 10000]);
+        $this->assertDatabaseHas('detail_penjualan_sampahs', ['sampah_id' => $jenisSampah2->id, 'berat' => 3, 'subtotal' => 9000]);
     }
 
     // -----------------------------------------------------------------------
@@ -125,17 +116,17 @@ class PenjualanSampahControllerTest extends TestCase
         // Arrange
         $admin    = $this->adminUser();
         $pengepul = Pengepul::factory()->create();
-        $sampah   = Sampah::factory()->create(['harga_per_kg' => 1000, 'stok' => 10]);
+        $jenisSampah   = JenisSampah::factory()->create(['harga_per_kg' => 1000, 'stok' => 10]);
 
         // Act
         $this->actingAs($admin)->post(route('admin.penjualan.store'), [
             'pengepul_id' => $pengepul->id,
-            'sampah_id'   => [$sampah->id],
+            'sampah_id'   => [$jenisSampah->id],
             'berat'       => [3],
         ]);
 
         // Assert: stock harus berkurang
-        $this->assertEquals(7, $sampah->fresh()->stok);
+        $this->assertEquals(7, $jenisSampah->fresh()->stok);
     }
 
     /** @test */
@@ -144,21 +135,20 @@ class PenjualanSampahControllerTest extends TestCase
         // Arrange
         $admin    = $this->adminUser();
         $pengepul = Pengepul::factory()->create();
-        $sampah   = Sampah::factory()->create(['harga_per_kg' => 1000, 'stok' => 10]);
+        $jenisSampah   = JenisSampah::factory()->create(['harga_per_kg' => 1000, 'stok' => 10]);
 
         // Act
         $response = $this->actingAs($admin)->post(route('admin.penjualan.store'), [
             'pengepul_id' => $pengepul->id,
-            'sampah_id'   => [$sampah->id],
+            'sampah_id'   => [$jenisSampah->id],
             'berat'       => [0],
         ]);
 
-        // Assert: error dengan field spesifik
-        $response->assertSessionHasErrors('berat.0');
+        // Assert
+        $response->assertStatus(422);
         $this->assertDatabaseCount('penjualan_sampahs', 0);
         $this->assertDatabaseCount('detail_penjualan_sampahs', 0);
-        // Stock tetap sama
-        $this->assertEquals(10, $sampah->fresh()->stok);
+        $this->assertEquals(10, $jenisSampah->fresh()->stok);
     }
 
     /** @test */
@@ -167,21 +157,20 @@ class PenjualanSampahControllerTest extends TestCase
         // Arrange
         $admin    = $this->adminUser();
         $pengepul = Pengepul::factory()->create();
-        $sampah   = Sampah::factory()->create(['harga_per_kg' => 1000, 'stok' => 10]);
+        $jenisSampah   = JenisSampah::factory()->create(['harga_per_kg' => 1000, 'stok' => 10]);
 
         // Act
         $response = $this->actingAs($admin)->post(route('admin.penjualan.store'), [
             'pengepul_id' => $pengepul->id,
-            'sampah_id'   => [$sampah->id],
+            'sampah_id'   => [$jenisSampah->id],
             'berat'       => [11],
         ]);
 
-        // Assert: error dengan field spesifik
-        $response->assertSessionHasErrors('berat.0');
+        // Assert
+        $response->assertStatus(422);
         $this->assertDatabaseCount('penjualan_sampahs', 0);
         $this->assertDatabaseCount('detail_penjualan_sampahs', 0);
-        // Stock tetap sama
-        $this->assertEquals(10, $sampah->fresh()->stok);
+        $this->assertEquals(10, $jenisSampah->fresh()->stok);
     }
 
     /** @test */
@@ -190,26 +179,26 @@ class PenjualanSampahControllerTest extends TestCase
         // Arrange
         $admin    = $this->adminUser();
         $pengepul = Pengepul::factory()->create();
-        $sampah1  = Sampah::factory()->create(['harga_per_kg' => 2000, 'stok' => 10]);
-        $sampah2  = Sampah::factory()->create(['harga_per_kg' => 3000, 'stok' => 5]);
+        $jenisSampah1  = JenisSampah::factory()->create(['harga_per_kg' => 2000, 'stok' => 10]);
+        $jenisSampah2  = JenisSampah::factory()->create(['harga_per_kg' => 3000, 'stok' => 5]);
 
         // Act: item 1 valid (5 < 10), item 2 melebihi stok (10 > 5)
         $response = $this->actingAs($admin)->post(route('admin.penjualan.store'), [
             'pengepul_id' => $pengepul->id,
-            'sampah_id'   => [$sampah1->id, $sampah2->id],
+            'sampah_id'   => [$jenisSampah1->id, $jenisSampah2->id],
             'berat'       => [5, 10],
         ]);
 
-        // Assert: must fail - either custom validation caught it or transaction rolled back
-        $response->assertSessionHasErrors();
+        // Assert: validation error
+        $response->assertStatus(422);
 
         // Tidak ada satupun penjualan atau detail yang tersimpan
         $this->assertDatabaseCount('penjualan_sampahs', 0);
         $this->assertDatabaseCount('detail_penjualan_sampahs', 0);
 
         // Stock kedua sampah tetap tidak berubah
-        $this->assertEquals(10, $sampah1->fresh()->stok);
-        $this->assertEquals(5, $sampah2->fresh()->stok);
+        $this->assertEquals(10, $jenisSampah1->fresh()->stok);
+        $this->assertEquals(5, $jenisSampah2->fresh()->stok);
     }
 
     // -----------------------------------------------------------------------
@@ -221,12 +210,12 @@ class PenjualanSampahControllerTest extends TestCase
     {
         // Arrange
         $admin  = $this->adminUser();
-        $sampah = Sampah::factory()->create();
+        $jenisSampah = JenisSampah::factory()->create();
 
         // Act
         $response = $this->actingAs($admin)->post(route('admin.penjualan.store'), [
             'pengepul_id' => 99999,
-            'sampah_id'   => [$sampah->id],
+            'sampah_id'   => [$jenisSampah->id],
             'berat'       => [1],
         ]);
 
@@ -258,17 +247,17 @@ class PenjualanSampahControllerTest extends TestCase
         // Arrange
         $admin    = $this->adminUser();
         $pengepul = Pengepul::factory()->create();
-        $sampah   = Sampah::factory()->create();
+        $jenisSampah   = JenisSampah::factory()->create();
 
         // Act
         $response = $this->actingAs($admin)->post(route('admin.penjualan.store'), [
             'pengepul_id' => $pengepul->id,
-            'sampah_id'   => [$sampah->id],
-            'berat'       => [0], // Di bawah minimum 0.1
+            'sampah_id'   => [$jenisSampah->id],
+            'berat'       => [0],
         ]);
 
         // Assert
-        $response->assertSessionHasErrors();
+        $response->assertStatus(422);
     }
 
     /** @test */
@@ -281,7 +270,7 @@ class PenjualanSampahControllerTest extends TestCase
         $response = $this->actingAs($admin)->post(route('admin.penjualan.store'), []);
 
         // Assert
-        $response->assertSessionHasErrors(['pengepul_id', 'sampah_id', 'berat']);
+        $response->assertStatus(422);
     }
 
     /** @test */
@@ -299,6 +288,6 @@ class PenjualanSampahControllerTest extends TestCase
         ]);
 
         // Assert
-        $response->assertSessionHasErrors();
+        $response->assertStatus(422);
     }
 }

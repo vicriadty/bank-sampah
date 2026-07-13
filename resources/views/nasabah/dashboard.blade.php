@@ -163,7 +163,7 @@
                                 <td>{{ $setoran->created_at->format('d/m/Y H:i') }}</td>
                                 <td>
                                     @foreach ($setoran->details as $detail)
-                                        {{ $detail->sampah->nama_sampah ?? '-' }}@if (!$loop->last), @endif
+                                        {{ $detail->sampah->nama_jenis ?? '-' }}@if (!$loop->last), @endif
                                     @endforeach
                                 </td>
                                 <td>{{ number_format($setoran->details->sum('berat'), 2, ',', '.') }} Kg</td>

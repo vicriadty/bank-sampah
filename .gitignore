@@ -1,5 +1,4 @@
 /.phpunit.cache
-/.sisyphus
 /.superpowers
 /node_modules
 /public/build
@@ -25,3 +24,4 @@ yarn-error.log
 /.zed
 plan.md
 tambah-fitur.md
+flowchart.puml

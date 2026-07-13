@@ -58,7 +58,7 @@
     <li class="nav-item {{ request()->routeIs('admin.setoran.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.setoran.index') }}">
             <i class="fas fa-fw fa-upload"></i>
-            <span>Setor Sampah</span></a>
+            <span>Setoran Sampah</span></a>
     </li>
     <li class="nav-item {{ request()->routeIs('admin.penjualan.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.penjualan.index') }}">

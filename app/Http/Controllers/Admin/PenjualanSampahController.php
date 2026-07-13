@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DetailPenjualanSampah;
 use App\Models\Pengepul;
 use App\Models\PenjualanSampah;
-use App\Models\Sampah;
+use App\Models\JenisSampah;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
@@ -56,20 +56,20 @@ class PenjualanSampahController extends Controller
         // Default tampil data
         $penjualans = $query->paginate(10);
         $pengepuls = Pengepul::all();
-        $sampahs = Sampah::with(['jenisSampah'])
-            ->select('id', 'nama_sampah', 'jenis_sampah_id', 'harga_per_kg', 'stok')
+        $jenisSampahs = JenisSampah::with(['kategoriSampah'])
+            ->select('id', 'nama_jenis', 'kategori_id', 'harga_per_kg', 'stok')
             ->get();
-        return view('admin.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepuls', 'sampahs'));
+        return view('admin.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepuls', 'jenisSampahs'));
     }
 
     public function create()
     {
         $pengepuls = Pengepul::all();
-        $sampahs = Sampah::with(['jenisSampah'])
-            ->select('id', 'nama_sampah', 'jenis_sampah_id', 'harga_per_kg', 'stok')
+        $jenisSampahs = JenisSampah::with(['kategoriSampah'])
+            ->select('id', 'nama_jenis', 'kategori_id', 'harga_per_kg', 'stok')
             ->get();
 
-        return view('admin.transaksi.penjualan-sampah.create', compact('pengepuls', 'sampahs'));
+        return view('admin.transaksi.penjualan-sampah.create', compact('pengepuls', 'jenisSampahs'));
     }
 
     public function store(Request $request)
@@ -77,7 +77,7 @@ class PenjualanSampahController extends Controller
         $request->validate([
             'pengepul_id' => ['required', 'exists:pengepuls,id'],
             'sampah_id' => ['required', 'array'],
-            'sampah_id.*' => ['required', 'exists:sampahs,id'],
+            'sampah_id.*' => ['required', 'exists:jenis_sampahs,id'],
             'berat' => ['required', 'array'],
             'berat.*' => ['required', 'numeric', 'min:0.1'],
         ]);
@@ -91,8 +91,8 @@ class PenjualanSampahController extends Controller
                 continue;
             }
 
-            $sampah = Sampah::find($sampahId);
-            if ($sampah && $berat > $sampah->stok) {
+            $jenisSampah = JenisSampah::find($sampahId);
+            if ($jenisSampah && $berat > $jenisSampah->stok) {
                 $errors["berat.{$index}"] = 'Berat penjualan melebihi stok tersedia.';
             }
         }
@@ -116,24 +116,24 @@ class PenjualanSampahController extends Controller
 
             foreach ($request->sampah_id as $index => $sampahId) {
                 $berat = $request->berat[$index];
-                $sampah = Sampah::where('id', $sampahId)->lockForUpdate()->firstOrFail();
+                $jenisSampah = JenisSampah::where('id', $sampahId)->lockForUpdate()->firstOrFail();
 
-                if ($berat > $sampah->stok) {
-                    throw new \Exception('Stok sampah ' . $sampah->nama_sampah . ' tidak mencukupi.');
+                if ($berat > $jenisSampah->stok) {
+                    throw new \Exception('Stok sampah ' . $jenisSampah->nama_jenis . ' tidak mencukupi.');
                 }
 
-                $subtotal = $berat * $sampah->harga_per_kg;
+                $subtotal = $berat * $jenisSampah->harga_per_kg;
                 $totalHarga += $subtotal;
 
                 DetailPenjualanSampah::create([
                     'penjualan_sampah_id' => $penjualan->id,
                     'sampah_id' => $sampahId,
                     'berat' => $berat,
-                    'harga_per_kg' => $sampah->harga_per_kg,
+                    'harga_per_kg' => $jenisSampah->harga_per_kg,
                     'subtotal' => $subtotal,
                 ]);
 
-                $sampah->decrement('stok', $berat);
+                $jenisSampah->decrement('stok', $berat);
             }
 
             $penjualan->update(['total_harga' => $totalHarga]);
@@ -157,8 +157,8 @@ class PenjualanSampahController extends Controller
 
     public function getSampahByJenis($id)
     {
-        $sampahs = Sampah::where('jenis_sampah_id', $id)->get();
-        return response()->json($sampahs);
+        $jenisSampahs = JenisSampah::where('kategori_id', $id)->get();
+        return response()->json($jenisSampahs);
     }
 
 
@@ -179,8 +179,8 @@ class PenjualanSampahController extends Controller
 
             // Reversal: kembalikan stok sampah
             foreach ($penjualan->detail_penjualan as $detail) {
-                $sampah = Sampah::where('id', $detail->sampah_id)->lockForUpdate()->firstOrFail();
-                $sampah->increment('stok', $detail->berat);
+                $jenisSampah = JenisSampah::where('id', $detail->sampah_id)->lockForUpdate()->firstOrFail();
+                $jenisSampah->increment('stok', $detail->berat);
             }
 
             $penjualan->update([
@@ -195,28 +195,4 @@ class PenjualanSampahController extends Controller
             return back()->with('error', 'Gagal membatalkan transaksi: ' . $e->getMessage());
         }
     }
-
-    // public function laporanPDF(Request $request)
-    // {
-    //     $request->validate([
-    //         'tanggal' => 'required|date',
-    //     ]);
-
-    //     $tanggal = $request->tanggal;
-
-    //     $penjualan_sampahs = PenjualanSampah::with(['pengepul', 'detail_penjualan.sampah'])
-    //         ->whereDate('tanggal', $tanggal)
-    //         ->get();
-
-    //     if ($penjualan_sampahs->isEmpty()) {
-    //         return back()->withErrors(['error' => 'Tidak ada data penjualan pada tanggal tersebut.']);
-    //     }
-
-    //     $pdf = Pdf::loadView('admin.transaksi.penjualan-sampah.laporan_pdf', [
-    //         'penjualan_sampahs' => $penjualan_sampahs,
-    //         'tanggal' => $tanggal,
-    //     ]);
-
-    //     return $pdf->download('laporan-penjualan-' . $tanggal . '.pdf');
-    // }
 }
