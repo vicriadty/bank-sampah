@@ -23,37 +23,33 @@
 
     <!-- Heading -->
     <div class="sidebar-heading mt-3">
-        Aktivitas Saya
+        Riwayat Transaksi
     </div>
     <!-- Divider -->
     <hr class="sidebar-divider">
 
-    <!-- Riwayat Transaksi Dropdown -->
-    <li
-        class="nav-item {{ request()->routeIs('nasabah.riwayat-transaksi') || request()->routeIs('nasabah.riwayat-konversi') ? 'active' : '' }}">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRiwayat"
-            aria-expanded="true" aria-controls="collapseRiwayat">
-            <i class="fas fa-fw fa-history"></i>
-            <span>Riwayat Transaksi</span>
-        </a>
-        <div id="collapseRiwayat" class="collapse" aria-labelledby="headingRiwayat" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item {{ request()->routeIs('nasabah.riwayat-transaksi') ? 'active' : '' }}"
-                    href="{{ route('nasabah.riwayat-transaksi') }}">
-                    <i class="fas fa-fw fa-upload"></i> Setoran
-                </a>
-                <a class="collapse-item {{ request()->routeIs('nasabah.riwayat-konversi') ? 'active' : '' }}"
-                    href="{{ route('nasabah.riwayat-konversi') }}">
-                    <i class="fas fa-fw fa-coins"></i> Konversi Emas
-                </a>
-            </div>
-        </div>
+    <li class="nav-item {{ request()->routeIs('nasabah.riwayat-transaksi') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('nasabah.riwayat-transaksi') }}">
+            <i class="fas fa-fw fa-upload"></i>
+            <span>Setoran</span></a>
+    </li>
+
+    <li class="nav-item {{ request()->routeIs('nasabah.riwayat-konversi') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('nasabah.riwayat-konversi') }}">
+            <i class="fas fa-fw fa-coins"></i>
+            <span>Konversi Emas</span></a>
     </li>
 
     <li class="nav-item {{ request()->routeIs('nasabah.info-saldo') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('nasabah.info-saldo') }}">
             <i class="fas fa-fw fa-wallet"></i>
             <span>Info Saldo</span></a>
+    </li>
+
+    <li class="nav-item {{ request()->routeIs('nasabah.data-sampah') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('nasabah.data-sampah') }}">
+            <i class="fas fa-fw fa-trash"></i>
+            <span>Data Sampah</span></a>
     </li>
 
     <!-- Divider -->

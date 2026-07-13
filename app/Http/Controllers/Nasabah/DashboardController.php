@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\RiwayatKonversiEmas;
 use App\Services\GoldPriceService;
 use Illuminate\Support\Facades\Auth;
+use App\Models\JenisSampah;
 use App\Models\Setoran;
 use Illuminate\Support\Facades\DB;
 
@@ -72,5 +73,12 @@ class DashboardController extends Controller
         $setorans = Setoran::where('nasabah_id', $nasabah->id)->latest()->get();
         
         return view('nasabah.info-saldo', compact('nasabah', 'setorans'));
+    }
+
+    public function dataSampah()
+    {
+        $jenisSampahs = JenisSampah::with('kategoriSampah')->latest()->paginate(10);
+
+        return view('nasabah.data-sampah', compact('jenisSampahs'));
     }
 }
