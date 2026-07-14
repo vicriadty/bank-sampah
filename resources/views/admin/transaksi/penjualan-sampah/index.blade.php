@@ -66,9 +66,11 @@
             <div class="col-6 col-md-2">
                 <input type="date" name="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') }}">
             </div>
-            <div class="col-12 col-md-4 d-flex flex-wrap gap-2">
+            <div class="col-12 col-md-3 d-flex flex-wrap gap-2">
                 <button type="submit" name="action" value="filter" class="btn btn-primary">Filter</button>
                 <a href="{{ route('admin.penjualan.index') }}" class="btn btn-secondary">Reset</a>
+            </div>
+            <div class="col-12 col-md-3 d-flex flex-wrap justify-content-end gap-2">
                 <button type="submit" name="action" value="cetak" class="btn btn-danger"><i class="fas fa-file-pdf"></i> Cetak Laporan</button>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPenjualan"><i class="fas fa-plus fa-sm text-white-50"></i> Tambah Penjualan</button>
             </div>
