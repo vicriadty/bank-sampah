@@ -5,73 +5,75 @@
 @section('content')
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-upload text-primary"></i> Data Setoran Sampah</h1>
-
-        {{-- Toast: Success --}}
-        @if (session('success'))
-            <script>
-                Swal.fire({
-                    icon: 'success',
-                    title: '{{ session('success') }}',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-            </script>
-        @endif
-
-        {{-- Toast: Error from session --}}
-        @if (session('error'))
-            <script>
-                Swal.fire({
-                    icon: 'error',
-                    title: '{{ session('error') }}',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 4000,
-                    timerProgressBar: true
-                });
-            </script>
-        @endif
-
-        {{-- Toast: Validation errors --}}
-        @if ($errors->any())
-            <script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi Kesalahan',
-                    html: `{!! implode('<br>', $errors->all()) !!}`,
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 5000,
-                    timerProgressBar: true
-                });
-            </script>
-        @endif
-
+        <div class="d-flex gap-2">
+            <button type="submit" form="formFilterSetoran" name="action" value="cetak" class="btn btn-danger mx-2"><i
+                    class="fas fa-file-pdf"></i> Cetak Laporan</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSetoran"><i
+                    class="fas fa-plus fa-sm text-white-50"></i> Tambah Setoran</button>
+        </div>
     </div>
+
+    {{-- Toast: Success --}}
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: '{{ session('success') }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        </script>
+    @endif
+
+    {{-- Toast: Error from session --}}
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: '{{ session('error') }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true
+            });
+        </script>
+    @endif
+
+    {{-- Toast: Validation errors --}}
+    @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true
+            });
+        </script>
+    @endif
+
     {{-- Form Filter --}}
-    <form method="GET" action="{{ route('admin.setoran.index') }}" class="row mb-3">
-        <div class="col-md-2 mb-2 mb-md-0">
-            <input type="text" name="nasabah" class="form-control" placeholder="Cari Nama Nasabah"
+    <form id="formFilterSetoran" method="GET" action="{{ route('admin.setoran.index') }}" class="row gy-2 mb-3">
+        <div class="col-md-4">
+            <input type="text" name="nasabah" class="form-control" placeholder="Cari Kode atau Nama Nasabah..."
                 value="{{ request('nasabah') }}">
         </div>
-        <div class="col-md-2 mb-2 mb-md-0">
+        <div class="col-md-3">
             <input type="date" name="tanggal_awal" class="form-control" value="{{ request('tanggal_awal') }}">
         </div>
-        <div class="col-md-2 mb-2 mb-md-0">
+        <div class="col-md-3">
             <input type="date" name="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') }}">
         </div>
-        <div class="col-md-3 mb-2 mb-md-0 d-flex flex-nowrap gap-1">
-            <button type="submit" name="action" value="filter" class="btn btn-primary">Filter</button>
+        <div class="col-md-2 d-flex align-items-center">
+            <button type="submit" name="action" value="filter" class="btn btn-primary mx-2">Filter</button>
             <a href="{{ route('admin.setoran.index') }}" class="btn btn-secondary">Reset</a>
-        </div>
-        <div class="col-md-3 d-flex justify-content-md-end flex-nowrap gap-1">
-            <button type="submit" name="action" value="cetak" class="btn btn-danger"><i class="fas fa-file-pdf"></i> Cetak Laporan</button>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSetoran"><i class="fas fa-plus fa-sm text-white-50"></i> Tambah Setoran</button>
         </div>
     </form>
 
@@ -443,7 +445,7 @@
                         })
                         .catch(err => {
                             let msg = err.error || (err.errors ? Object.values(err.errors)
-                            .flat().join('<br>') : 'Terjadi kesalahan server');
+                                .flat().join('<br>') : 'Terjadi kesalahan server');
                             Swal.fire({
                                 icon: 'error',
                                 html: msg
