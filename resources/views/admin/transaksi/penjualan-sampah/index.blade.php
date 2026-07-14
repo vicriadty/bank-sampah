@@ -54,26 +54,24 @@
     </div>
 
     {{-- Form Filter --}}
-    <form method="GET" action="{{ route('admin.penjualan.index') }}" class="mb-3">
-        <div class="row g-2 align-items-end">
-            <div class="col-12 col-md-2">
-                <input type="text" name="pengepul" class="form-control" placeholder="Cari Nama Pengepul"
-                    value="{{ request('pengepul') }}">
-            </div>
-            <div class="col-6 col-md-2">
-                <input type="date" name="tanggal_awal" class="form-control" value="{{ request('tanggal_awal') }}">
-            </div>
-            <div class="col-6 col-md-2">
-                <input type="date" name="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') }}">
-            </div>
-            <div class="col-12 col-md-3 d-flex flex-wrap gap-2">
-                <button type="submit" name="action" value="filter" class="btn btn-primary">Filter</button>
-                <a href="{{ route('admin.penjualan.index') }}" class="btn btn-secondary">Reset</a>
-            </div>
-            <div class="col-12 col-md-3 d-flex flex-wrap justify-content-end gap-2">
-                <button type="submit" name="action" value="cetak" class="btn btn-danger"><i class="fas fa-file-pdf"></i> Cetak Laporan</button>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPenjualan"><i class="fas fa-plus fa-sm text-white-50"></i> Tambah Penjualan</button>
-            </div>
+    <form method="GET" action="{{ route('admin.penjualan.index') }}" class="row mb-3">
+        <div class="col-md-2 mb-2 mb-md-0">
+            <input type="text" name="pengepul" class="form-control" placeholder="Cari Nama Pengepul"
+                value="{{ request('pengepul') }}">
+        </div>
+        <div class="col-md-2 mb-2 mb-md-0">
+            <input type="date" name="tanggal_awal" class="form-control" value="{{ request('tanggal_awal') }}">
+        </div>
+        <div class="col-md-2 mb-2 mb-md-0">
+            <input type="date" name="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') }}">
+        </div>
+        <div class="col-md-3 mb-2 mb-md-0">
+            <button type="submit" name="action" value="filter" class="btn btn-primary me-1">Filter</button>
+            <a href="{{ route('admin.penjualan.index') }}" class="btn btn-secondary">Reset</a>
+        </div>
+        <div class="col-md-3 text-md-end">
+            <button type="submit" name="action" value="cetak" class="btn btn-danger me-1"><i class="fas fa-file-pdf"></i> Cetak Laporan</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPenjualan"><i class="fas fa-plus fa-sm text-white-50"></i> Tambah Penjualan</button>
         </div>
     </form>
 
