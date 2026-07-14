@@ -65,12 +65,12 @@
         <div class="col-md-2 mb-2 mb-md-0">
             <input type="date" name="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') }}">
         </div>
-        <div class="col-md-3 mb-2 mb-md-0">
-            <button type="submit" name="action" value="filter" class="btn btn-primary me-1">Filter</button>
+        <div class="col-md-3 mb-2 mb-md-0 d-flex flex-nowrap gap-1">
+            <button type="submit" name="action" value="filter" class="btn btn-primary">Filter</button>
             <a href="{{ route('admin.penjualan.index') }}" class="btn btn-secondary">Reset</a>
         </div>
-        <div class="col-md-3 text-md-end">
-            <button type="submit" name="action" value="cetak" class="btn btn-danger me-1"><i class="fas fa-file-pdf"></i> Cetak Laporan</button>
+        <div class="col-md-3 d-flex justify-content-md-end flex-nowrap gap-1">
+            <button type="submit" name="action" value="cetak" class="btn btn-danger"><i class="fas fa-file-pdf"></i> Cetak Laporan</button>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPenjualan"><i class="fas fa-plus fa-sm text-white-50"></i> Tambah Penjualan</button>
         </div>
     </form>
