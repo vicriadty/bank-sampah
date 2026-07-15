@@ -14,7 +14,17 @@ class SetoranFactory extends Factory
     {
         return [
             'nasabah_id' => Nasabah::factory(),
-            'total_harga' => $this->faker->numberBetween(1000, 100000),
+            'total_harga' => 0,
+            'status' => 'berhasil',
+            'alasan_batal' => null,
         ];
+    }
+
+    public function dibatalkan(string $alasan = null): static
+    {
+        return $this->state(fn () => [
+            'status' => 'dibatalkan',
+            'alasan_batal' => $alasan ?? fake()->sentence(),
+        ]);
     }
 }

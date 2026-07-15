@@ -34,7 +34,8 @@ class PenjualanSampahController extends Controller
         }
 
         if ($tanggalAwal && $tanggalAkhir) {
-            $query->whereBetween('created_at', [$tanggalAwal, $tanggalAkhir]);
+            $query->whereDate('created_at', '>=', $tanggalAwal)
+                  ->whereDate('created_at', '<=', $tanggalAkhir);
         }
 
         if ($pengepulId) {

@@ -19,7 +19,15 @@ class GoldExchangeController extends Controller
             });
         }
 
-        $riwayat = $query->paginate(10);
+        $tanggalAwal = $request->tanggal_awal;
+        $tanggalAkhir = $request->tanggal_akhir;
+
+        if ($tanggalAwal && $tanggalAkhir) {
+            $query->whereDate('created_at', '>=', $tanggalAwal)
+                  ->whereDate('created_at', '<=', $tanggalAkhir);
+        }
+
+        $riwayat = $query->paginate(10)->appends($request->query());
 
         $masterSwitch = Pengaturan::getValue('master_switch_auto_convert', '0');
 

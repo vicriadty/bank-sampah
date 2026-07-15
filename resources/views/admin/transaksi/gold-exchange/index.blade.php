@@ -67,13 +67,19 @@
         @endif
     </div>
 
-    <form method="GET" action="{{ route('admin.gold-exchange.index') }}" class="row mb-3">
-        <div class="col-md-3">
-            <input type="text" name="nasabah" class="form-control" placeholder="Cari Nama Nasabah"
+    <form method="GET" action="{{ route('admin.gold-exchange.index') }}" class="row gy-2 mb-3">
+        <div class="col-md-4">
+            <input type="text" name="nasabah" class="form-control" placeholder="Cari Nama Nasabah..."
                 value="{{ request('nasabah') }}">
         </div>
         <div class="col-md-3">
-            <button type="submit" class="btn btn-primary mr-2">Filter</button>
+            <input type="date" name="tanggal_awal" class="form-control" value="{{ request('tanggal_awal') }}">
+        </div>
+        <div class="col-md-3">
+            <input type="date" name="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') }}">
+        </div>
+        <div class="col-md-2 d-flex align-items-center">
+            <button type="submit" class="btn btn-primary mx-2">Filter</button>
             <a href="{{ route('admin.gold-exchange.index') }}" class="btn btn-secondary">Reset</a>
         </div>
     </form>

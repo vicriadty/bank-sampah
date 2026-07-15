@@ -172,33 +172,52 @@ class NasabahSeeder extends Seeder
             });
         }
 
-        // 50 data faker untuk test pagination
+        // Data faker per bulan (Jan-Des 2026) dengan created_at natural
         $faker = \Faker\Factory::create('id_ID');
-        for ($i = 1; $i <= 50; $i++) {
-            DB::transaction(function () use ($faker, $i) {
-                $nama = $faker->name();
-                $username = strtolower(str_replace(' ', '.', $nama)) . $i;
-                $email = $faker->unique()->safeEmail();
 
-                $user = User::create([
-                    'username' => $username,
-                    'email' => $email,
-                    'password' => Hash::make('123456'),
-                    'role' => 'nasabah',
-                ]);
+        for ($month = 1; $month <= 12; $month++) {
+            $count = $faker->numberBetween(5, 20);
 
-                Nasabah::create([
-                    'user_id' => $user->id,
-                    'nik' => $faker->numerify('################'),
-                    'nama' => $nama,
-                    'jenis_kelamin' => $faker->randomElement(['Laki-laki', 'Perempuan']),
-                    'tanggal_lahir' => $faker->date('Y-m-d', '-18 years'),
-                    'tempat_lahir' => $faker->city(),
-                    'alamat' => $faker->address(),
-                    'no_hp' => $faker->numerify('08##########'),
-                    'email' => $email,
-                ]);
-            });
+            for ($i = 0; $i < $count; $i++) {
+                $day = $faker->numberBetween(1, 28);
+                $date = \Carbon\Carbon::create(2026, $month, $day);
+                $uniqueId = $month . '_' . $i;
+
+                DB::transaction(function () use ($faker, $date, $uniqueId) {
+                    $nama = $faker->name();
+                    $username = strtolower(str_replace(' ', '.', $nama)) . $uniqueId;
+                    $email = $faker->unique()->safeEmail();
+
+                    $user = User::create([
+                        'username' => $username,
+                        'email' => $email,
+                        'password' => Hash::make('123456'),
+                        'role' => 'nasabah',
+                    ]);
+
+                    $user->timestamps = false;
+                    $user->created_at = $date;
+                    $user->updated_at = $date;
+                    $user->save();
+
+                    $nasabah = Nasabah::create([
+                        'user_id' => $user->id,
+                        'nik' => $faker->numerify('################'),
+                        'nama' => $nama,
+                        'jenis_kelamin' => $faker->randomElement(['Laki-laki', 'Perempuan']),
+                        'tanggal_lahir' => $faker->date('Y-m-d', '-18 years'),
+                        'tempat_lahir' => $faker->city(),
+                        'alamat' => $faker->address(),
+                        'no_hp' => $faker->numerify('08##########'),
+                        'email' => $email,
+                    ]);
+
+                    $nasabah->timestamps = false;
+                    $nasabah->created_at = $date;
+                    $nasabah->updated_at = $date;
+                    $nasabah->save();
+                });
+            }
         }
     }
 }

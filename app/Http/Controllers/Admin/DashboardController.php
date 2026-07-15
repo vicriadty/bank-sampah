@@ -34,22 +34,22 @@ class DashboardController extends Controller
         $totalRupiahDiKonversi = RiwayatKonversiEmas::sum('saldo_terpakai');
         $totalGoldExchanged = RiwayatKonversiEmas::sum('jumlah_gram');
 
-        // Chart: Setoran per bulan (6 bulan terakhir)
+        // Chart: Setoran per bulan (tahun 2026)
         $setoranPerBulan = Setoran::select(
             DB::raw("DATE_FORMAT(created_at, '%Y-%m') as bulan"),
             DB::raw('SUM(total_harga) as total')
         )
-            ->where('created_at', '>=', now()->subMonths(6))
+            ->whereYear('created_at', 2026)
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->get();
 
-        // Chart: Nasabah baru per bulan
+        // Chart: Nasabah baru per bulan (tahun 2026)
         $nasabahBaruPerBulan = Nasabah::select(
             DB::raw("DATE_FORMAT(created_at, '%Y-%m') as bulan"),
             DB::raw('COUNT(*) as total')
         )
-            ->where('created_at', '>=', now()->subMonths(6))
+            ->whereYear('created_at', 2026)
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->get();
@@ -61,13 +61,13 @@ class DashboardController extends Controller
             ->groupBy('kategori_sampahs.nama_kategori')
             ->get();
 
-        // Chart: Penukaran emas per bulan
+        // Chart: Penukaran emas per bulan (tahun 2026)
         $goldPerBulan = RiwayatKonversiEmas::select(
             DB::raw("DATE_FORMAT(created_at, '%Y-%m') as bulan"),
             DB::raw('SUM(jumlah_gram) as total_gram'),
             DB::raw('SUM(saldo_terpakai) as total_saldo')
         )
-            ->where('created_at', '>=', now()->subMonths(6))
+            ->whereYear('created_at', 2026)
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->get();

@@ -26,6 +26,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
+            SetoranSeeder::class,
+        ]);
+
+        $this->call([
+            RiwayatKonversiEmasSeeder::class,
+        ]);
+
+        $this->call([
             PengepulSeeder::class,
         ]);
 
