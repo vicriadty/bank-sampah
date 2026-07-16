@@ -22,34 +22,34 @@
                     <thead>
                         <tr>
                             <th>Tanggal</th>
-                            <th>Tipe</th>
-                            <th>Jumlah (Rp)</th>
+                            <th>Sampah</th>
+                            <th>Berat</th>
+                            <th>Total (Rp)</th>
                             <th>Status</th>
-                            <th>Keterangan</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($transaksi as $item)
+                        @forelse($transaksi as $setoran)
                             <tr>
-                                <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
+                                <td>{{ $setoran->created_at->format('d/m/Y H:i') }}</td>
                                 <td>
-                                    <span class="badge {{ $item->tipe == 'Setoran' ? 'badge-primary' : 'badge-info' }}">
-                                        {{ $item->tipe }}
-                                    </span>
+                                    @foreach ($setoran->details as $detail)
+                                        {{ $detail->sampah->nama_jenis ?? '-' }}@if (!$loop->last), @endif
+                                    @endforeach
                                 </td>
-                                <td>{{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                                <td>{{ number_format($setoran->details->sum('berat'), 2, ',', '.') }} Kg</td>
+                                <td>Rp {{ number_format($setoran->total_harga, 0, ',', '.') }}</td>
                                 <td>
-                                    @if ($item->status == 'dibatalkan')
-                                        <span class="badge badge-danger">Dibatalkan</span>
-                                    @else
+                                    @if ($setoran->status === 'berhasil')
                                         <span class="badge badge-success">Berhasil</span>
+                                    @else
+                                        <span class="badge badge-danger">Dibatalkan</span>
                                     @endif
                                 </td>
-                                <td>{{ $item->keterangan ?? '-' }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center">Belum ada transaksi.</td>
+                                <td colspan="5" class="text-center text-muted">Belum ada transaksi.</td>
                             </tr>
                         @endforelse
                     </tbody>

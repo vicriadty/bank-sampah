@@ -13,13 +13,10 @@ class TransaksiController extends Controller
     {
         $nasabahId = Auth::user()->nasabah->id;
 
-        $transaksi = Setoran::where('nasabah_id', $nasabahId)->latest()->get()->map(function ($item) {
-            $item->tipe = 'Setoran';
-            $item->jumlah = $item->total_harga;
-            $item->status = $item->status;
-            $item->keterangan = $item->alasan_batal ?? '-';
-            return $item;
-        });
+        $transaksi = Setoran::with('details.sampah')
+            ->where('nasabah_id', $nasabahId)
+            ->latest()
+            ->get();
 
         return view('nasabah.riwayat-transaksi', compact('transaksi'));
     }

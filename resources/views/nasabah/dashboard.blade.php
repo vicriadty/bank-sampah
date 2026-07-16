@@ -8,13 +8,13 @@
     </div>
 
     <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-6 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Saldo Aktif</div>
+                                Saldo Rupiah</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
                                 {{ number_format($saldoAktif, 0, ',', '.') }}</div>
                         </div>
@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-6 col-md-6 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -39,41 +39,6 @@
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-coins fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Saldo Di Konversi</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Rp
-                                {{ number_format($saldoDiKonversi, 0, ',', '.') }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-exchange-alt fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Setoran</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalSetoran }} Kali</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-upload fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
@@ -152,9 +117,10 @@
                     <thead class="thead-light">
                         <tr>
                             <th>Tanggal</th>
-                            <th>Jenis Sampah</th>
+                            <th>Sampah</th>
                             <th>Berat</th>
-                            <th>Harga</th>
+                            <th>Total (Rp)</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -168,10 +134,17 @@
                                 </td>
                                 <td>{{ number_format($setoran->details->sum('berat'), 2, ',', '.') }} Kg</td>
                                 <td>Rp {{ number_format($setoran->total_harga, 0, ',', '.') }}</td>
+                                <td>
+                                    @if ($setoran->status === 'berhasil')
+                                        <span class="badge badge-success">Berhasil</span>
+                                    @else
+                                        <span class="badge badge-danger">Dibatalkan</span>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center text-muted">Belum ada transaksi</td>
+                                <td colspan="5" class="text-center text-muted">Belum ada transaksi</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -71,8 +71,9 @@ class DashboardController extends Controller
         $nasabah = $user->nasabah;
         
         $setorans = Setoran::where('nasabah_id', $nasabah->id)->latest()->get();
+        $konversis = RiwayatKonversiEmas::where('nasabah_id', $nasabah->id)->latest()->get();
         
-        return view('nasabah.info-saldo', compact('nasabah', 'setorans'));
+        return view('nasabah.info-saldo', compact('nasabah', 'setorans', 'konversis'));
     }
 
     public function dataSampah()
