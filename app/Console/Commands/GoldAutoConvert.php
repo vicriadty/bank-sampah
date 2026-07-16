@@ -19,12 +19,17 @@ class GoldAutoConvert extends Command
     // Threshold dalam gram emas — minimal 0.05 gram untuk bisa dikonversi
     private const THRESHOLD_GRAM = 0.05;
 
+    private $logChannel;
+
     public function handle(GoldPriceService $goldPriceService): int
     {
+        $this->logChannel = 'gold-convert';
+
         // Langkah 1: Cek Master Switch — jika OFF, hentikan proses
         $masterSwitch = Pengaturan::getValue('master_switch_auto_convert', '0');
         if ($masterSwitch !== '1') {
             $this->warn('Master Switch OFF — proses auto-convert dihentikan.');
+            Log::channel($this->logChannel)->warning('Auto-convert dihentikan: Master Switch OFF');
             return Command::SUCCESS;
         }
 
@@ -34,12 +39,16 @@ class GoldAutoConvert extends Command
 
         if ($hargaEmasPerGram <= 0) {
             $this->error('Harga emas tidak tersedia — proses dibatalkan.');
+            Log::channel($this->logChannel)->error('Auto-convert dibatalkan: Harga emas tidak tersedia (0)');
             return Command::FAILURE;
         }
 
         $this->info("Harga emas hari ini: Rp " . number_format($hargaEmasPerGram, 2, ',', '.') . " / gram");
+        Log::channel($this->logChannel)->info('Auto-convert dimulai', [
+            'harga_emas_per_gram' => $hargaEmasPerGram,
+        ]);
 
-        // Langkah 3: Hitung Target Rupiah (threshold 0.5 gram)
+        // Langkah 3: Hitung Target Rupiah (threshold 0.05 gram)
         $targetRupiah = self::THRESHOLD_GRAM * $hargaEmasPerGram;
 
         $this->info("Target rupiah (0.05 gram): Rp " . number_format($targetRupiah, 2, ',', '.') . "");
@@ -88,7 +97,7 @@ class GoldAutoConvert extends Command
         $this->info("- Rupiah dikonversi: Rp " . number_format($totalRupiahDikonversi, 2, ',', '.'));
         $this->info("- Emas dihasilkan: " . number_format($totalEmasDihasilkan, 4, ',', '.') . " gram");
 
-        Log::info('Auto-convert gold selesai', [
+        Log::channel($this->logChannel)->info('Auto-convert selesai', [
             'nasabah_diproses' => $totalNasabahDiproses,
             'rupiah_dikonversi' => $totalRupiahDikonversi,
             'emas_dihasilkan' => $totalEmasDihasilkan,
@@ -117,7 +126,7 @@ class GoldAutoConvert extends Command
             return; // Tidak memenuhi threshold setelah holding adjustment
         }
 
-        // Rule of Multiplier: hitung kelipatan 0.5 gram (pembulatan ke bawah)
+        // Rule of Multiplier: hitung kelipatan 0.05 gram (pembulatan ke bawah)
         $kelipatan = floor($saldoEfektif / $targetRupiah);
 
         if ($kelipatan < 1) {
@@ -153,5 +162,14 @@ class GoldAutoConvert extends Command
 
         $this->line("  [OK] Nasabah #{$dompet->nasabah_id}: Rp " . number_format($jumlahRupiahKonversi, 0, ',', '.') .
             " -> " . number_format($jumlahGram, 4, ',', '.') . " gram");
+
+        Log::channel($this->logChannel)->info('[OK] Konversi berhasil', [
+            'nasabah_id' => $dompet->nasabah_id,
+            'rupiah' => $jumlahRupiahKonversi,
+            'gram' => $jumlahGram,
+            'harga_per_gram' => $hargaEmasPerGram,
+            'sisa_saldo_rupiah' => $dompet->fresh()->saldo_rupiah,
+            'total_saldo_emas' => $dompet->fresh()->saldo_emas_gram,
+        ]);
     }
 }

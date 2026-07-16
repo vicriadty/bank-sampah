@@ -127,6 +127,13 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'gold-convert' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/gold-convert.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 30,
+        ],
+
     ],
 
 ];
