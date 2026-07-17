@@ -357,6 +357,7 @@
                         })
                         .then(data => {
                             if (data.success) {
+                                bootstrap.Modal.getInstance(document.getElementById('modalPenjualan')).hide();
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Data Penjualan berhasil disimpan!',

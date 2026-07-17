@@ -295,6 +295,7 @@
                         })
                         .then(data => {
                             if (data.success) {
+                                bootstrap.Modal.getInstance(document.getElementById('modalNasabah')).hide();
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Nasabah & Akun Login berhasil dibuat!',
@@ -401,6 +402,7 @@
                         })
                         .then(data => {
                             if (data.success) {
+                                bootstrap.Modal.getInstance(document.getElementById('modalEditNasabah')).hide();
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Nasabah berhasil diupdate!',

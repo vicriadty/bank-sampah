@@ -238,6 +238,7 @@
                 })
                 .then(data => {
                     if (data.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('modalSampah')).hide();
                         Swal.fire({
                             icon: 'success',
                             title: 'Data sampah berhasil ditambahkan!',
@@ -328,6 +329,7 @@
                     })
                     .then(data => {
                         if (data.success) {
+                            bootstrap.Modal.getInstance(document.getElementById('modalEditSampah')).hide();
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Sampah berhasil diupdate!',

@@ -242,6 +242,7 @@
             })
             .then(data => {
                 if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('modalPengepul')).hide();
                     Swal.fire({
                         icon: 'success',
                         title: 'Pengepul berhasil ditambahkan!',
@@ -334,6 +335,7 @@
                 })
                 .then(data => {
                     if (data.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('modalEditPengepul')).hide();
                         Swal.fire({
                             icon: 'success',
                             title: 'Pengepul berhasil diupdate!',
