@@ -60,7 +60,11 @@ class PenjualanSampahController extends Controller
         $jenisSampahs = JenisSampah::with(['kategoriSampah'])
             ->select('id', 'nama_jenis', 'kategori_id', 'harga_per_kg', 'stok')
             ->get();
-        return view('admin.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepuls', 'jenisSampahs'));
+
+        $hasFilter = $request->filled('pengepul') || $request->filled('tanggal_awal');
+        $hasData = $penjualans->total() > 0;
+
+        return view('admin.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepuls', 'jenisSampahs', 'hasFilter', 'hasData'));
     }
 
     public function create()

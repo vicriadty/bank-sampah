@@ -6,9 +6,12 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-history text-primary"></i> Riwayat Konversi Emas</h1>
 
-        <div class="text-right">
-            <button type="button" id="btnToggleSwitch" class="btn {{ $masterSwitch === '1' ? 'btn-success' : 'btn-danger' }}"
-                style="min-width: 220px;">
+        <div class="d-flex gap-2 align-items-center">
+            <button type="submit" form="formFilterGold" name="action" value="cetak" class="btn btn-danger mx-2"
+                {{ !($hasFilter && $hasData) ? 'disabled' : '' }}><i class="fas fa-file-pdf"></i> Cetak Laporan</button>
+
+            <button type="button" id="btnToggleSwitch"
+                class="btn {{ $masterSwitch === '1' ? 'btn-success' : 'btn-danger' }}" style="min-width: 220px;">
                 <i class="fas {{ $masterSwitch === '1' ? 'fa-check-circle' : 'fa-stop-circle' }}"></i>
                 <strong>Master Switch: {{ $masterSwitch === '1' ? 'AKTIF' : 'NON-AKTIF' }}</strong>
                 <br>
@@ -67,7 +70,7 @@
         @endif
     </div>
 
-    <form method="GET" action="{{ route('admin.gold-exchange.index') }}" class="row gy-2 mb-3">
+    <form id="formFilterGold" method="GET" action="{{ route('admin.gold-exchange.index') }}" class="row gy-2 mb-3">
         <div class="col-md-4">
             <input type="text" name="nasabah" class="form-control" placeholder="Cari Nama Nasabah..."
                 value="{{ request('nasabah') }}">
@@ -159,6 +162,33 @@
                     });
                 }
             });
+        });
+
+        // Validasi inline untuk filter tanggal
+        function validateDates() {
+            var tglAwal = $('input[name="tanggal_awal"]').val();
+            var tglAkhir = $('input[name="tanggal_akhir"]').val();
+
+            $('.date-error').remove();
+            $('input[name="tanggal_awal"]').removeClass('is-invalid');
+            $('input[name="tanggal_akhir"]').removeClass('is-invalid');
+
+            if (tglAwal && !tglAkhir) {
+                $('input[name="tanggal_akhir"]').addClass('is-invalid')
+                    .after('<small class="text-danger date-error">Tanggal Akhir wajib diisi</small>');
+            } else if (!tglAwal && tglAkhir) {
+                $('input[name="tanggal_awal"]').addClass('is-invalid')
+                    .after('<small class="text-danger date-error">Tanggal Awal wajib diisi</small>');
+            } else if (tglAwal && tglAkhir && tglAwal > tglAkhir) {
+                $('input[name="tanggal_akhir"]').addClass('is-invalid')
+                    .after(
+                        '<small class="text-danger date-error">Tanggal Akhir harus lebih besar atau sama dengan Tanggal Awal</small>'
+                        );
+            }
+        }
+
+        $('input[name="tanggal_awal"], input[name="tanggal_akhir"]').on('change', function() {
+            validateDates();
         });
     </script>
 @endsection

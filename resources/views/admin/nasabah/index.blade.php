@@ -101,7 +101,8 @@
                                 <td>Rp {{ number_format($item->dompet->saldo_rupiah ?? 0, 2, ',', '.') }}</td>
                                 <td>
                                     <div class="d-flex justify-content-center">
-                                        <button type="button" class="d-inline-block mr-2 btn btn-sm btn-warning btn-edit-nasabah"
+                                        <button type="button"
+                                            class="d-inline-block mr-2 btn btn-sm btn-warning btn-edit-nasabah"
                                             data-id="{{ $item->id }}">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -115,7 +116,7 @@
                                             @csrf
                                             @method('DELETE')
                                         </form>
-                                    </td>
+                                </td>
                                 </td>
                             </tr>
                         @empty
@@ -126,7 +127,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="d-flex justify-content-center">
+            <div class="mt-3">
                 {{ $nasabah->links() }}
             </div>
         </div>
@@ -170,7 +171,8 @@
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label for="edit_nik">NIK</label>
-                                    <input type="number" inputmode="numeric" name="nik" id="edit_nik" class="form-control" required>
+                                    <input type="number" inputmode="numeric" name="nik" id="edit_nik"
+                                        class="form-control" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -192,13 +194,15 @@
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label for="edit_tanggal_lahir">Tanggal Lahir</label>
-                                    <input type="date" name="tanggal_lahir" id="edit_tanggal_lahir" class="form-control" required>
+                                    <input type="date" name="tanggal_lahir" id="edit_tanggal_lahir"
+                                        class="form-control" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label for="edit_tempat_lahir">Tempat Lahir</label>
-                                    <input type="text" name="tempat_lahir" id="edit_tempat_lahir" class="form-control" required>
+                                    <input type="text" name="tempat_lahir" id="edit_tempat_lahir"
+                                        class="form-control" required>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -226,187 +230,202 @@
 @endsection
 
 @section('scripts')
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Delete handler
-        const deleteButtons = document.querySelectorAll('.btn-delete');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
-                const namaNasabah = this.getAttribute('data-nama');
-                Swal.fire({
-                    title: `Apakah Anda yakin ingin menghapus nasabah <br> ${namaNasabah}?`,
-                    text: "Data yang dihapus tidak dapat dikembalikan!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById('form-delete-' + id).submit();
-                    }
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Delete handler
+            const deleteButtons = document.querySelectorAll('.btn-delete');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const namaNasabah = this.getAttribute('data-nama');
+                    Swal.fire({
+                        title: `Apakah Anda yakin ingin menghapus nasabah <br> ${namaNasabah}?`,
+                        text: "Data yang dihapus tidak dapat dikembalikan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('form-delete-' + id).submit();
+                        }
+                    });
                 });
             });
-        });
 
-        // Create handler
-        document.getElementById('btn-simpan-nasabah').addEventListener('click', function(e) {
-            e.preventDefault();
-            let form = document.getElementById('formNasabah');
-            let data = new FormData(form);
-            let nama = data.get('nama') || '-';
+            // Create handler
+            document.getElementById('btn-simpan-nasabah').addEventListener('click', function(e) {
+                e.preventDefault();
+                let form = document.getElementById('formNasabah');
+                let data = new FormData(form);
+                let nama = data.get('nama') || '-';
 
-            Swal.fire({
-                title: 'Konfirmasi Data Nasabah',
-                html: `<div style="text-align: left;">
+                Swal.fire({
+                    title: 'Konfirmasi Data Nasabah',
+                    html: `<div style="text-align: left;">
                     <p><strong>Nama:</strong> ${nama}</p>
                     <p style="margin-bottom:0">Data nasabah beserta akun login akan dibuat.</p>
                 </div>`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Simpan!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (!result.isConfirmed) return;
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Simpan!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (!result.isConfirmed) return;
 
-                let btn = this;
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+                    let btn = this;
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
 
-                fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                    },
-                    body: new FormData(form)
-                })
-                .then(res => {
-                    if (!res.ok) return res.json().then(data => Promise.reject(data));
-                    return res.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Nasabah & Akun Login berhasil dibuat!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            timerProgressBar: true
-                        }).then(() => window.location.href = data.redirect);
-                    }
-                })
-                .catch(err => {
-                    let msg = err.error || (err.errors ? Object.values(err.errors).flat().join('<br>') : 'Terjadi kesalahan server');
-                    Swal.fire({ icon: 'error', html: msg });
-                })
-                .finally(() => {
-                    btn.disabled = false;
-                    btn.textContent = 'Simpan';
+                    fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json',
+                            },
+                            body: new FormData(form)
+                        })
+                        .then(res => {
+                            if (!res.ok) return res.json().then(data => Promise.reject(data));
+                            return res.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Nasabah & Akun Login berhasil dibuat!',
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    timerProgressBar: true
+                                }).then(() => window.location.href = data.redirect);
+                            }
+                        })
+                        .catch(err => {
+                            let msg = err.error || (err.errors ? Object.values(err.errors)
+                            .flat().join('<br>') : 'Terjadi kesalahan server');
+                            Swal.fire({
+                                icon: 'error',
+                                html: msg
+                            });
+                        })
+                        .finally(() => {
+                            btn.disabled = false;
+                            btn.textContent = 'Simpan';
+                        });
                 });
             });
-        });
 
-        // Edit modal — populate data
-        const editButtons = document.querySelectorAll('.btn-edit-nasabah');
-        editButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const id = this.getAttribute('data-id');
-                const form = document.getElementById('formEditNasabah');
-                form.action = '{{ url("admin/nasabah") }}/' + id;
+            // Edit modal — populate data
+            const editButtons = document.querySelectorAll('.btn-edit-nasabah');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const form = document.getElementById('formEditNasabah');
+                    form.action = '{{ url('admin/nasabah') }}/' + id;
 
-                fetch('{{ url("admin/nasabah") }}/' + id + '/edit-data', {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                    }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('edit_nik').value = data.nik || '';
-                    document.getElementById('edit_nama').value = data.nama || '';
-                    document.getElementById('edit_jenis_kelamin').value = data.jenis_kelamin || '';
-                    document.getElementById('edit_tanggal_lahir').value = data.tanggal_lahir || '';
-                    document.getElementById('edit_tempat_lahir').value = data.tempat_lahir || '';
-                    document.getElementById('edit_alamat').value = data.alamat || '';
-                    document.getElementById('edit_no_hp').value = data.no_hp || '';
+                    fetch('{{ url('admin/nasabah') }}/' + id + '/edit-data', {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json',
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            document.getElementById('edit_nik').value = data.nik || '';
+                            document.getElementById('edit_nama').value = data.nama || '';
+                            document.getElementById('edit_jenis_kelamin').value = data
+                                .jenis_kelamin || '';
+                            document.getElementById('edit_tanggal_lahir').value = data
+                                .tanggal_lahir || '';
+                            document.getElementById('edit_tempat_lahir').value = data
+                                .tempat_lahir || '';
+                            document.getElementById('edit_alamat').value = data.alamat || '';
+                            document.getElementById('edit_no_hp').value = data.no_hp || '';
 
-                    var modal = new bootstrap.Modal(document.getElementById('modalEditNasabah'));
-                    modal.show();
-                })
-                .catch(() => {
-                    Swal.fire({ icon: 'error', title: 'Gagal memuat data nasabah' });
+                            var modal = new bootstrap.Modal(document.getElementById(
+                                'modalEditNasabah'));
+                            modal.show();
+                        })
+                        .catch(() => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal memuat data nasabah'
+                            });
+                        });
                 });
             });
-        });
 
-        // Edit handler
-        document.getElementById('btn-update-nasabah').addEventListener('click', function(e) {
-            e.preventDefault();
-            let form = document.getElementById('formEditNasabah');
-            let data = new FormData(form);
-            let nama = data.get('nama') || '-';
+            // Edit handler
+            document.getElementById('btn-update-nasabah').addEventListener('click', function(e) {
+                e.preventDefault();
+                let form = document.getElementById('formEditNasabah');
+                let data = new FormData(form);
+                let nama = data.get('nama') || '-';
 
-            Swal.fire({
-                title: 'Konfirmasi Perubahan',
-                html: `<div style="text-align: left;">
+                Swal.fire({
+                    title: 'Konfirmasi Perubahan',
+                    html: `<div style="text-align: left;">
                     <p><strong>Nama:</strong> ${nama}</p>
                     <p style="margin-bottom:0">Apakah Anda yakin ingin menyimpan perubahan?</p>
                 </div>`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Simpan!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (!result.isConfirmed) return;
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Simpan!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (!result.isConfirmed) return;
 
-                let btn = this;
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+                    let btn = this;
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
 
-                fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                    },
-                    body: new FormData(form)
-                })
-                .then(res => {
-                    if (!res.ok) return res.json().then(data => Promise.reject(data));
-                    return res.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Nasabah berhasil diupdate!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            timerProgressBar: true
-                        }).then(() => window.location.href = data.redirect);
-                    }
-                })
-                .catch(err => {
-                    let msg = err.error || (err.errors ? Object.values(err.errors).flat().join('<br>') : 'Terjadi kesalahan server');
-                    Swal.fire({ icon: 'error', html: msg });
-                })
-                .finally(() => {
-                    btn.disabled = false;
-                    btn.textContent = 'Simpan Perubahan';
+                    fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json',
+                            },
+                            body: new FormData(form)
+                        })
+                        .then(res => {
+                            if (!res.ok) return res.json().then(data => Promise.reject(data));
+                            return res.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Nasabah berhasil diupdate!',
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    timerProgressBar: true
+                                }).then(() => window.location.href = data.redirect);
+                            }
+                        })
+                        .catch(err => {
+                            let msg = err.error || (err.errors ? Object.values(err.errors)
+                            .flat().join('<br>') : 'Terjadi kesalahan server');
+                            Swal.fire({
+                                icon: 'error',
+                                html: msg
+                            });
+                        })
+                        .finally(() => {
+                            btn.disabled = false;
+                            btn.textContent = 'Simpan Perubahan';
+                        });
                 });
             });
         });
-    });
-</script>
+    </script>
 @endsection

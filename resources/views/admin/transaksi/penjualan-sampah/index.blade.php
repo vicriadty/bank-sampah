@@ -6,8 +6,8 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-cash-register text-primary"></i> Data Penjualan Sampah</h1>
         <div class="d-flex gap-2">
-            <button type="submit" form="formFilterPenjualan" name="action" value="cetak" class="btn btn-danger mx-2"><i
-                    class="fas fa-file-pdf"></i> Cetak Laporan</button>
+            <button type="submit" form="formFilterPenjualan" name="action" value="cetak" class="btn btn-danger mx-2"
+                {{ !($hasFilter && $hasData) ? 'disabled' : '' }}><i class="fas fa-file-pdf"></i> Cetak Laporan</button>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPenjualan"><i
                     class="fas fa-plus fa-sm text-white-50"></i> Tambah Penjualan</button>
         </div>
@@ -134,7 +134,7 @@
             </tbody>
         </table>
     </div>
-    <div class="d-flex justify-content-center">
+    <div class="mt-3">
         {{ $penjualans->links() }}
     </div>
 
@@ -172,7 +172,7 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalPenjualanLabel">POS Penjualan Sampah</h5>
+                    <h5 class="modal-title" id="modalPenjualanLabel">Tambah Penjualan Sampah</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="formPenjualan" action="{{ route('admin.penjualan.store') }}" method="post">
@@ -382,6 +382,33 @@
                         });
                 });
             });
+        });
+
+        // Validasi inline untuk filter tanggal
+        function validateDates() {
+            var tglAwal = $('input[name="tanggal_awal"]').val();
+            var tglAkhir = $('input[name="tanggal_akhir"]').val();
+
+            $('.date-error').remove();
+            $('input[name="tanggal_awal"]').removeClass('is-invalid');
+            $('input[name="tanggal_akhir"]').removeClass('is-invalid');
+
+            if (tglAwal && !tglAkhir) {
+                $('input[name="tanggal_akhir"]').addClass('is-invalid')
+                    .after('<small class="text-danger date-error">Tanggal Akhir wajib diisi</small>');
+            } else if (!tglAwal && tglAkhir) {
+                $('input[name="tanggal_awal"]').addClass('is-invalid')
+                    .after('<small class="text-danger date-error">Tanggal Awal wajib diisi</small>');
+            } else if (tglAwal && tglAkhir && tglAwal > tglAkhir) {
+                $('input[name="tanggal_akhir"]').addClass('is-invalid')
+                    .after(
+                        '<small class="text-danger date-error">Tanggal Akhir harus lebih besar atau sama dengan Tanggal Awal</small>'
+                        );
+            }
+        }
+
+        $('input[name="tanggal_awal"], input[name="tanggal_akhir"]').on('change', function() {
+            validateDates();
         });
     </script>
 @endsection

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pengaturan;
 use App\Models\RiwayatKonversiEmas;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class GoldExchangeController extends Controller
 {
@@ -27,11 +28,25 @@ class GoldExchangeController extends Controller
                   ->whereDate('created_at', '<=', $tanggalAkhir);
         }
 
+        if ($request->action == 'cetak') {
+            $riwayat = $query->get();
+            $pdf = Pdf::loadView('admin.transaksi.gold-exchange.laporan_pdf', compact('riwayat', 'tanggalAwal', 'tanggalAkhir'))
+                ->setPaper('A4', 'landscape');
+
+            $tanggal = now()->format('d-m-y');
+            $namaFile = 'laporan-konversi-emas-' . $tanggal . '.pdf';
+
+            return $pdf->download($namaFile);
+        }
+
         $riwayat = $query->paginate(10)->appends($request->query());
 
         $masterSwitch = Pengaturan::getValue('master_switch_auto_convert', '0');
 
-        return view('admin.transaksi.gold-exchange.index', compact('riwayat', 'masterSwitch'));
+        $hasFilter = $request->filled('nasabah') || $request->filled('tanggal_awal');
+        $hasData = $riwayat->total() > 0;
+
+        return view('admin.transaksi.gold-exchange.index', compact('riwayat', 'masterSwitch', 'hasFilter', 'hasData'));
     }
 
     public function toggleMasterSwitch()

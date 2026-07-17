@@ -63,7 +63,11 @@ class SetoranController extends Controller
         $jenisSampahs = JenisSampah::with(['kategoriSampah'])
             ->select('id', 'nama_jenis', 'kategori_id', 'harga_per_kg', 'stok')
             ->get();
-        return view('admin.transaksi.setor-sampah.index', compact('setorans', 'nasabahs', 'kategoriSampah', 'jenisSampahs'));
+
+        $hasFilter = $request->filled('nasabah') || $request->filled('tanggal_awal');
+        $hasData = $setorans->total() > 0;
+
+        return view('admin.transaksi.setor-sampah.index', compact('setorans', 'nasabahs', 'kategoriSampah', 'jenisSampahs', 'hasFilter', 'hasData'));
     }
 
     public function create()
