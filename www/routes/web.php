@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SampahController;
 use App\Http\Controllers\Admin\SetoranController;
 // use App\Http\Controllers\Admin\StokSampahController;
 use App\Http\Controllers\Admin\GoldExchangeController as AdminGoldExchangeController;
+use App\Http\Controllers\Search\SearchController;
 use App\Http\Controllers\UserController;
 use App\Models\KategoriSampah;
 use Illuminate\Support\Facades\Route;
@@ -81,4 +82,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/settings', [UserController::class, 'edit'])->name('settings.edit');
     Route::post('/settings', [UserController::class, 'update'])->name('settings.update');
     Route::post('/settings/password', [UserController::class, 'updatePassword'])->name('settings.updatePassword');
+});
+
+// Search API (Elasticsearch dengan fallback MySQL)
+Route::middleware(['auth'])->prefix('search')->name('search.')->group(function () {
+    Route::get('/nasabah', [SearchController::class, 'nasabah'])->name('nasabah');
+    Route::get('/sampah', [SearchController::class, 'sampah'])->name('sampah');
+    Route::get('/setoran', [SearchController::class, 'setoran'])->name('setoran');
 });

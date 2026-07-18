@@ -134,6 +134,13 @@ return [
             'days' => 30,
         ],
 
+        'elasticsearch' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/elasticsearch.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+        ],
+
     ],
 
 ];
