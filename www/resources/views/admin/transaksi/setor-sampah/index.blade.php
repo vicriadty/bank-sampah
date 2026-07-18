@@ -287,8 +287,9 @@
 
             // Init modal setoran form
             const modalSetoran = document.getElementById('modalSetoran');
+            let firstRowHtml = document.querySelector('.sampah-row')?.outerHTML;
+
             modalSetoran.addEventListener('shown.bs.modal', function() {
-                // Select2
                 if (typeof $.fn.select2 !== 'undefined') {
                     $('#nasabah_id').select2({
                         placeholder: 'Pilih Nasabah',
@@ -305,19 +306,11 @@
                 }
                 document.getElementById('formSetoran').reset();
                 let container = document.getElementById('sampah-container');
-                container.innerHTML = '';
-                let firstRow = document.querySelector('.sampah-row');
-                if (firstRow) container.appendChild(firstRow.cloneNode(true));
-                document.querySelectorAll('.sampah-row').forEach((row, i) => {
-                    if (i > 0) row.remove();
-                });
-                document.querySelector('.sampah-row')?.querySelectorAll('select, input').forEach(el => el
-                    .value = '');
-                document.querySelector('.subtotal') && (document.querySelector('.subtotal').dataset.nilai =
-                    0);
-                document.querySelector('.harga-per-kg') && (document.querySelector('.harga-per-kg').value =
-                    '');
-                document.querySelector('.subtotal') && (document.querySelector('.subtotal').value = '');
+                container.innerHTML = firstRowHtml;
+                document.querySelector('.sampah-row')?.querySelectorAll('select, input').forEach(el => el.value = '');
+                document.querySelector('.subtotal')?.setAttribute('data-nilai', '0');
+                document.querySelector('.harga-per-kg').value = '';
+                document.querySelector('.subtotal').value = '';
                 document.getElementById('total-harga').value = 'Rp0';
             });
 

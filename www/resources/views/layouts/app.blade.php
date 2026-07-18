@@ -96,7 +96,6 @@
     {{-- Redundant: handled by navbar SweetAlert2 --}}
 
     <!-- Bootstrap core JavaScript-->
-    <script src="{{ asset('template/vendor/jquery/jquery.min.js') }}"></script>
     @stack('scripts')
     <script src="{{ asset('template/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
