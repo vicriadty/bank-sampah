@@ -17,13 +17,16 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # 3. Install PHP extensions yang dibutuhkan Laravel
 RUN docker-php-ext-install pdo_mysql mysqli mbstring exif pcntl bcmath gd zip
 
-# 4. Ambil Composer versi terbaru langsung dari official image-nya
+# 4. Install Redis extension via PECL (dibutuhkan untuk session/cache/queue)
+RUN pecl install redis && docker-php-ext-enable redis
+
+# 5. Ambil Composer versi terbaru langsung dari official image-nya
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 5. Konfigurasi Apache Document Root ke folder public Laravel
+# 6. Konfigurasi Apache Document Root ke folder public Laravel
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# 6. Aktifkan mod_rewrite Apache (wajib untuk routing Laravel)
+# 7. Aktifkan mod_rewrite Apache (wajib untuk routing Laravel)
 RUN a2enmod rewrite
