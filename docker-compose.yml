@@ -1,0 +1,77 @@
+services:
+  # Database Service (MySQL 8.0)
+  db:
+    image: mysql:8.0
+    container_name: laravel_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${FORWARD_DB_PORT:-3306}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - laravel_network
+
+  # Redis Service
+  redis:
+    image: redis:alpine
+    container_name: laravel_redis
+    ports:
+      - "${FORWARD_REDIS_PORT:-6379}:6379"
+    networks:
+      - laravel_network
+
+  # Mailpit
+  mailpit:
+    image: 'axllent/mailpit:latest'
+    container_name: laravel_mailpit
+    ports:
+      - "${FORWARD_MAILPIT_PORT:-1025}:1025"
+      - "${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025"
+    networks:
+      - laravel_network
+
+  # Elasticsearch 8.11.1 Engine (Layanan Tambahan Baru)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: elasticsearch_spp
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false # Dimatikan agar tidak rumit mengurus token/SSL saat sidang skripsi
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # Alokasi RAM dibatasi 512MB (Aman & Ringan untuk Laptop)
+    ports:
+      - "${FORWARD_ELASTIC_PORT:-9200}:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - laravel_network
+    depends_on:
+      - db
+
+  # PHP 8.4 & Web Server Service (Menggunakan Dockerfile)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    depends_on:
+      - db
+      - redis
+      - elasticsearch # Menjamin Elasticsearch up lebih dulu sebelum aplikasi Laravel berjalan
+    ports:
+      - "${APP_PORT:-8000}:80"
+    volumes:
+      - ./www:/var/www/html
+    networks:
+      - laravel_network
+
+networks:
+  laravel_network:
+    driver: bridge
+
+volumes:
+  db_data:
+  es_data: # Volume persisten baru agar data index pencarian tidak hilang saat container mati
