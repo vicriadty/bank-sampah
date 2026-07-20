@@ -3,21 +3,22 @@
 namespace App\Services;
 
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class GoldPriceService
 {
     private const OUNCE_TO_GRAM = 28.3495;
+    private const CACHE_TTL = 1800;
 
     protected string $apiKey;
     protected string $baseUrl;
     protected string $defaultMetal;
     protected string $defaultCurrency;
 
-    public function __construct()
-    {
+    public function __construct(
+        private RedisService $redis
+    ) {
         $this->apiKey = config('services.metalpriceapi.key', '');
         $this->baseUrl = rtrim(config('services.metalpriceapi.base_url', 'https://api.metalpriceapi.com/v1'), '/');
         $this->defaultMetal = config('services.metalpriceapi.default_metal', 'XAU');
@@ -31,7 +32,7 @@ class GoldPriceService
 
         $cacheKey = "gold_price_{$metal}_{$currency}";
 
-        return Cache::remember($cacheKey, now()->addMinutes(15), function () use ($metal, $currency) {
+        return $this->redis->remember($cacheKey, self::CACHE_TTL, function () use ($metal, $currency) {
             return $this->fetchPrice($metal, $currency);
         });
     }
@@ -151,6 +152,6 @@ class GoldPriceService
     {
         $metal = strtoupper($metal ?? $this->defaultMetal);
         $currency = strtoupper($currency ?? $this->defaultCurrency);
-        Cache::forget("gold_price_{$metal}_{$currency}");
+        $this->redis->forget("gold_price_{$metal}_{$currency}");
     }
 }

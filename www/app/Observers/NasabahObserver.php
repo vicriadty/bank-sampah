@@ -3,12 +3,14 @@
 namespace App\Observers;
 
 use App\Models\Nasabah;
+use App\Services\CacheService;
 use App\Services\ElasticsearchService;
 
 class NasabahObserver
 {
     public function __construct(
-        private ElasticsearchService $elasticsearch
+        private ElasticsearchService $elasticsearch,
+        private CacheService $cacheService
     ) {}
 
     public function created(Nasabah $nasabah): void
@@ -22,6 +24,8 @@ class NasabahObserver
             'no_hp' => $nasabah->no_hp,
             'created_at' => $nasabah->created_at?->toIso8601String(),
         ]);
+
+        $this->cacheService->invalidateDashboard();
     }
 
     public function updated(Nasabah $nasabah): void
@@ -33,10 +37,13 @@ class NasabahObserver
             'alamat' => $nasabah->alamat,
             'no_hp' => $nasabah->no_hp,
         ]);
+
+        $this->cacheService->invalidateDashboard();
     }
 
     public function deleted(Nasabah $nasabah): void
     {
         $this->elasticsearch->deleteDocument('nasabahs', (string) $nasabah->id);
+        $this->cacheService->invalidateDashboard();
     }
 }

@@ -141,6 +141,13 @@ return [
             'days' => 14,
         ],
 
+        'redis' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/redis.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+        ],
+
     ],
 
 ];

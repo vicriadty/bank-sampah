@@ -39,7 +39,7 @@ class GoldPriceServiceTest extends TestCase
             ]),
         ]);
 
-        $service = new GoldPriceService;
+        $service = $this->app->make(GoldPriceService::class);
         $price = $service->getPrice();
 
         $expectedUsdPerOunce = 2000.0;
@@ -69,7 +69,7 @@ class GoldPriceServiceTest extends TestCase
             ]),
         ]);
 
-        $service = new GoldPriceService;
+        $service = $this->app->make(GoldPriceService::class);
         $price = $service->getPrice();
 
         $expectedIdrRate = 1 / 0.0000625;
@@ -91,7 +91,7 @@ class GoldPriceServiceTest extends TestCase
             ]),
         ]);
 
-        $service = new GoldPriceService;
+        $service = $this->app->make(GoldPriceService::class);
         $price = $service->getPrice('XAU', 'USD');
 
         $expectedUsdPerOunce = 1 / 0.0005;
@@ -110,7 +110,7 @@ class GoldPriceServiceTest extends TestCase
             ], 500),
         ]);
 
-        $service = new GoldPriceService;
+        $service = $this->app->make(GoldPriceService::class);
         $price = $service->getPrice('XAU', 'USD');
 
         $this->assertSame(0.0, $price['price_per_gram']);
@@ -131,7 +131,7 @@ class GoldPriceServiceTest extends TestCase
             ]),
         ]);
 
-        $service = new GoldPriceService;
+        $service = $this->app->make(GoldPriceService::class);
         $price = $service->getPrice();
 
         $this->assertSame('USD', $price['currency']);
@@ -156,7 +156,7 @@ class GoldPriceServiceTest extends TestCase
             },
         ]);
 
-        $service = new GoldPriceService;
+        $service = $this->app->make(GoldPriceService::class);
 
         $price1 = $service->getPrice();
         $price2 = $service->getPrice();
