@@ -3,94 +3,40 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-
-use App\Models\DetailPenjualanSampah;
-use App\Models\DompetNasabah;
-use App\Models\RiwayatKonversiEmas;
-use App\Models\Nasabah;
-use App\Models\Pengepul;
-use App\Models\PenjualanSampah;
-use App\Models\JenisSampah;
-use App\Models\Setoran;
-use App\Models\SetoranDetail;
+use App\Services\CacheService;
 use App\Services\GoldPriceService;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index(GoldPriceService $goldPriceService)
+    public function index(GoldPriceService $goldPriceService, CacheService $cacheService)
     {
-        // Summary cards
-        $jumlahNasabah = Nasabah::count();
-        $jumlahPengepul = Pengepul::count();
-        $jumlahSampah = JenisSampah::count();
-        $totalSampahDisetorkan = SetoranDetail::sum('berat');
-        $totalTabunganNasabah = DompetNasabah::sum('saldo_rupiah');
-        $totalPenjualanSampah = DetailPenjualanSampah::sum('berat');
-        $totalPenjualan = PenjualanSampah::sum('total_harga');
+        $summary = $cacheService->getDashboardSummary();
+        $goldStats = $cacheService->getGoldStats();
 
-        // Gold stats
         $goldPrice = $goldPriceService->getPrice();
-        $totalRupiahDiKonversi = RiwayatKonversiEmas::sum('saldo_terpakai');
-        $totalGoldExchanged = RiwayatKonversiEmas::sum('jumlah_gram');
-
-        // Chart: Setoran per bulan (tahun 2026)
-        $setoranPerBulan = Setoran::select(
-            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as bulan"),
-            DB::raw('SUM(total_harga) as total')
-        )
-            ->whereYear('created_at', 2026)
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->get();
-
-        // Chart: Nasabah baru per bulan (tahun 2026)
-        $nasabahBaruPerBulan = Nasabah::select(
-            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as bulan"),
-            DB::raw('COUNT(*) as total')
-        )
-            ->whereYear('created_at', 2026)
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->get();
-
-        // Chart: Komposisi kategori sampah
-        $komposisiSampah = SetoranDetail::join('jenis_sampahs', 'setoran_details.sampah_id', '=', 'jenis_sampahs.id')
-            ->join('kategori_sampahs', 'jenis_sampahs.kategori_id', '=', 'kategori_sampahs.id')
-            ->select('kategori_sampahs.nama_kategori', DB::raw('SUM(setoran_details.berat) as total_berat'))
-            ->groupBy('kategori_sampahs.nama_kategori')
-            ->get();
-
-        // Chart: Penukaran emas per bulan (tahun 2026)
-        $goldPerBulan = RiwayatKonversiEmas::select(
-            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as bulan"),
-            DB::raw('SUM(jumlah_gram) as total_gram'),
-            DB::raw('SUM(saldo_terpakai) as total_saldo')
-        )
-            ->whereYear('created_at', 2026)
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->get();
-
-        // Nasabah terbaru
-        $nasabahTerbaru = Nasabah::latest()->take(5)->get();
+        $setoranPerBulan = $cacheService->getSetoranPerBulan();
+        $nasabahBaruPerBulan = $cacheService->getNasabahBaruPerBulan();
+        $komposisiSampah = $cacheService->getKomposisiSampah();
+        $goldPerBulan = $cacheService->getGoldPerBulan();
+        $nasabahTerbaru = $cacheService->getNasabahTerbaru();
 
         return view('admin.dashboard', compact(
-            'jumlahNasabah',
-            'jumlahPengepul',
-            'jumlahSampah',
-            'totalSampahDisetorkan',
-            'totalTabunganNasabah',
-            'totalPenjualanSampah',
-            'totalPenjualan',
             'goldPrice',
-            'totalRupiahDiKonversi',
-            'totalGoldExchanged',
             'setoranPerBulan',
             'nasabahBaruPerBulan',
             'komposisiSampah',
             'goldPerBulan',
             'nasabahTerbaru'
-        ));
+        ) + [
+            'jumlahNasabah' => $summary['jumlah_nasabah'],
+            'jumlahPengepul' => $summary['jumlah_pengepul'],
+            'jumlahSampah' => $summary['jumlah_sampah'],
+            'totalSampahDisetorkan' => $summary['total_sampah_disetorkan'],
+            'totalTabunganNasabah' => $summary['total_tabungan_nasabah'],
+            'totalPenjualanSampah' => $summary['total_penjualan_sampah'],
+            'totalPenjualan' => $summary['total_penjualan'],
+            'totalRupiahDiKonversi' => $goldStats['total_rupiah_dikonversi'],
+            'totalGoldExchanged' => $goldStats['total_gold_exchanged'],
+        ]);
     }
 }

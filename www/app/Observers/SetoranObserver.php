@@ -3,12 +3,14 @@
 namespace App\Observers;
 
 use App\Models\Setoran;
+use App\Services\CacheService;
 use App\Services\ElasticsearchService;
 
 class SetoranObserver
 {
     public function __construct(
-        private ElasticsearchService $elasticsearch
+        private ElasticsearchService $elasticsearch,
+        private CacheService $cacheService
     ) {}
 
     public function created(Setoran $setoran): void
@@ -24,6 +26,8 @@ class SetoranObserver
             'status' => $setoran->status,
             'created_at' => $setoran->created_at?->toIso8601String(),
         ]);
+
+        $this->cacheService->invalidateDashboard();
     }
 
     public function updated(Setoran $setoran): void
@@ -36,10 +40,13 @@ class SetoranObserver
             'total_harga' => (float) $setoran->total_harga,
             'status' => $setoran->status,
         ]);
+
+        $this->cacheService->invalidateDashboard();
     }
 
     public function deleted(Setoran $setoran): void
     {
         $this->elasticsearch->deleteDocument('setorans', (string) $setoran->id);
+        $this->cacheService->invalidateDashboard();
     }
 }

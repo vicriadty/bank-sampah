@@ -3,12 +3,14 @@
 namespace App\Observers;
 
 use App\Models\JenisSampah;
+use App\Services\CacheService;
 use App\Services\ElasticsearchService;
 
 class JenisSampahObserver
 {
     public function __construct(
-        private ElasticsearchService $elasticsearch
+        private ElasticsearchService $elasticsearch,
+        private CacheService $cacheService
     ) {}
 
     public function created(JenisSampah $sampah): void
@@ -22,6 +24,8 @@ class JenisSampahObserver
             'harga_per_kg' => (float) $sampah->harga_per_kg,
             'stok' => (float) $sampah->stok,
         ]);
+
+        $this->cacheService->invalidateDashboard();
     }
 
     public function updated(JenisSampah $sampah): void
@@ -34,10 +38,13 @@ class JenisSampahObserver
             'harga_per_kg' => (float) $sampah->harga_per_kg,
             'stok' => (float) $sampah->stok,
         ]);
+
+        $this->cacheService->invalidateDashboard();
     }
 
     public function deleted(JenisSampah $sampah): void
     {
         $this->elasticsearch->deleteDocument('jenis_sampahs', (string) $sampah->id);
+        $this->cacheService->invalidateDashboard();
     }
 }
