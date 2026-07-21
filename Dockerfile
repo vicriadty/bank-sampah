@@ -18,9 +18,16 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-install pdo_mysql mysqli mbstring exif pcntl bcmath gd zip
 
 # 4. Install Redis extension via PECL (dibutuhkan untuk session/cache/queue)
-RUN pecl install redis && docker-php-ext-enable redis
+RUN pecl install redis && { \
+    echo "extension=redis.so"; \
+} > /usr/local/etc/php/conf.d/docker-php-ext-redis.ini
 
-# 5. Ambil Composer versi terbaru langsung dari official image-nya
+# 5. Install OPcache untuk mempercepat eksekusi PHP
+RUN docker-php-ext-install opcache
+
+COPY opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+# 6. Ambil Composer versi terbaru langsung dari official image-nya
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # 6. Konfigurasi Apache Document Root ke folder public Laravel
