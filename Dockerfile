@@ -18,7 +18,9 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-install pdo_mysql mysqli mbstring exif pcntl bcmath gd zip
 
 # 4. Install Redis extension via PECL (dibutuhkan untuk session/cache/queue)
-RUN pecl install redis && docker-php-ext-enable redis
+RUN pecl install redis && { \
+    echo "extension=redis.so"; \
+} > /usr/local/etc/php/conf.d/docker-php-ext-redis.ini
 
 # 5. Install OPcache untuk mempercepat eksekusi PHP
 RUN docker-php-ext-install opcache
