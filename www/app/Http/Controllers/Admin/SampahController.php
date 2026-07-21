@@ -92,6 +92,11 @@ class SampahController extends Controller
     public function destroy($id)
     {
         $sampah = JenisSampah::findOrFail($id);
+
+        if ($sampah->stok > 0) {
+            return redirect()->route('admin.sampah.index')->with('error', 'Sampah tidak dapat dihapus karena masih memiliki stok.');
+        }
+
         $sampah->delete();
 
         return redirect()->route('admin.sampah.index')->with('success', 'Sampah berhasil dihapus');

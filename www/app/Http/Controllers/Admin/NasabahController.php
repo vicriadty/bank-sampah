@@ -134,6 +134,11 @@ class NasabahController extends Controller
     public function destroy($id)
     {
         $nasabah = Nasabah::findOrFail($id);
+
+        if ($nasabah->setorans()->exists()) {
+            return redirect()->route('admin.nasabah.index')->with('error', 'Nasabah tidak dapat dihapus karena masih memiliki riwayat setoran.');
+        }
+
         $nasabah->delete();
 
         return redirect()->route('admin.nasabah.index')->with('success', 'Nasabah berhasil dihapus');
