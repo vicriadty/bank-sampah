@@ -87,6 +87,11 @@ class PengepulController extends Controller
     public function destroy($id)
     {
         $pengepul = Pengepul::findOrFail($id);
+
+        if ($pengepul->penjualan()->exists()) {
+            return redirect()->route('admin.pengepul.index')->with('error', 'Pengepul tidak dapat dihapus karena masih memiliki riwayat penjualan.');
+        }
+
         $pengepul->delete();
 
         return redirect()->route('admin.pengepul.index')->with('success', 'Pengepul berhasil dihapus');
