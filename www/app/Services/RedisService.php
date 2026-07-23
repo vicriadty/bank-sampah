@@ -54,6 +54,40 @@ class RedisService
         }
     }
 
+    public function rememberWithMetadata(string $key, int $ttlSeconds, callable $callback): array
+    {
+        try {
+            $cached = Cache::get($key);
+
+            if ($cached !== null) {
+                return [
+                    'cache' => 'hit',
+                    'data' => $cached,
+                ];
+            }
+
+            $data = $callback();
+            Cache::put($key, $data, $ttlSeconds);
+
+            return [
+                'cache' => 'miss',
+                'data' => $data,
+            ];
+        } catch (\Exception $e) {
+            Log::channel($this->logChannel)->error('Redis rememberWithMetadata error', [
+                'key' => $key,
+                'error' => $e->getMessage(),
+            ]);
+
+            $data = $callback();
+
+            return [
+                'cache' => 'miss',
+                'data' => $data,
+            ];
+        }
+    }
+
     public function forget(string $key): void
     {
         try {

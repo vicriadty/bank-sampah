@@ -148,6 +148,13 @@ return [
             'days' => 14,
         ],
 
+        'search' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/search.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+        ],
+
     ],
 
 ];
