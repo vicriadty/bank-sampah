@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\SearchUnavailableException;
 use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\ClientBuilder;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
@@ -226,10 +227,10 @@ class ElasticsearchService
             ];
         } catch (NoNodeAvailableException | ClientResponseException | ServerResponseException $e) {
             Log::channel('elasticsearch')->error("Search failed for {$index}: " . $e->getMessage());
-            return ['results' => [], 'total' => 0, 'from' => $from, 'size' => $size];
+            throw new SearchUnavailableException("Elasticsearch unavailable: " . $e->getMessage(), 0, $e);
         } catch (Exception $e) {
             Log::channel('elasticsearch')->error("Unexpected search error for {$index}: " . $e->getMessage());
-            return ['results' => [], 'total' => 0, 'from' => $from, 'size' => $size];
+            throw new SearchUnavailableException("Elasticsearch error: " . $e->getMessage(), 0, $e);
         }
     }
 }
