@@ -20,7 +20,7 @@
                 </small>
             </button>
 
-            <form id="formToggleSwitch" action="{{ route('admin.gold-exchange.toggle') }}" method="POST"
+            <form id="formToggleSwitch" action="{{ route('admin.riwayat-konversi-emas.toggle') }}" method="POST"
                 style="display:none">
                 @csrf
             </form>
@@ -70,7 +70,7 @@
         @endif
     </div>
 
-    <form id="formFilterGold" method="GET" action="{{ route('admin.gold-exchange.index') }}" class="row gy-2 mb-3">
+    <form id="formFilterGold" method="GET" action="{{ route('admin.riwayat-konversi-emas.index') }}" class="row gy-2 mb-3">
         <div class="col-md-4">
             <input type="text" name="nasabah" class="form-control" placeholder="Cari Nama Nasabah..."
                 value="{{ request('nasabah') }}">
@@ -83,7 +83,7 @@
         </div>
         <div class="col-md-2 d-flex align-items-center">
             <button type="submit" class="btn btn-primary mx-2">Filter</button>
-            <a href="{{ route('admin.gold-exchange.index') }}" class="btn btn-secondary">Reset</a>
+            <a href="{{ route('admin.riwayat-konversi-emas.index') }}" class="btn btn-secondary">Reset</a>
         </div>
     </form>
 

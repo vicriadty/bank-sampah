@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\PenjualanSampahController;
 use App\Http\Controllers\Admin\SampahController;
 use App\Http\Controllers\Admin\SetoranController;
 // use App\Http\Controllers\Admin\StokSampahController;
-use App\Http\Controllers\Admin\GoldExchangeController as AdminGoldExchangeController;
+use App\Http\Controllers\Admin\RiwayatKonversiEmasController;
 use App\Http\Controllers\Search\SearchController;
 use App\Http\Controllers\UserController;
 use App\Models\KategoriSampah;
@@ -57,9 +57,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/penjualan/laporan', [PenjualanSampahController::class, 'laporanPDF'])->name('penjualan.laporan');
     Route::post('/penjualan/{id}/void', [PenjualanSampahController::class, 'void'])->name('penjualan.void');
 
-    // Gold Exchange — riwayat auto-convert emas
-    Route::get('/gold-exchange', [AdminGoldExchangeController::class, 'index'])->name('gold-exchange.index');
-    Route::post('/gold-exchange/toggle', [AdminGoldExchangeController::class, 'toggleMasterSwitch'])->name('gold-exchange.toggle');
+    // Riwayat Konversi Emas
+    Route::get('/riwayat-konversi-emas', [RiwayatKonversiEmasController::class, 'index'])->name('riwayat-konversi-emas.index');
+    Route::post('/riwayat-konversi-emas/toggle', [RiwayatKonversiEmasController::class, 'toggleMasterSwitch'])->name('riwayat-konversi-emas.toggle');
 });
 
 // Nasabah Routes

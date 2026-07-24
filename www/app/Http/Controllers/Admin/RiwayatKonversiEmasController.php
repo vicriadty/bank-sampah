@@ -8,7 +8,7 @@ use App\Models\RiwayatKonversiEmas;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class GoldExchangeController extends Controller
+class RiwayatKonversiEmasController extends Controller
 {
     public function index(Request $request)
     {
@@ -30,7 +30,7 @@ class GoldExchangeController extends Controller
 
         if ($request->action == 'cetak') {
             $riwayat = $query->get();
-            $pdf = Pdf::loadView('admin.transaksi.gold-exchange.laporan_pdf', compact('riwayat', 'tanggalAwal', 'tanggalAkhir'))
+            $pdf = Pdf::loadView('admin.transaksi.riwayat-konversi-emas.laporan_pdf', compact('riwayat', 'tanggalAwal', 'tanggalAkhir'))
                 ->setPaper('A4', 'landscape');
 
             $tanggal = now()->format('d-m-y');
@@ -46,7 +46,7 @@ class GoldExchangeController extends Controller
         $hasFilter = $request->filled('nasabah') || $request->filled('tanggal_awal');
         $hasData = $riwayat->total() > 0;
 
-        return view('admin.transaksi.gold-exchange.index', compact('riwayat', 'masterSwitch', 'hasFilter', 'hasData'));
+        return view('admin.transaksi.riwayat-konversi-emas.index', compact('riwayat', 'masterSwitch', 'hasFilter', 'hasData'));
     }
 
     public function toggleMasterSwitch()

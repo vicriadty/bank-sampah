@@ -65,8 +65,8 @@
             <i class="fas fa-fw fa-cash-register"></i>
             <span>Penjualan Sampah</span></a>
     </li>
-    <li class="nav-item {{ request()->routeIs('admin.gold-exchange.index') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('admin.gold-exchange.index') }}">
+    <li class="nav-item {{ request()->routeIs('admin.riwayat-konversi-emas.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.riwayat-konversi-emas.index') }}">
             <i class="fas fa-fw fa-history"></i>
             <span>Riwayat Konversi Emas</span></a>
     </li>
