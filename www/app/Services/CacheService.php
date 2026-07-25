@@ -58,6 +58,38 @@ class CacheService
         });
     }
 
+    public function getTransaksiPerBulan(): mixed
+    {
+        return $this->redis->remember('dashboard:transaksi-per-bulan', 600, function () {
+            return SetoranDetail::join('setorans', 'setoran_details.setoran_id', '=', 'setorans.id')
+                ->join('jenis_sampahs', 'setoran_details.sampah_id', '=', 'jenis_sampahs.id')
+                ->join('kategori_sampahs', 'jenis_sampahs.kategori_id', '=', 'kategori_sampahs.id')
+                ->select(
+                    DB::raw("DATE_FORMAT(setoran_details.created_at, '%Y-%m') as bulan"),
+                    'kategori_sampahs.nama_kategori as kategori',
+                    DB::raw('SUM(setoran_details.berat) as total_berat'),
+                    DB::raw('SUM(setoran_details.subtotal) as total_subtotal')
+                )
+                ->whereYear('setoran_details.created_at', '2026')
+                ->groupBy('bulan', 'kategori_sampahs.nama_kategori')
+                ->orderBy('bulan')
+                ->get();
+        });
+    }
+
+    public function getGoldPriceHistory(): mixed
+    {
+        return $this->redis->remember('dashboard:gold-price-history', 600, function () {
+            return RiwayatKonversiEmas::select(
+                DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as tanggal"),
+                DB::raw('AVG(harga_emas_per_gram) as harga_rata')
+            )
+                ->groupBy('tanggal')
+                ->orderBy('tanggal')
+                ->get();
+        });
+    }
+
     public function getNasabahBaruPerBulan(): mixed
     {
         return $this->redis->remember('dashboard:nasabah-baru-per-bulan', 600, function () {
@@ -111,9 +143,11 @@ class CacheService
             'dashboard:summary',
             'dashboard:gold-stats',
             'dashboard:setoran-per-bulan',
+            'dashboard:transaksi-per-bulan',
             'dashboard:nasabah-baru-per-bulan',
             'dashboard:komposisi-sampah',
             'dashboard:gold-per-bulan',
+            'dashboard:gold-price-history',
             'dashboard:nasabah-terbaru',
         ];
         foreach ($keys as $key) {

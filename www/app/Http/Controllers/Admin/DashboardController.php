@@ -15,16 +15,31 @@ class DashboardController extends Controller
 
         $goldPrice = $goldPriceService->getPrice();
         $setoranPerBulan = $cacheService->getSetoranPerBulan();
-        $nasabahBaruPerBulan = $cacheService->getNasabahBaruPerBulan();
         $komposisiSampah = $cacheService->getKomposisiSampah();
+        $goldPriceHistory = $cacheService->getGoldPriceHistory();
+        $nasabahBaruPerBulan = $cacheService->getNasabahBaruPerBulan();
         $goldPerBulan = $cacheService->getGoldPerBulan();
         $nasabahTerbaru = $cacheService->getNasabahTerbaru();
+
+        $goldChangePercent = null;
+        if ($goldPriceHistory->count() >= 2) {
+            $last = $goldPriceHistory->last()->harga_rata;
+            $prev = $goldPriceHistory->slice(-2, 1)->first()->harga_rata;
+            $goldChangePercent = $prev > 0 ? round((($last - $prev) / $prev) * 100, 2) : 0;
+        }
+
+        $goldHistoryCategories = $goldPriceHistory->pluck('tanggal')->toArray();
+        $goldHistoryData = $goldPriceHistory->pluck('harga_rata')->map(fn($v) => (float) $v)->toArray();
 
         return view('admin.dashboard', compact(
             'goldPrice',
             'setoranPerBulan',
-            'nasabahBaruPerBulan',
             'komposisiSampah',
+            'goldPriceHistory',
+            'goldHistoryCategories',
+            'goldHistoryData',
+            'goldChangePercent',
+            'nasabahBaruPerBulan',
             'goldPerBulan',
             'nasabahTerbaru'
         ) + [
