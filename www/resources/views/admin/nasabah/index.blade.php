@@ -64,7 +64,7 @@
             <a href="{{ route('admin.nasabah.index') }}" class="btn btn-secondary">Reset</a>
         </div>
         <div class="col-md-6 d-flex justify-content-end">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNasabah"><i
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalNasabah"><i
                     class="fas fa-plus fa-sm text-white-50"></i> Tambah
                 Nasabah</button>
         </div>
@@ -139,7 +139,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalNasabahLabel">Tambah Nasabah</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <form id="formNasabah" action="{{ route('admin.nasabah.store') }}" method="post">
                     @csrf
@@ -147,7 +147,7 @@
                         @include('admin.nasabah._form')
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="button" id="btn-simpan-nasabah" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
@@ -161,7 +161,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalEditNasabahLabel">Ubah Nasabah</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <form id="formEditNasabah" method="post">
                     @csrf
@@ -220,7 +220,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="button" id="btn-update-nasabah" class="btn btn-warning">Simpan Perubahan</button>
                     </div>
                 </form>
@@ -295,7 +295,7 @@
                         })
                         .then(data => {
                             if (data.success) {
-                                bootstrap.Modal.getInstance(document.getElementById('modalNasabah')).hide();
+                                $('#modalNasabah').modal('hide');
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Nasabah & Akun Login berhasil dibuat!',
@@ -349,9 +349,7 @@
                             document.getElementById('edit_alamat').value = data.alamat || '';
                             document.getElementById('edit_no_hp').value = data.no_hp || '';
 
-                            var modal = new bootstrap.Modal(document.getElementById(
-                                'modalEditNasabah'));
-                            modal.show();
+                            $('#modalEditNasabah').modal('show');
                         })
                         .catch(() => {
                             Swal.fire({
@@ -402,7 +400,7 @@
                         })
                         .then(data => {
                             if (data.success) {
-                                bootstrap.Modal.getInstance(document.getElementById('modalEditNasabah')).hide();
+                                $('#modalEditNasabah').modal('hide');
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Nasabah berhasil diupdate!',

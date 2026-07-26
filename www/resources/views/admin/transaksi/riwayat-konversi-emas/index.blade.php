@@ -70,7 +70,8 @@
         @endif
     </div>
 
-    <form id="formFilterGold" method="GET" action="{{ route('admin.riwayat-konversi-emas.index') }}" class="row gy-2 mb-3">
+    <form id="formFilterGold" method="GET" action="{{ route('admin.riwayat-konversi-emas.index') }}"
+        class="row gy-2 mb-3">
         <div class="col-md-4">
             <input type="text" name="nasabah" class="form-control" placeholder="Cari Nama Nasabah..."
                 value="{{ request('nasabah') }}">
@@ -87,39 +88,44 @@
         </div>
     </form>
 
-    <div class="table-responsive mt-4">
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Nasabah</th>
-                    <th>Saldo Terpakai</th>
-                    <th>Harga Emas/gram</th>
-                    <th>Jumlah Gram</th>
-                    <th>Sisa Saldo Rp</th>
-                    <th>Total Saldo Emas</th>
-                    <th>Tanggal</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($riwayat as $item)
-                    <tr>
-                        <td>{{ $item->nasabah->nama }}</td>
-                        <td>Rp{{ number_format($item->saldo_terpakai, 0, ',', '.') }}</td>
-                        <td>Rp{{ number_format($item->harga_emas_per_gram, 0, ',', '.') }}</td>
-                        <td>{{ rtrim(rtrim(number_format($item->jumlah_gram, 4, ',', '.'), '0'), ',') }} g</td>
-                        <td>Rp{{ number_format($item->sisa_saldo_rupiah, 0, ',', '.') }}</td>
-                        <td>{{ rtrim(rtrim(number_format($item->total_saldo_emas, 4, ',', '.'), '0'), ',') }} g</td>
-                        <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="text-center">Belum ada riwayat konversi emas.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-        <div class="mt-3">
-            {{ $riwayat->links() }}
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nasabah</th>
+                            <th>Saldo Terpakai</th>
+                            <th>Harga Emas/gram</th>
+                            <th>Jumlah Gram</th>
+                            <th>Sisa Saldo Rp</th>
+                            <th>Total Saldo Emas</th>
+                            <th>Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($riwayat as $item)
+                            <tr>
+                                <td>{{ $item->nasabah->nama }}</td>
+                                <td>Rp{{ number_format($item->saldo_terpakai, 0, ',', '.') }}</td>
+                                <td>Rp{{ number_format($item->harga_emas_per_gram, 0, ',', '.') }}</td>
+                                <td>{{ rtrim(rtrim(number_format($item->jumlah_gram, 4, ',', '.'), '0'), ',') }} g</td>
+                                <td>Rp{{ number_format($item->sisa_saldo_rupiah, 0, ',', '.') }}</td>
+                                <td>{{ rtrim(rtrim(number_format($item->total_saldo_emas, 4, ',', '.'), '0'), ',') }} g
+                                </td>
+                                <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center">Belum ada riwayat konversi emas.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+                <div class="mt-3">
+                    {{ $riwayat->links() }}
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -127,6 +133,13 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            // Cetak laporan — open in new tab
+            $('[name="action"][value="cetak"]').on('click', function() {
+                var form = document.getElementById('formFilterGold');
+                form.target = '_blank';
+                setTimeout(function() { form.target = ''; }, 100);
+            });
+
             $('#btnToggleSwitch').click(function() {
                 let isOn = "{{ $masterSwitch }}" === '1';
 
@@ -183,7 +196,7 @@
                 $('input[name="tanggal_akhir"]').addClass('is-invalid')
                     .after(
                         '<small class="text-danger date-error">Tanggal Akhir harus lebih besar atau sama dengan Tanggal Awal</small>'
-                        );
+                    );
             }
         }
 

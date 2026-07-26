@@ -53,7 +53,7 @@ class SetoranController extends Controller
 
             $namaFile = 'laporan-setoran-' . $tanggal . '.pdf';
 
-            return $pdf->download($namaFile);
+            return $pdf->stream($namaFile);
         }
 
         // Default tampil data

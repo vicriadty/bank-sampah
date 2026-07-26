@@ -8,7 +8,7 @@
         <div class="d-flex gap-2">
             <button type="submit" form="formFilterPenjualan" name="action" value="cetak" class="btn btn-danger mx-2"
                 {{ !($hasFilter && $hasData) ? 'disabled' : '' }}><i class="fas fa-file-pdf"></i> Cetak Laporan</button>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPenjualan"><i
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalPenjualan"><i
                     class="fas fa-plus fa-sm text-white-50"></i> Tambah Penjualan</button>
         </div>
     </div>
@@ -77,65 +77,67 @@
         </div>
     </form>
 
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Kode</th>
+                            <th>Tanggal</th>
+                            <th>Pengepul</th>
+                            <th>Total Harga</th>
+                            <th>Nama Jenis</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($penjualans as $jual)
+                            <tr>
+                                <td>{{ $jual->kode_penjualan ?? '-' }}</td>
+                                <td>{{ $jual->tanggal }}</td>
+                                <td>{{ $jual->pengepul->nama }}</td>
+                                <td>Rp {{ number_format($jual->total_harga, 0, ',', '.') }}</td>
+                                <td>
+                                    <ul>
+                                        @foreach ($jual->detail_penjualan as $detail)
+                                            <li>{{ $detail->sampah->nama_jenis }} ({{ $detail->berat }} kg)</li>
+                                        @endforeach
+                                    </ul>
+                                </td>
+                                <td>
+                                    @if ($jual->status == 'dibatalkan')
+                                        <span class="badge badge-danger">Dibatalkan</span>
+                                    @else
+                                        <span class="badge badge-success">Berhasil</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($jual->status == 'berhasil')
+                                        <button type="button" class="btn btn-sm btn-danger btn-void-penjualan"
+                                            data-id="{{ $jual->id }}" data-pengepul="{{ $jual->pengepul->nama }}"
+                                            data-kode="{{ $jual->kode_penjualan ?? '-' }}">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center">Tidak ada data penjualan sampah.</td>
+                            </tr>
+                        @endforelse
 
-
-
-    <div class="table-responsive mt-5">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Kode</th>
-                    <th>Tanggal</th>
-                    <th>Pengepul</th>
-                    <th>Total Harga</th>
-                    <th>Nama Jenis</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($penjualans as $jual)
-                    <tr>
-                        <td>{{ $jual->kode_penjualan ?? '-' }}</td>
-                        <td>{{ $jual->tanggal }}</td>
-                        <td>{{ $jual->pengepul->nama }}</td>
-                        <td>Rp {{ number_format($jual->total_harga, 0, ',', '.') }}</td>
-                        <td>
-                            <ul>
-                                @foreach ($jual->detail_penjualan as $detail)
-                                    <li>{{ $detail->sampah->nama_jenis }} ({{ $detail->berat }} kg)</li>
-                                @endforeach
-                            </ul>
-                        </td>
-                        <td>
-                            @if ($jual->status == 'dibatalkan')
-                                <span class="badge badge-danger">Dibatalkan</span>
-                            @else
-                                <span class="badge badge-success">Berhasil</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if ($jual->status == 'berhasil')
-                                <button type="button" class="btn btn-sm btn-danger btn-void-penjualan"
-                                    data-id="{{ $jual->id }}" data-pengepul="{{ $jual->pengepul->nama }}">
-                                    <i class="fas fa-ban"></i>
-                                </button>
-                            @else
-                                <span class="text-muted">-</span>
-                            @endif
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="text-center">Tidak ada data penjualan sampah.</td>
-                    </tr>
-                @endforelse
-
-            </tbody>
-        </table>
-    </div>
-    <div class="mt-3">
-        {{ $penjualans->links() }}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3">
+                {{ $penjualans->links() }}
+            </div>
+        </div>
     </div>
 
     {{-- Modal Void Penjualan --}}
@@ -147,7 +149,8 @@
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title" id="voidModalPenjualanLabel">Batalkan Transaksi Penjualan</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
                         <p>Apakah Anda yakin ingin membatalkan transaksi penjualan atas nama pengepul <strong
@@ -159,7 +162,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-danger">Ya, Batalkan</button>
                     </div>
                 </form>
@@ -173,7 +176,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalPenjualanLabel">Tambah Penjualan Sampah</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                 </div>
                 <form id="formPenjualan" action="{{ route('admin.penjualan.store') }}" method="post">
                     @csrf
@@ -181,7 +185,7 @@
                         @include('admin.transaksi.penjualan-sampah._form')
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="button" id="btn-simpan" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
@@ -193,17 +197,55 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Cetak laporan — open in new tab
+            document.querySelector('[name="action"][value="cetak"]').addEventListener('click', function() {
+                var form = document.getElementById('formFilterPenjualan');
+                form.target = '_blank';
+                setTimeout(function() { form.target = ''; }, 100);
+            });
+
             // Void handler
             const voidButtons = document.querySelectorAll('.btn-void-penjualan');
             voidButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
                     const id = this.dataset.id;
                     const nama = this.dataset.pengepul;
+                    const kode = this.dataset.kode;
                     document.getElementById('formVoidPenjualan').action = '/admin/penjualan/' + id +
                         '/void';
                     document.getElementById('pengepulNamePenjualan').textContent = nama;
-                    var modal = new bootstrap.Modal(document.getElementById('voidModalPenjualan'));
-                    modal.show();
+                    document.getElementById('formVoidPenjualan').dataset.kode = kode;
+                    document.getElementById('formVoidPenjualan').dataset.pengepul = nama;
+                    $('#voidModalPenjualan').modal('show');
+                });
+            });
+
+            document.getElementById('formVoidPenjualan').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = this;
+                const alasan = form.querySelector('textarea[name="alasan_batal"]').value.trim();
+                if (!alasan) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Alasan pembatalan wajib diisi'
+                    });
+                    return;
+                }
+                const kode = form.dataset.kode || '-';
+                const pengepul = form.dataset.pengepul || '-';
+                Swal.fire({
+                    title: 'Konfirmasi Pembatalan',
+                    html: `Apakah Anda yakin ingin membatalkan penjualan <strong>${kode}</strong> atas nama <strong>${pengepul}</strong>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Batalkan!',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
                 });
             });
 
@@ -357,7 +399,7 @@
                         })
                         .then(data => {
                             if (data.success) {
-                                bootstrap.Modal.getInstance(document.getElementById('modalPenjualan')).hide();
+                                $('#modalPenjualan').modal('hide');
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Data Penjualan berhasil disimpan!',
@@ -404,7 +446,7 @@
                 $('input[name="tanggal_akhir"]').addClass('is-invalid')
                     .after(
                         '<small class="text-danger date-error">Tanggal Akhir harus lebih besar atau sama dengan Tanggal Awal</small>'
-                        );
+                    );
             }
         }
 

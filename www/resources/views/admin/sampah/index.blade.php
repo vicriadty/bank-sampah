@@ -67,7 +67,7 @@
             <a href="{{ route('admin.sampah.index') }}" class="btn btn-secondary">Reset</a>
         </div>
         <div class="col-md-6 d-flex justify-content-end">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSampah"><i
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalSampah"><i
                     class="fas fa-plus fa-sm text-white-50"></i> Tambah
                 Sampah</button>
         </div>
@@ -134,7 +134,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalSampahLabel">Tambah Sampah</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <form id="formSampah" action="{{ route('admin.sampah.store') }}" method="post">
                     @csrf
@@ -142,7 +142,7 @@
                         @include('admin.sampah._form')
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
@@ -156,7 +156,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalEditSampahLabel">Ubah Sampah</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <form id="formEditSampah" method="post">
                     @csrf
@@ -181,7 +181,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="button" id="btn-update-sampah" class="btn btn-warning">Simpan Perubahan</button>
                     </div>
                 </form>
@@ -238,7 +238,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        bootstrap.Modal.getInstance(document.getElementById('modalSampah')).hide();
+                            $('#modalSampah').modal('hide');
                         Swal.fire({
                             icon: 'success',
                             title: 'Data sampah berhasil ditambahkan!',
@@ -280,8 +280,7 @@
                         document.getElementById('edit_nama_jenis').value = data.nama_jenis || '';
                         document.getElementById('edit_harga_per_kg').value = data.harga_per_kg || '';
 
-                        var modal = new bootstrap.Modal(document.getElementById('modalEditSampah'));
-                        modal.show();
+                        $('#modalEditSampah').modal('show');
                     })
                     .catch(() => {
                         Swal.fire({ icon: 'error', title: 'Gagal memuat data sampah' });
@@ -329,7 +328,7 @@
                     })
                     .then(data => {
                         if (data.success) {
-                            bootstrap.Modal.getInstance(document.getElementById('modalEditSampah')).hide();
+                            $('#modalEditSampah').modal('hide');
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Sampah berhasil diupdate!',

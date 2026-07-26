@@ -36,7 +36,7 @@ class RiwayatKonversiEmasController extends Controller
             $tanggal = now()->format('d-m-y');
             $namaFile = 'laporan-konversi-emas-' . $tanggal . '.pdf';
 
-            return $pdf->download($namaFile);
+            return $pdf->stream($namaFile);
         }
 
         $riwayat = $query->paginate(10)->appends($request->query());

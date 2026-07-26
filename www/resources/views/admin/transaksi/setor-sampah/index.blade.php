@@ -7,9 +7,8 @@
         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-upload text-primary"></i> Data Setoran Sampah</h1>
         <div class="d-flex gap-2">
             <button type="submit" form="formFilterSetoran" name="action" value="cetak" class="btn btn-danger mx-2"
-                {{ !($hasFilter && $hasData) ? 'disabled' : '' }}><i
-                    class="fas fa-file-pdf"></i> Cetak Laporan</button>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSetoran"><i
+                {{ !($hasFilter && $hasData) ? 'disabled' : '' }}><i class="fas fa-file-pdf"></i> Cetak Laporan</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalSetoran"><i
                     class="fas fa-plus fa-sm text-white-50"></i> Tambah Setoran</button>
         </div>
     </div>
@@ -79,92 +78,100 @@
     </form>
 
     {{-- Tabel Data --}}
-    <div class="table-responsive mt-5">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Kode</th>
-                    <th>Nasabah</th>
-                    <th>Tanggal</th>
-                    <th>Jenis Sampah</th>
-                    <th>Harga/Kg</th>
-                    <th>Berat(Kg)</th>
-                    <th>Subtotal</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($setorans as $setoran)
-                    @if ($setoran->details->count() > 0)
-                        @foreach ($setoran->details as $detail)
-                            <tr>
-                                @if ($loop->first)
-                                    <td rowspan="{{ $setoran->details->count() }}">{{ $setoran->kode_setoran ?? '-' }}</td>
-                                    <td rowspan="{{ $setoran->details->count() }}">{{ $setoran->nasabah->nama }}</td>
-                                    <td rowspan="{{ $setoran->details->count() }}">
-                                        {{ $setoran->created_at->format('d-m-Y') }}</td>
-                                @endif
-                                <td>{{ $detail->sampah->nama_jenis }}</td>
-                                <td>Rp{{ number_format($detail->harga_per_kg, 0, ',', '.') }}</td>
-                                <td>{{ $detail->berat }}</td>
-                                <td>Rp{{ number_format($detail->subtotal, 0, ',', '.') }}</td>
-                                @if ($loop->first)
-                                    <td rowspan="{{ $setoran->details->count() }}">
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Kode</th>
+                            <th>Nasabah</th>
+                            <th>Tanggal</th>
+                            <th>Jenis Sampah</th>
+                            <th>Harga/Kg</th>
+                            <th>Berat(Kg)</th>
+                            <th>Subtotal</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($setorans as $setoran)
+                            @if ($setoran->details->count() > 0)
+                                @foreach ($setoran->details as $detail)
+                                    <tr>
+                                        @if ($loop->first)
+                                            <td rowspan="{{ $setoran->details->count() }}">
+                                                {{ $setoran->kode_setoran ?? '-' }}</td>
+                                            <td rowspan="{{ $setoran->details->count() }}">{{ $setoran->nasabah->nama }}
+                                            </td>
+                                            <td rowspan="{{ $setoran->details->count() }}">
+                                                {{ $setoran->created_at->format('d-m-Y') }}</td>
+                                        @endif
+                                        <td>{{ $detail->sampah->nama_jenis }}</td>
+                                        <td>Rp{{ number_format($detail->harga_per_kg, 0, ',', '.') }}</td>
+                                        <td>{{ $detail->berat }}</td>
+                                        <td>Rp{{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                                        @if ($loop->first)
+                                            <td rowspan="{{ $setoran->details->count() }}">
+                                                @if ($setoran->status == 'dibatalkan')
+                                                    <span class="badge badge-danger">Dibatalkan</span>
+                                                @else
+                                                    <span class="badge badge-success">Berhasil</span>
+                                                @endif
+                                            </td>
+                                            <td rowspan="{{ $setoran->details->count() }}">
+                                                @if ($setoran->status == 'berhasil')
+                                                    <button type="button" class="btn btn-sm btn-danger btn-void-setoran"
+                                                        data-id="{{ $setoran->id }}"
+                                                        data-nasabah="{{ $setoran->nasabah->nama }}"
+                                                        data-kode="{{ $setoran->kode_setoran ?? '-' }}">
+                                                        <i class="fas fa-ban"></i>
+                                                    </button>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                        @endif
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td>{{ $setoran->nasabah->nama }}</td>
+                                    <td>{{ $setoran->created_at->format('d-m-Y') }}</td>
+                                    <td colspan="4" class="text-center">Tidak ada detail setoran</td>
+                                    <td>
                                         @if ($setoran->status == 'dibatalkan')
                                             <span class="badge badge-danger">Dibatalkan</span>
                                         @else
                                             <span class="badge badge-success">Berhasil</span>
                                         @endif
                                     </td>
-                                    <td rowspan="{{ $setoran->details->count() }}">
+                                    <td>
                                         @if ($setoran->status == 'berhasil')
                                             <button type="button" class="btn btn-sm btn-danger btn-void-setoran"
-                                                data-id="{{ $setoran->id }}"
-                                                data-nasabah="{{ $setoran->nasabah->nama }}">
+                                                data-id="{{ $setoran->id }}" data-nasabah="{{ $setoran->nasabah->nama }}"
+                                                data-kode="{{ $setoran->kode_setoran ?? '-' }}">
                                                 <i class="fas fa-ban"></i>
                                             </button>
                                         @else
                                             <span class="text-muted">-</span>
                                         @endif
                                     </td>
-                                @endif
+                                </tr>
+                            @endif
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center">Tidak ada data setoran.</td>
                             </tr>
-                        @endforeach
-                    @else
-                        <tr>
-                            <td>{{ $setoran->nasabah->nama }}</td>
-                            <td>{{ $setoran->created_at->format('d-m-Y') }}</td>
-                            <td colspan="4" class="text-center">Tidak ada detail setoran</td>
-                            <td>
-                                @if ($setoran->status == 'dibatalkan')
-                                    <span class="badge badge-danger">Dibatalkan</span>
-                                @else
-                                    <span class="badge badge-success">Berhasil</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if ($setoran->status == 'berhasil')
-                                    <button type="button" class="btn btn-sm btn-danger btn-void-setoran"
-                                        data-id="{{ $setoran->id }}" data-nasabah="{{ $setoran->nasabah->nama }}">
-                                        <i class="fas fa-ban"></i>
-                                    </button>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endif
-                @empty
-                    <tr>
-                        <td colspan="8" class="text-center">Tidak ada data setoran.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    <div class="mt-3">
-        {{ $setorans->links() }}
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-3">
+                {{ $setorans->links() }}
+            </div>
+        </div>
     </div>
 
     {{-- Modal Void Setoran --}}
@@ -175,7 +182,8 @@
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title" id="voidModalSetoranLabel">Batalkan Transaksi Setoran</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
                         <p>Apakah Anda yakin ingin membatalkan transaksi setoran atas nama <strong
@@ -187,7 +195,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-danger">Ya, Batalkan</button>
                     </div>
                 </form>
@@ -201,7 +209,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalSetoranLabel">Tambah Setoran Sampah</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                 </div>
                 <form id="formSetoran" action="{{ route('admin.setoran.store') }}" method="post">
                     @csrf
@@ -209,7 +218,7 @@
                         @include('admin.transaksi.setor-sampah._form')
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="button" id="btn-simpan" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
@@ -221,17 +230,55 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Cetak laporan — open in new tab
+            document.querySelector('[name="action"][value="cetak"]').addEventListener('click', function() {
+                var form = document.getElementById('formFilterSetoran');
+                form.target = '_blank';
+                setTimeout(function() { form.target = ''; }, 100);
+            });
+
             // Void handler
             const voidButtons = document.querySelectorAll('.btn-void-setoran');
             voidButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
                     const id = this.dataset.id;
                     const nama = this.dataset.nasabah;
+                    const kode = this.dataset.kode;
                     document.getElementById('formVoidSetoran').action = '/admin/setoran/' + id +
                         '/void';
                     document.getElementById('nasabahNameSetoran').textContent = nama;
-                    var modal = new bootstrap.Modal(document.getElementById('voidModalSetoran'));
-                    modal.show();
+                    document.getElementById('formVoidSetoran').dataset.kode = kode;
+                    document.getElementById('formVoidSetoran').dataset.nasabah = nama;
+                    $('#voidModalSetoran').modal('show');
+                });
+            });
+
+            document.getElementById('formVoidSetoran').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = this;
+                const alasan = form.querySelector('textarea[name="alasan_batal"]').value.trim();
+                if (!alasan) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Alasan pembatalan wajib diisi'
+                    });
+                    return;
+                }
+                const kode = form.dataset.kode || '-';
+                const nasabah = form.dataset.nasabah || '-';
+                Swal.fire({
+                    title: 'Konfirmasi Pembatalan',
+                    html: `Apakah Anda yakin ingin membatalkan setoran <strong>${kode}</strong> atas nama <strong>${nasabah}</strong>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Batalkan!',
+                    cancelButtonText: 'Tidak'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
                 });
             });
 
@@ -433,7 +480,7 @@
                         })
                         .then(data => {
                             if (data.success) {
-                                bootstrap.Modal.getInstance(document.getElementById('modalSetoran')).hide();
+                                $('#modalSetoran').modal('hide');
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Data Setoran berhasil disimpan!',
@@ -478,7 +525,9 @@
                     .after('<small class="text-danger date-error">Tanggal Awal wajib diisi</small>');
             } else if (tglAwal && tglAkhir && tglAwal > tglAkhir) {
                 $('input[name="tanggal_akhir"]').addClass('is-invalid')
-                    .after('<small class="text-danger date-error">Tanggal Akhir harus lebih besar atau sama dengan Tanggal Awal</small>');
+                    .after(
+                        '<small class="text-danger date-error">Tanggal Akhir harus lebih besar atau sama dengan Tanggal Awal</small>'
+                        );
             }
         }
 

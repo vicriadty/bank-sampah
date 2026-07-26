@@ -35,7 +35,7 @@ class PenjualanSampahController extends Controller
 
         if ($tanggalAwal && $tanggalAkhir) {
             $query->whereDate('created_at', '>=', $tanggalAwal)
-                  ->whereDate('created_at', '<=', $tanggalAkhir);
+                ->whereDate('created_at', '<=', $tanggalAkhir);
         }
 
         if ($pengepulId) {
@@ -51,7 +51,7 @@ class PenjualanSampahController extends Controller
 
             $namaFile = 'laporan-penjualan-' . $tanggal . '.pdf';
 
-            return $pdf->download($namaFile);
+            return $pdf->stream($namaFile);
         }
 
         // Default tampil data

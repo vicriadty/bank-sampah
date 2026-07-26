@@ -96,7 +96,11 @@
                     <img src="{{ public_path('icon/recycle.png') }}" width="20"> Bank Sampah
                 </td>
                 <td class="header-right">
-                    Tanggal: {{ date('d-m-Y') }}
+                    Tanggal Cetak: {{ date('d-m-Y') }}
+                    @if ($tanggalAwal && $tanggalAkhir)
+                        <br>Periode: {{ \Carbon\Carbon::parse($tanggalAwal)->format('d/m/Y') }} -
+                        {{ \Carbon\Carbon::parse($tanggalAkhir)->format('d/m/Y') }}
+                    @endif
                 </td>
             </tr>
         </table>
