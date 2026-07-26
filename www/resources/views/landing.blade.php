@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bank Sampah</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
         :root {
@@ -18,6 +17,8 @@
             /* Dark Gray */
             --light-color: #ffffff;
             /* White */
+            --gold-color: #febd14
+                /* Gold */
         }
 
         body {
@@ -107,16 +108,6 @@
             color: var(--light-color);
         }
 
-        #setor-sampah {
-            padding: 100px 0;
-        }
-
-        .form-control,
-        .form-select {
-            border-radius: 10px;
-            padding: 12px;
-        }
-
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
@@ -181,7 +172,9 @@
 
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ Auth::user()->role === 'admin' ? route('admin.dashboard') : route('nasabah.dashboard') }}">Dashboard</a></li>
+                            <li><a class="dropdown-item"
+                                    href="{{ Auth::user()->role === 'admin' ? route('admin.dashboard') : route('nasabah.dashboard') }}">Dashboard</a>
+                            </li>
                             <li><a class="dropdown-item" href="{{ route('settings.edit') }}">Settings</a></li>
                             <li>
                                 <hr class="dropdown-divider">
@@ -208,63 +201,16 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6 hero-text">
-                    <h1>Peduli Lingkungan, Untung di Tangan</h1>
-                    <p class="my-4">Jadikan sampah di sekitarmu menjadi sumber penghasilan tambahan. Setorkan sampahmu
-                        sekarang dan nikmati keuntungannya!</p>
-                    <a href="#setor-sampah" class="btn btn-cta">Setor Sampah</a>
+                    <h1>Ubah <span class="text-success">Sampah</span> Jadi <span style="color: #febd14">Emas</span>,
+                        Bangun
+                        Masa Depanmu!</h1>
+                    <p class="my-4">Jangan biarkan sampah terbuang sia-sia. Mulai kebiasaan memilah dan setorkan
+                        sampahmu ke Bank Sampah. Kumpulkan saldo rupiahnya, konversikan langsung menjadi tabungan emas
+                        murni, dan mulailah investasi jangka panjangmu hari ini!</p>
+                    <a href="{{ route('register') }}" class="btn btn-cta">Daftar Nasabah</a>
                 </div>
                 <div class="col-md-6 hero-image">
                     <img src="/images/43173.jpg" alt="Ilustrasi Lingkungan" class="img-fluid">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="setor-sampah" class="py-5">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card p-4 shadow-sm">
-                        <h4 class="text-center mb-4">Formulir Setor Sampah</h4>
-                        @auth
-                            <form action="{{ route('admin.setoran.store') }}" method="post">
-                                @csrf
-                                @method('POST')
-                                <div class="mb-3">
-                                    <label for="nasabah_id" class="form-label">Nama Nasabah</label>
-                                    <input type="text" class="form-control" value="{{ Auth::user()->username }}"
-                                        placeholder="{{ Auth::user()->username }}" disabled>
-                                    <input type="hidden" name="id" value="{{ $nasabah->id ?? '' }}">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="jenis_sampah" class="form-label">Jenis Sampah</label>
-                                    <select id="jenis_sampah" class="form-control" required>
-                                        <option value="">Pilih Jenis Sampah</option>
-                                        @foreach ($kategoriSampah ?? [] as $kategori)
-                                            <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="sampah_id" class="form-label">Nama Sampah</label>
-                                    <select name="sampah_id" id="sampah_id" class="form-control" required>
-                                        <option value="">Pilih Nama Sampah</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="berat" class="form-label">Berat (kg)</label>
-                                    <input type="number" step="0.01" name="berat" class="form-control" required>
-                                </div>
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary btn-block">Simpan</button>
-                                </div>
-                            </form>
-                        @else
-                            <div class="alert alert-warning text-center" role="alert">
-                                Silakan <a href="{{ route('login') }}">login</a> untuk melakukan setoran sampah.
-                            </div>
-                        @endauth
-                    </div>
                 </div>
             </div>
         </div>
@@ -311,38 +257,6 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#jenis_sampah').on('change', function() {
-                let jenisID = $(this).val();
-                if (jenisID) {
-                    $.ajax({
-                        url: '/admin/get-sampah-by-jenis/' + jenisID,
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(data) {
-                            $('#sampah_id').empty().append(
-                                '<option value="">-- Pilih Nama Sampah --</option>');
-                            $.each(data, function(key, value) {
-                                    $('#sampah_id').append(
-                                        '<option value="' + value.id + '">' +
-                                        value.nama_jenis + ' - Rp' + parseInt(value
-                                            .harga_per_kg).toLocaleString() + '/kg' +
-                                        '</option>'
-                                );
-                            });
-                        },
-                        error: function() {
-                            alert('Gagal memuat nama sampah');
-                        }
-                    });
-                } else {
-                    $('#sampah').empty().append('<option value="">-- Pilih Nama Sampah --</option>');
-                }
-            });
-        });
-    </script>
 </body>
 
 </html>
