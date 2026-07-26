@@ -82,9 +82,9 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-lg-6 mb-4">
-            <div class="card shadow">
+            <div class="card shadow h-100">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Setoran per Bulan</h6>
                 </div>
@@ -95,9 +95,9 @@
         </div>
 
         <div class="col-lg-6 mb-4">
-            <div class="card shadow">
+            <div class="card shadow h-100">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Saldo Di Konversi (Rupiah ke Emas)</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Konversi Saldo ke Emas</h6>
                 </div>
                 <div class="card-body">
                     <div id="konversiChart"></div>
@@ -156,28 +156,47 @@
 
 @section('scripts')
     <script>
+        // =====================================================
+        // 1. Grafik Setoran per Bulan (Bar Chart)
+        // =====================================================
         var setoranData = @json($setoranPerBulan);
         new ApexCharts(document.getElementById('setoranChart'), {
-            chart: { type: 'line', height: 250, toolbar: { show: false } },
-            series: [{ name: 'Setoran (Rp)', data: setoranData.map(i => parseFloat(i.total)) }],
-            xaxis: { categories: setoranData.map(i => i.bulan) },
-            yaxis: { labels: { formatter: v => 'Rp ' + v.toLocaleString('id-ID') } },
-            stroke: { curve: 'smooth', width: 2 },
+            chart: { type: 'bar', height: 350, toolbar: { show: false } },
+            series: [{ name: 'Setoran (Rp)', data: setoranData.map(function(i) { return parseFloat(i.total); }) }],
+            xaxis: { categories: setoranData.map(function(i) { return i.bulan; }) },
+            yaxis: { labels: { formatter: function(v) { return 'Rp ' + v.toLocaleString('id-ID'); } } },
             colors: ['#4e73df'],
-            tooltip: { y: { formatter: v => 'Rp ' + v.toLocaleString('id-ID') } }
+            tooltip: { y: { formatter: function(v) { return 'Rp ' + v.toLocaleString('id-ID'); } } }
         }).render();
 
+        // =====================================================
+        // 2. Grafik Konversi Saldo (Line + Area, Dual Y-Axis)
+        // =====================================================
         var konversiData = @json($konversiPerBulan);
+        var konversiCategories = konversiData.map(function(i) { return i.bulan; });
+        var rupiahData = konversiData.map(function(i) { return parseFloat(i.total_rupiah); });
+        var gramData = konversiData.map(function(i) { return parseFloat(i.total_gram); });
+
         new ApexCharts(document.getElementById('konversiChart'), {
-            chart: { type: 'line', height: 250, toolbar: { show: false } },
+            chart: { type: 'line', height: 300, toolbar: { show: false } },
             series: [
-                { name: 'Rupiah Dikonversi', data: konversiData.map(i => parseFloat(i.total_rupiah)) },
-                { name: 'Emas (gram)', data: konversiData.map(i => parseFloat(i.total_gram)) }
+                { name: 'Rupiah Dikonversi (Rp)', type: 'line', data: rupiahData },
+                { name: 'Emas (gram)', type: 'area', data: gramData }
             ],
-            xaxis: { categories: konversiData.map(i => i.bulan) },
-            stroke: { curve: 'smooth', width: 2 },
-            colors: ['#1cc88a', '#d4a017'],
-            tooltip: { y: { formatter: (v, { seriesIndex }) => seriesIndex === 0 ? 'Rp ' + v.toLocaleString('id-ID') : v.toFixed(4) + ' g' } }
+            xaxis: { categories: konversiCategories },
+            yaxis: [
+                { title: { text: 'Rupiah (Rp)' }, labels: { formatter: function(v) { return 'Rp ' + v.toLocaleString('id-ID'); } } },
+                { title: { text: 'Gram' }, opposite: true, labels: { formatter: function(v) { return v.toFixed(2) + ' g'; } } }
+            ],
+            colors: ['#4e73df', '#d4a017'],
+            stroke: { width: [2, 0], curve: 'smooth' },
+            fill: { opacity: [1, 0.3], type: ['solid', 'solid'] },
+            tooltip: {
+                shared: true,
+                intersect: false,
+                y: { formatter: function(v, opts) { return opts.seriesIndex === 0 ? 'Rp ' + v.toLocaleString('id-ID') : v.toFixed(4) + ' g'; } }
+            },
+            legend: { position: 'bottom' }
         }).render();
     </script>
 @endsection
