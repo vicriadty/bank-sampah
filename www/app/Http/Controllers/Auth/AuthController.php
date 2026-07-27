@@ -30,8 +30,8 @@ class AuthController extends Controller
         }
 
         $credentials = $request->validate([
-            'username' => ['required'],
-            'password' => ['required'],
+            'username' => ['required', 'string', 'min:5', 'max:30'],
+            'password' => ['required', 'string', 'min:8', 'max:100'],
         ]);
 
         if (Auth::attempt($credentials)) {
@@ -77,20 +77,21 @@ class AuthController extends Controller
 
         $request->validate([
             'nik'              => 'required|string|size:16|unique:nasabahs,nik',
-            'nama'             => 'required|string|max:100',
+            'nama'             => 'required|string|min:3|max:100',
             'jenis_kelamin'    => 'required|in:Laki-laki,Perempuan',
             'tempat_lahir'     => 'required|string|max:100',
             'tanggal_lahir'    => 'required|date|before:today',
             'alamat'           => 'required|string|max:1000',
-            'no_hp'            => 'required|string|max:15',
-            'username'         => 'required|string|max:100|unique:users,username',
-            'email'            => 'required|email|unique:users,email',
-            'password'         => 'required|min:6|confirmed',
+            'no_hp'            => 'required|string|min:10|max:13',
+            'username'         => 'required|string|min:5|max:30|unique:users,username',
+            'password'         => 'required|min:8|confirmed',
         ], [
             'nik.required'           => 'NIK wajib diisi.',
             'nik.size'               => 'NIK harus 16 digit.',
             'nik.unique'             => 'NIK sudah terdaftar.',
             'nama.required'          => 'Nama lengkap wajib diisi.',
+            'nama.min'               => 'Nama minimal 3 karakter.',
+            'nama.max'               => 'Nama maksimal 100 karakter.',
             'jenis_kelamin.required' => 'Pilih jenis kelamin.',
             'jenis_kelamin.in'       => 'Jenis kelamin tidak valid.',
             'tempat_lahir.required'  => 'Tempat lahir wajib diisi.',
@@ -98,13 +99,14 @@ class AuthController extends Controller
             'tanggal_lahir.before'   => 'Tanggal lahir harus sebelum hari ini.',
             'alamat.required'        => 'Alamat wajib diisi.',
             'no_hp.required'         => 'No. handphone wajib diisi.',
+            'no_hp.min'              => 'No. handphone minimal 10 digit.',
+            'no_hp.max'              => 'No. handphone maksimal 13 digit.',
             'username.required'      => 'Username wajib diisi.',
+            'username.min'           => 'Username minimal 5 karakter.',
+            'username.max'           => 'Username maksimal 30 karakter.',
             'username.unique'        => 'Username sudah digunakan.',
-            'email.required'         => 'Email wajib diisi.',
-            'email.email'            => 'Format email tidak valid.',
-            'email.unique'           => 'Email sudah terdaftar.',
             'password.required'      => 'Password wajib diisi.',
-            'password.min'           => 'Password minimal 6 karakter.',
+            'password.min'           => 'Password minimal 8 karakter.',
             'password.confirmed'     => 'Konfirmasi password tidak cocok.',
         ]);
 
@@ -112,7 +114,6 @@ class AuthController extends Controller
         try {
             $user = User::create([
                 'username' => $request->username,
-                'email'    => $request->email,
                 'password' => Hash::make($request->password),
                 'role'     => 'nasabah',
             ]);
@@ -126,7 +127,7 @@ class AuthController extends Controller
                 'tanggal_lahir'  => $request->tanggal_lahir,
                 'alamat'         => $request->alamat,
                 'no_hp'          => $request->no_hp,
-                'email'          => $request->email,
+                'email'          => $request->email ?? null,
             ]);
 
             DB::commit();

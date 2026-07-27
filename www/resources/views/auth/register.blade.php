@@ -335,23 +335,10 @@
                             <i class="fas fa-user input-icon-left"></i>
                             <input type="text" name="username" id="username"
                                    class="form-control @error('username') is-invalid @enderror"
-                                   placeholder="Username" value="{{ old('username') }}" maxlength="100" required>
+                                   placeholder="Username" value="{{ old('username') }}"
+                                   minlength="5" maxlength="30" required>
                         </div>
                         @error('username')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- Email --}}
-                    <div class="col-md-6">
-                        <label for="email" class="form-label">Email</label>
-                        <div class="input-wrapper">
-                            <i class="fas fa-envelope input-icon-left"></i>
-                            <input type="email" name="email" id="email"
-                                   class="form-control @error('email') is-invalid @enderror"
-                                   placeholder="email@contoh.com" value="{{ old('email') }}" required>
-                        </div>
-                        @error('email')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
@@ -365,7 +352,7 @@
                             <i class="fas fa-lock input-icon-left"></i>
                             <input type="password" name="password" id="password"
                                    class="form-control @error('password') is-invalid @enderror"
-                                   placeholder="Min. 6 karakter" minlength="6" required>
+                                   placeholder="Min. 8 karakter" minlength="8" maxlength="100" required>
                         </div>
                         @error('password')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -379,7 +366,7 @@
                             <i class="fas fa-lock input-icon-left"></i>
                             <input type="password" name="password_confirmation" id="password_confirmation"
                                    class="form-control @error('password_confirmation') is-invalid @enderror"
-                                   placeholder="Ulangi password" minlength="6" required>
+                                   placeholder="Ulangi password" minlength="8" maxlength="100" required>
                         </div>
                         @error('password_confirmation')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
