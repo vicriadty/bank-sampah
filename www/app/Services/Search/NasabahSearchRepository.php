@@ -23,6 +23,7 @@ class NasabahSearchRepository
                     'query' => $keyword,
                     'fields' => ['nama', 'nik', 'email', 'alamat'],
                     'type' => 'best_fields',
+                    'fuzziness' => 'AUTO',
                 ],
             ],
         ];
