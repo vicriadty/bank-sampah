@@ -19,10 +19,24 @@ class NasabahSearchRepository
 
         $query = [
             'query' => [
-                'multi_match' => [
-                    'query' => $keyword,
-                    'fields' => ['nama', 'nik', 'email', 'alamat'],
-                    'type' => 'best_fields',
+                'bool' => [
+                    'should' => [
+                        ['match' => [
+                            'nama' => ['query' => $keyword, 'operator' => 'and', 'boost' => 5],
+                        ]],
+                        ['match' => [
+                            'nik' => ['query' => $keyword, 'operator' => 'and', 'boost' => 4],
+                        ]],
+                        ['prefix' => ['nama' => ['value' => $keyword, 'boost' => 3]]],
+                        ['prefix' => ['nik' => ['value' => $keyword, 'boost' => 2]]],
+                        ['multi_match' => [
+                            'query' => $keyword,
+                            'fields' => ['nama^2', 'nik^2', 'email', 'alamat^0.5'],
+                            'type' => 'best_fields',
+                            'fuzziness' => 'AUTO',
+                        ]],
+                    ],
+                    'minimum_should_match' => 1,
                 ],
             ],
         ];
@@ -34,7 +48,7 @@ class NasabahSearchRepository
 
         $ids = array_column($items, 'id');
         $models = Nasabah::whereIn('id', $ids)->get()->keyBy('id');
-        $ordered = collect($ids)->map(fn($id) => $models->get($id))->filter();
+        $ordered = collect($ids)->map(fn($id) => $models->get($id))->filter()->values();
 
         return [
             'engine' => 'elasticsearch',

@@ -19,10 +19,20 @@ class JenisSampahSearchRepository
 
         $query = [
             'query' => [
-                'multi_match' => [
-                    'query' => $keyword,
-                    'fields' => ['nama_jenis', 'kategori'],
-                    'type' => 'best_fields',
+                'bool' => [
+                    'should' => [
+                        ['match' => [
+                            'nama_jenis' => ['query' => $keyword, 'operator' => 'and', 'boost' => 5],
+                        ]],
+                        ['prefix' => ['nama_jenis' => ['value' => $keyword, 'boost' => 3]]],
+                        ['multi_match' => [
+                            'query' => $keyword,
+                            'fields' => ['nama_jenis^2', 'kategori'],
+                            'type' => 'best_fields',
+                            'fuzziness' => 'AUTO',
+                        ]],
+                    ],
+                    'minimum_should_match' => 1,
                 ],
             ],
         ];
@@ -34,7 +44,7 @@ class JenisSampahSearchRepository
 
         $ids = array_column($items, 'id');
         $models = JenisSampah::with('kategoriSampah')->whereIn('id', $ids)->get()->keyBy('id');
-        $ordered = collect($ids)->map(fn($id) => $models->get($id))->filter();
+        $ordered = collect($ids)->map(fn($id) => $models->get($id))->filter()->values();
 
         return [
             'engine' => 'elasticsearch',

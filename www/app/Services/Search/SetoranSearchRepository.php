@@ -19,10 +19,23 @@ class SetoranSearchRepository
 
         $query = [
             'query' => [
-                'multi_match' => [
-                    'query' => $keyword,
-                    'fields' => ['kode_setoran', 'nasabah', 'status'],
-                    'type' => 'best_fields',
+                'bool' => [
+                    'should' => [
+                        ['match' => [
+                            'kode_setoran' => ['query' => $keyword, 'operator' => 'and', 'boost' => 5],
+                        ]],
+                        ['match' => [
+                            'nasabah' => ['query' => $keyword, 'operator' => 'and', 'boost' => 4],
+                        ]],
+                        ['prefix' => ['nasabah' => ['value' => $keyword, 'boost' => 3]]],
+                        ['multi_match' => [
+                            'query' => $keyword,
+                            'fields' => ['nasabah^2', 'kode_setoran^2', 'status'],
+                            'type' => 'best_fields',
+                            'fuzziness' => 'AUTO',
+                        ]],
+                    ],
+                    'minimum_should_match' => 1,
                 ],
             ],
         ];
@@ -34,7 +47,7 @@ class SetoranSearchRepository
 
         $ids = array_column($items, 'id');
         $models = Setoran::with(['nasabah', 'details.sampah'])->whereIn('id', $ids)->get()->keyBy('id');
-        $ordered = collect($ids)->map(fn($id) => $models->get($id))->filter();
+        $ordered = collect($ids)->map(fn($id) => $models->get($id))->filter()->values();
 
         return [
             'engine' => 'elasticsearch',

@@ -63,10 +63,22 @@ class ElasticIndexCreate extends Command
                 'mappings' => [
                     'properties' => [
                         'id' => ['type' => 'integer'],
-                        'nik' => ['type' => 'text', 'analyzer' => 'ngram_analyzer'],
-                        'nama' => ['type' => 'text', 'analyzer' => 'ngram_analyzer'],
+                        'nik' => [
+                            'type' => 'text',
+                            'analyzer' => 'ngram_analyzer',
+                            'fields' => ['keyword' => ['type' => 'keyword']],
+                        ],
+                        'nama' => [
+                            'type' => 'text',
+                            'analyzer' => 'ngram_analyzer',
+                            'fields' => ['keyword' => ['type' => 'keyword']],
+                        ],
                         'email' => ['type' => 'keyword'],
-                        'alamat' => ['type' => 'text', 'analyzer' => 'ngram_analyzer'],
+                        'alamat' => [
+                            'type' => 'text',
+                            'analyzer' => 'ngram_analyzer',
+                            'fields' => ['keyword' => ['type' => 'keyword']],
+                        ],
                         'no_hp' => ['type' => 'keyword'],
                         'created_at' => ['type' => 'date'],
                     ],
@@ -77,8 +89,16 @@ class ElasticIndexCreate extends Command
                 'mappings' => [
                     'properties' => [
                         'id' => ['type' => 'integer'],
-                        'nama_jenis' => ['type' => 'text', 'analyzer' => 'ngram_analyzer'],
-                        'kategori' => ['type' => 'text', 'analyzer' => 'ngram_analyzer'],
+                        'nama_jenis' => [
+                            'type' => 'text',
+                            'analyzer' => 'ngram_analyzer',
+                            'fields' => ['keyword' => ['type' => 'keyword']],
+                        ],
+                        'kategori' => [
+                            'type' => 'text',
+                            'analyzer' => 'ngram_analyzer',
+                            'fields' => ['keyword' => ['type' => 'keyword']],
+                        ],
                         'harga_per_kg' => ['type' => 'float'],
                         'stok' => ['type' => 'float'],
                     ],
@@ -91,7 +111,11 @@ class ElasticIndexCreate extends Command
                         'id' => ['type' => 'integer'],
                         'kode_setoran' => ['type' => 'keyword'],
                         'nasabah_id' => ['type' => 'integer'],
-                        'nasabah' => ['type' => 'text', 'analyzer' => 'ngram_analyzer'],
+                        'nasabah' => [
+                            'type' => 'text',
+                            'analyzer' => 'ngram_analyzer',
+                            'fields' => ['keyword' => ['type' => 'keyword']],
+                        ],
                         'total_harga' => ['type' => 'float'],
                         'status' => ['type' => 'keyword'],
                         'created_at' => ['type' => 'date'],

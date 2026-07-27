@@ -91,6 +91,9 @@ class SearchController extends Controller
         }
 
         $response = response()->json([
+            'search_engine' => $engine,
+            'cache_status' => strtoupper($cacheStatus),
+            'search_time' => $elapsed . ' ms',
             'data' => $result['data'],
             'total' => $result['total'],
             'per_page' => $result['per_page'],
@@ -98,12 +101,10 @@ class SearchController extends Controller
             'last_page' => $result['last_page'],
         ]);
 
-        if (config('app.debug')) {
-            $response->headers->set('X-Cache', strtoupper($cacheStatus));
-            $servedFrom = $cacheStatus === 'hit' ? 'Redis' : ucfirst($engine);
-            $response->headers->set('X-Served-From', $servedFrom);
-            $response->headers->set('X-Search-Time', $elapsed . ' ms');
-        }
+        $response->headers->set('X-Cache', strtoupper($cacheStatus));
+        $servedFrom = $cacheStatus === 'hit' ? 'Redis' : ucfirst($engine);
+        $response->headers->set('X-Served-From', $servedFrom);
+        $response->headers->set('X-Search-Time', $elapsed . ' ms');
 
         return $response;
     }
