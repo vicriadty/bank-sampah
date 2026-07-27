@@ -25,6 +25,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        // Session Login sudah ada, redirect ke halaman sebelumnya
         if (Auth::check()) {
             return back();
         }
@@ -62,6 +63,7 @@ class AuthController extends Controller
 
     public function showRegisterForm()
     {
+        // Session Login sudah ada, redirect ke halaman sebelumnya
         if (Auth::check()) {
             return back();
         }
@@ -71,6 +73,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        // Session Login sudah ada, redirect ke halaman sebelumnya
         if (Auth::check()) {
             return back();
         }

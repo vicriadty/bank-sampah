@@ -14,9 +14,9 @@ class RiwayatKonversiEmasSeeder extends Seeder
         $faker = \Faker\Factory::create('id_ID');
         $nasabahIds = Nasabah::pluck('id')->toArray();
 
-        // Harga emas per gram range (2026: 1.600.000 - 1.850.000)
-        $hargaAwal = 1_600_000;
-        $hargaAkhir = 1_850_000;
+        // Harga emas per gram range (2026: 2.300.000 - 2.750.000)
+        $hargaAwal = 2_300_000;
+        $hargaAkhir = 2_750_000;
 
         for ($month = 1; $month <= 12; $month++) {
             $count = $faker->numberBetween(3, 10);
