@@ -23,6 +23,7 @@ class SetoranSearchRepository
                     'query' => $keyword,
                     'fields' => ['kode_setoran', 'nasabah', 'status'],
                     'type' => 'best_fields',
+                    'fuzziness' => 'AUTO',
                 ],
             ],
         ];
