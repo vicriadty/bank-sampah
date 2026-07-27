@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 
 use App\Models\DetailPenjualanSampah;
+use App\Models\KategoriSampah;
 use App\Models\Pengepul;
 use App\Models\PenjualanSampah;
 use App\Models\JenisSampah;
@@ -57,6 +58,7 @@ class PenjualanSampahController extends Controller
         // Default tampil data
         $penjualans = $query->paginate(10);
         $pengepuls = Pengepul::all();
+        $kategoriSampah = KategoriSampah::all();
         $jenisSampahs = JenisSampah::with(['kategoriSampah'])
             ->select('id', 'nama_jenis', 'kategori_id', 'harga_per_kg', 'stok')
             ->get();
@@ -64,17 +66,18 @@ class PenjualanSampahController extends Controller
         $hasFilter = $request->filled('pengepul') || $request->filled('tanggal_awal');
         $hasData = $penjualans->total() > 0;
 
-        return view('admin.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepuls', 'jenisSampahs', 'hasFilter', 'hasData'));
+        return view('admin.transaksi.penjualan-sampah.index', compact('penjualans', 'pengepuls', 'kategoriSampah', 'jenisSampahs', 'hasFilter', 'hasData'));
     }
 
     public function create()
     {
         $pengepuls = Pengepul::all();
+        $kategoriSampah = KategoriSampah::all();
         $jenisSampahs = JenisSampah::with(['kategoriSampah'])
             ->select('id', 'nama_jenis', 'kategori_id', 'harga_per_kg', 'stok')
             ->get();
 
-        return view('admin.transaksi.penjualan-sampah.create', compact('pengepuls', 'jenisSampahs'));
+        return view('admin.transaksi.penjualan-sampah.create', compact('pengepuls', 'kategoriSampah', 'jenisSampahs'));
     }
 
     public function store(Request $request)

@@ -263,6 +263,29 @@
                 document.getElementById('total-harga').value = formatRupiah(total);
             }
 
+            function loadSampahByJenis(jenisSelect, sampahSelect, hargaInput) {
+                let jenisID = jenisSelect.value;
+                if (!jenisID) {
+                    sampahSelect.innerHTML = '<option value="">Pilih Jenis Sampah</option>';
+                    hargaInput.value = '';
+                    return;
+                }
+                fetch('/admin/get-sampah-by-jenis/' + jenisID)
+                    .then(res => res.json())
+                    .then(data => {
+                        sampahSelect.innerHTML = '<option value="">Pilih Jenis Sampah</option>';
+                        data.forEach(item => {
+                            let opt = document.createElement('option');
+                            opt.value = item.id;
+                            opt.dataset.harga = item.harga_per_kg;
+                            opt.textContent = item.nama_jenis + ' - Rp' + parseInt(item.harga_per_kg)
+                                .toLocaleString('id-ID') + '/kg (Stok: ' + parseFloat(item.stok).toFixed(2) + ' kg)';
+                            sampahSelect.appendChild(opt);
+                        });
+                    })
+                    .catch(() => alert('Gagal memuat data sampah'));
+            }
+
             function updateSubtotal(row) {
                 let sampahSelect = row.querySelector('.sampah-select');
                 let hargaOption = sampahSelect.options[sampahSelect.selectedIndex];
@@ -298,6 +321,15 @@
 
             // Dynamic row events (delegated)
             document.getElementById('sampah-container').addEventListener('change', function(e) {
+                if (e.target.classList.contains('jenis-sampah-select')) {
+                    let row = e.target.closest('.sampah-row');
+                    let sampahSelect = row.querySelector('.sampah-select');
+                    let hargaInput = row.querySelector('.harga-per-kg');
+                    loadSampahByJenis(e.target, sampahSelect, hargaInput);
+                    row.querySelector('.subtotal').value = '';
+                    row.querySelector('.subtotal').dataset.nilai = 0;
+                    hitungTotal();
+                }
                 if (e.target.classList.contains('sampah-select')) {
                     updateSubtotal(e.target.closest('.sampah-row'));
                 }
