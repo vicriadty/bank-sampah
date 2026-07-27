@@ -20,9 +20,8 @@ class NasabahSeeder extends Seeder
             [
                 'nik' => '3201021204990018',
                 'nama' => 'RAFFA PRADIPTA',
-                'username' => 'raffa',
-                'email' => 'raffa@gmail.com',
-                'password' => '123456',
+                'username' => 'raffa01',
+                'password' => '12345678',
                 'jenis_kelamin' => 'Laki-laki',
                 'tempat_lahir' => 'Bogor',
                 'tanggal_lahir' => '1989-01-01',
@@ -33,9 +32,8 @@ class NasabahSeeder extends Seeder
             [
                 'nik' => '3201024506920001',
                 'nama' => 'SITI AMINAH',
-                'username' => 'siti',
-                'email' => 'siti@gmail.com',
-                'password' => '123456',
+                'username' => 'siti01',
+                'password' => '12345678',
                 'jenis_kelamin' => 'Perempuan',
                 'tempat_lahir' => 'Jakarta',
                 'tanggal_lahir' => '1992-06-15',
@@ -46,9 +44,8 @@ class NasabahSeeder extends Seeder
             [
                 'nik' => '3201022108850005',
                 'nama' => 'BUDI SANTOSO',
-                'username' => 'budi',
-                'email' => 'budi@gmail.com',
-                'password' => '123456',
+                'username' => 'budi01',
+                'password' => '12345678',
                 'jenis_kelamin' => 'Laki-laki',
                 'tempat_lahir' => 'Bandung',
                 'tanggal_lahir' => '1985-08-21',
@@ -59,9 +56,8 @@ class NasabahSeeder extends Seeder
             [
                 'nik' => '3201026011950002',
                 'nama' => 'DEWI LESTARI',
-                'username' => 'dewi',
-                'email' => 'dewi@gmail.com',
-                'password' => '123456',
+                'username' => 'dewi01',
+                'password' => '12345678',
                 'jenis_kelamin' => 'Perempuan',
                 'tempat_lahir' => 'Surabaya',
                 'tanggal_lahir' => '1995-11-20',
@@ -72,9 +68,8 @@ class NasabahSeeder extends Seeder
             [
                 'nik' => '3201020303880008',
                 'nama' => 'AHMAD FAUZI',
-                'username' => 'ahmad',
-                'email' => 'ahmad@gmail.com',
-                'password' => '123456',
+                'username' => 'ahmad01',
+                'password' => '12345678',
                 'jenis_kelamin' => 'Laki-laki',
                 'tempat_lahir' => 'Malang',
                 'tanggal_lahir' => '1988-03-03',
@@ -85,9 +80,8 @@ class NasabahSeeder extends Seeder
             [
                 'nik' => '3201025212900003',
                 'nama' => 'RINA WATI',
-                'username' => 'rina',
-                'email' => 'rina@gmail.com',
-                'password' => '123456',
+                'username' => 'rina01',
+                'password' => '12345678',
                 'jenis_kelamin' => 'Perempuan',
                 'tempat_lahir' => 'Semarang',
                 'tanggal_lahir' => '1990-12-12',
@@ -98,9 +92,8 @@ class NasabahSeeder extends Seeder
             [
                 'nik' => '3201021507800004',
                 'nama' => 'JOKO SUSILO',
-                'username' => 'joko',
-                'email' => 'joko@gmail.com',
-                'password' => '123456',
+                'username' => 'joko01',
+                'password' => '12345678',
                 'jenis_kelamin' => 'Laki-laki',
                 'tempat_lahir' => 'Yogyakarta',
                 'tanggal_lahir' => '1980-07-15',
@@ -111,9 +104,8 @@ class NasabahSeeder extends Seeder
             [
                 'nik' => '3201024805980007',
                 'nama' => 'ANISA PUTRI',
-                'username' => 'anisa',
-                'email' => 'anisa@gmail.com',
-                'password' => '123456',
+                'username' => 'anisa01',
+                'password' => '12345678',
                 'jenis_kelamin' => 'Perempuan',
                 'tempat_lahir' => 'Solo',
                 'tanggal_lahir' => '1998-05-08',
@@ -124,9 +116,8 @@ class NasabahSeeder extends Seeder
             [
                 'nik' => '3201020909930009',
                 'nama' => 'RIZKY RAMADHAN',
-                'username' => 'rizky',
-                'email' => 'rizky@gmail.com',
-                'password' => '123456',
+                'username' => 'rizky01',
+                'password' => '12345678',
                 'jenis_kelamin' => 'Laki-laki',
                 'tempat_lahir' => 'Medan',
                 'tanggal_lahir' => '1993-09-09',
@@ -137,9 +128,8 @@ class NasabahSeeder extends Seeder
             [
                 'nik' => '3201024202870006',
                 'nama' => 'LINDA KUSUMA',
-                'username' => 'linda',
-                'email' => 'linda@gmail.com',
-                'password' => '123456',
+                'username' => 'linda01',
+                'password' => '12345678',
                 'jenis_kelamin' => 'Perempuan',
                 'tempat_lahir' => 'Denpasar',
                 'tanggal_lahir' => '1987-02-02',
@@ -153,7 +143,6 @@ class NasabahSeeder extends Seeder
             DB::transaction(function () use ($data) {
                 $user = User::create([
                     'username' => $data['username'],
-                    'email' => $data['email'],
                     'password' => Hash::make($data['password']),
                     'role' => 'nasabah',
                 ]);
@@ -167,7 +156,6 @@ class NasabahSeeder extends Seeder
                     'tempat_lahir' => $data['tempat_lahir'],
                     'alamat' => $data['alamat'],
                     'no_hp' => $data['no_hp'],
-                    'email' => $data['email'],
                 ]);
             });
         }
@@ -186,12 +174,11 @@ class NasabahSeeder extends Seeder
                 DB::transaction(function () use ($faker, $date, $uniqueId) {
                     $nama = $faker->name();
                     $username = strtolower(str_replace(' ', '.', $nama)) . $uniqueId;
-                    $email = $faker->unique()->safeEmail();
+                    $username = substr($username, 0, 30);
 
                     $user = User::create([
                         'username' => $username,
-                        'email' => $email,
-                        'password' => Hash::make('123456'),
+                        'password' => Hash::make('12345678'),
                         'role' => 'nasabah',
                     ]);
 
@@ -209,7 +196,6 @@ class NasabahSeeder extends Seeder
                         'tempat_lahir' => $faker->city(),
                         'alamat' => $faker->address(),
                         'no_hp' => $faker->numerify('08##########'),
-                        'email' => $email,
                     ]);
 
                     $nasabah->timestamps = false;

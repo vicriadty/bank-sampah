@@ -23,14 +23,11 @@ class UserController extends Controller
         $user = Auth::user();
 
         $validatedData = $request->validate([
-            'username' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'username' => 'required|string|min:5|max:30',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Simpan data user
         $user->username = $validatedData['username'];
-        $user->email = $validatedData['email'];
 
         if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('photos', 'public');
@@ -47,7 +44,7 @@ class UserController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'new_password' => 'required|string|min:6|confirmed',
+            'new_password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = Auth::user();

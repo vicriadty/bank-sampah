@@ -42,12 +42,7 @@
                 <div class="mb-3">
                     <label>Username</label>
                     <input type="text" id="username" name="username" class="form-control"
-                        value="{{ old('name', $user->username) }}">
-                </div>
-                <div class="mb-3">
-                    <label>Email</label>
-                    <input type="email" id="email" name="email" class="form-control"
-                        value="{{ old('email', $user->email) }}">
+                        value="{{ old('name', $user->username) }}" minlength="5" maxlength="30">
                 </div>
                 <div class="mb-3">
                     <label>Foto Profil</label><br>
@@ -70,11 +65,11 @@
                 </div>
                 <div class="mb-3">
                     <label>Password Baru</label>
-                    <input type="password" name="new_password" class="form-control">
+                    <input type="password" name="new_password" class="form-control" minlength="8">
                 </div>
                 <div class="mb-3">
                     <label>Konfirmasi Password Baru</label>
-                    <input type="password" name="new_password_confirmation" class="form-control">
+                    <input type="password" name="new_password_confirmation" class="form-control" minlength="8">
                 </div>
                 <button class="btn btn-warning">Ubah Password</button>
             </form>

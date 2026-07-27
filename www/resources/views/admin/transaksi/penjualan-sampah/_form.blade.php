@@ -33,7 +33,7 @@
 
         <div class="col-md-2 col-sm-4">
             <label>Berat (kg)</label>
-            <input type="number" name="berat[]" class="form-control berat-input form-control-sm" step="0.01"
+            <input type="number" name="berat[]" class="form-control berat-input form-control-sm" step="0.1"
                 min="0.1" required>
         </div>
 

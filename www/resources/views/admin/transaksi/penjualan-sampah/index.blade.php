@@ -363,6 +363,22 @@
                     return;
                 }
 
+                let beratInvalid = false;
+                document.querySelectorAll('.berat-input').forEach(el => {
+                    let val = parseFloat(el.value);
+                    if (el.value && val <= 0.1) {
+                        beratInvalid = true;
+                    }
+                });
+
+                if (beratInvalid) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Berat minimal 0.1 Kg'
+                    });
+                    return;
+                }
+
                 Swal.fire({
                     title: 'Konfirmasi Penjualan',
                     html: `<div style="text-align: left;">

@@ -135,7 +135,7 @@
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
-                        timer: 2000,
+                        timer: 3500,
                         timerProgressBar: true
                     });
                 </script>
@@ -150,7 +150,7 @@
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
-                        timer: 2000,
+                        timer: 3500,
                         timerProgressBar: true
                     });
                 </script>
@@ -190,7 +190,7 @@
                         <i class="fas fa-user input-icon"></i>
                         <input type="text" name="username" id="username"
                             class="form-control @error('username') is-invalid @enderror" placeholder="Masukkan username"
-                            value="{{ old('username') }}" required autofocus>
+                            value="{{ old('username') }}" minlength="5" maxlength="30" required autofocus>
                     </div>
                     @error('username')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -203,7 +203,7 @@
                         <i class="fas fa-lock input-icon"></i>
                         <input type="password" name="password" id="password"
                             class="form-control @error('password') is-invalid @enderror" placeholder="Masukkan password"
-                            required>
+                            minlength="8" maxlength="100" required>
                     </div>
                     @error('password')
                         <div class="invalid-feedback d-block">{{ $message }}</div>

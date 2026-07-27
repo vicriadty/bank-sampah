@@ -235,9 +235,8 @@
                     <div class="col-md-6">
                         <label for="nik" class="form-label">NIK</label>
                         <input type="text" name="nik" id="nik"
-                               class="form-control @error('nik') is-invalid @enderror"
-                               placeholder="16 digit NIK" value="{{ old('nik') }}"
-                               maxlength="16" inputmode="numeric" pattern="[0-9]{16}" required>
+                            class="form-control @error('nik') is-invalid @enderror" placeholder="16 digit NIK"
+                            value="{{ old('nik') }}" maxlength="16" inputmode="numeric" pattern="[0-9]{16}" required>
                         @error('nik')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
@@ -247,8 +246,8 @@
                     <div class="col-md-6">
                         <label for="nama" class="form-label">Nama Lengkap</label>
                         <input type="text" name="nama" id="nama"
-                               class="form-control @error('nama') is-invalid @enderror"
-                               placeholder="Nama lengkap" value="{{ old('nama') }}" maxlength="100" required>
+                            class="form-control @error('nama') is-invalid @enderror" placeholder="Nama lengkap"
+                            value="{{ old('nama') }}" maxlength="60" required>
                         @error('nama')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
@@ -260,15 +259,15 @@
                     <label class="form-label d-block">Jenis Kelamin</label>
                     <div class="d-flex gap-4">
                         <div class="form-check">
-                            <input class="form-check-input @error('jenis_kelamin') is-invalid @enderror"
-                                   type="radio" name="jenis_kelamin" value="Laki-laki" id="jk_l"
-                                   {{ old('jenis_kelamin') === 'Laki-laki' ? 'checked' : '' }} required>
+                            <input class="form-check-input @error('jenis_kelamin') is-invalid @enderror" type="radio"
+                                name="jenis_kelamin" value="Laki-laki" id="jk_l"
+                                {{ old('jenis_kelamin') === 'Laki-laki' ? 'checked' : '' }} required>
                             <label class="form-check-label" for="jk_l">Laki-laki</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input @error('jenis_kelamin') is-invalid @enderror"
-                                   type="radio" name="jenis_kelamin" value="Perempuan" id="jk_p"
-                                   {{ old('jenis_kelamin') === 'Perempuan' ? 'checked' : '' }} required>
+                            <input class="form-check-input @error('jenis_kelamin') is-invalid @enderror" type="radio"
+                                name="jenis_kelamin" value="Perempuan" id="jk_p"
+                                {{ old('jenis_kelamin') === 'Perempuan' ? 'checked' : '' }} required>
                             <label class="form-check-label" for="jk_p">Perempuan</label>
                         </div>
                     </div>
@@ -282,8 +281,8 @@
                     <div class="col-md-6">
                         <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
                         <input type="text" name="tempat_lahir" id="tempat_lahir"
-                               class="form-control @error('tempat_lahir') is-invalid @enderror"
-                               placeholder="Kota lahir" value="{{ old('tempat_lahir') }}" maxlength="100" required>
+                            class="form-control @error('tempat_lahir') is-invalid @enderror" placeholder="Kota lahir"
+                            value="{{ old('tempat_lahir') }}" maxlength="30" required>
                         @error('tempat_lahir')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
@@ -293,8 +292,8 @@
                     <div class="col-md-6">
                         <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
                         <input type="text" name="tanggal_lahir" id="tanggal_lahir"
-                               class="form-control @error('tanggal_lahir') is-invalid @enderror"
-                               placeholder="Pilih tanggal" value="{{ old('tanggal_lahir') }}" required>
+                            class="form-control @error('tanggal_lahir') is-invalid @enderror"
+                            placeholder="Pilih tanggal" value="{{ old('tanggal_lahir') }}" required>
                         @error('tanggal_lahir')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
@@ -304,9 +303,8 @@
                 {{-- Alamat --}}
                 <div class="mt-3">
                     <label for="alamat" class="form-label">Alamat Lengkap</label>
-                    <textarea name="alamat" id="alamat"
-                              class="form-control @error('alamat') is-invalid @enderror"
-                              placeholder="Alamat lengkap" rows="3" maxlength="1000" required>{{ old('alamat') }}</textarea>
+                    <textarea name="alamat" id="alamat" class="form-control @error('alamat') is-invalid @enderror"
+                        placeholder="Alamat lengkap" rows="3" maxlength="150" required>{{ old('alamat') }}</textarea>
                     @error('alamat')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
@@ -315,11 +313,13 @@
                 {{-- No. Handphone --}}
                 <div class="mt-3">
                     <label for="no_hp" class="form-label">No. Handphone</label>
-                    <input type="tel" name="no_hp" id="no_hp"
-                           class="form-control @error('no_hp') is-invalid @enderror"
-                           placeholder="08xxxxxxxxxx" value="{{ old('no_hp') }}" maxlength="15" required>
+                    <input type="text" name="no_hp" id="no_hp"
+                        class="form-control @error('no_hp') is-invalid @enderror" placeholder="08xxxxxxxxxx"
+                        value="{{ old('no_hp') }}" minlength="10" maxlength="15" required>
                     @error('no_hp')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                        <div class="invalid-feedback
+                        d-block">{{ $message }}
+                        </div>
                     @enderror
                 </div>
 
@@ -334,24 +334,10 @@
                         <div class="input-wrapper">
                             <i class="fas fa-user input-icon-left"></i>
                             <input type="text" name="username" id="username"
-                                   class="form-control @error('username') is-invalid @enderror"
-                                   placeholder="Username" value="{{ old('username') }}" maxlength="100" required>
+                                class="form-control @error('username') is-invalid @enderror" placeholder="Username"
+                                value="{{ old('username') }}" minlength="5" maxlength="30" required>
                         </div>
                         @error('username')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- Email --}}
-                    <div class="col-md-6">
-                        <label for="email" class="form-label">Email</label>
-                        <div class="input-wrapper">
-                            <i class="fas fa-envelope input-icon-left"></i>
-                            <input type="email" name="email" id="email"
-                                   class="form-control @error('email') is-invalid @enderror"
-                                   placeholder="email@contoh.com" value="{{ old('email') }}" required>
-                        </div>
-                        @error('email')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
@@ -364,8 +350,8 @@
                         <div class="input-wrapper">
                             <i class="fas fa-lock input-icon-left"></i>
                             <input type="password" name="password" id="password"
-                                   class="form-control @error('password') is-invalid @enderror"
-                                   placeholder="Min. 6 karakter" minlength="6" required>
+                                class="form-control @error('password') is-invalid @enderror"
+                                placeholder="Min. 8 karakter" minlength="8" maxlength="100" required>
                         </div>
                         @error('password')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -378,8 +364,8 @@
                         <div class="input-wrapper">
                             <i class="fas fa-lock input-icon-left"></i>
                             <input type="password" name="password_confirmation" id="password_confirmation"
-                                   class="form-control @error('password_confirmation') is-invalid @enderror"
-                                   placeholder="Ulangi password" minlength="6" required>
+                                class="form-control @error('password_confirmation') is-invalid @enderror"
+                                placeholder="Ulangi password" minlength="8" maxlength="100" required>
                         </div>
                         @error('password_confirmation')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -416,4 +402,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>

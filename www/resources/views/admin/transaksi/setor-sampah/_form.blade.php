@@ -14,9 +14,9 @@
 <div id="sampah-container">
     <div class="row sampah-row mb-3 align-items-end">
         <div class="col-md-3 col-sm-4">
-            <label>Kategori</label>
+            <label>Kategori Sampah</label>
             <select class="form-control jenis-sampah-select form-control-sm">
-                <option value="">Pilih Kategori</option>
+                <option value="">Pilih Kategori Sampah</option>
                 @foreach ($kategoriSampah as $kategori)
                     <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
                 @endforeach
@@ -34,7 +34,7 @@
         </div>
         <div class="col-md-1 col-sm-4">
             <label class="text-small">Berat(kg)</label>
-            <input type="number" name="berat[]" class="form-control berat-input form-control-sm" step="0.01"
+            <input type="number" name="berat[]" class="form-control berat-input form-control-sm" step="0.1"
                 min="0.1" required>
         </div>
         <div class="col-md-2 col-sm-4">

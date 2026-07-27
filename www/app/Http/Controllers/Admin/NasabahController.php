@@ -34,16 +34,15 @@ class NasabahController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nik' => ['required', 'min:16', 'max:16'],
-            'nama' => ['required', 'max:100'],
-            'username' => ['required', 'max:100'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'min:6'],
+            'nik' => ['required', 'size:16'],
+            'nama' => ['required', 'min:3', 'max:100'],
+            'username' => ['required', 'min:5', 'max:30'],
+            'password' => ['required', 'min:8'],
             'jenis_kelamin' => ['required', Rule::in(['Laki-laki', 'Perempuan'])],
-            'tanggal_lahir' => ['required', 'string'],
+            'tanggal_lahir' => ['required', 'date'],
             'tempat_lahir' => ['required', 'max:100'],
             'alamat' => ['required', 'max:255'],
-            'no_hp' => ['required', 'max:13'],
+            'no_hp' => ['required', 'min:10', 'max:13'],
         ]);
 
         try {
@@ -51,7 +50,6 @@ class NasabahController extends Controller
 
             $user = User::create([
                 'username' => $request->username,
-                'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role' => 'nasabah',
             ]);
@@ -60,7 +58,6 @@ class NasabahController extends Controller
                 'user_id' => $user->id,
                 'nik' => $request->nik,
                 'nama' => $request->nama,
-                'email' => $request->email,
                 'jenis_kelamin' => $request->jenis_kelamin,
                 'tanggal_lahir' => $request->tanggal_lahir,
                 'tempat_lahir' => $request->tempat_lahir,

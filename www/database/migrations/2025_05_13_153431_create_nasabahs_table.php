@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('nasabahs', function (Blueprint $table) {
             $table->id();
             $table->string('nik', 16)->unique();
-            $table->string('nama', 100);
+            $table->string('nama', 60);
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
             $table->date('tanggal_lahir');
-            $table->string('tempat_lahir', 100);
+            $table->string('tempat_lahir', 30);
             $table->text('alamat');
             $table->string('no_hp', 15);
             $table->decimal('saldo', 12, 2)->default(0)->nullable();

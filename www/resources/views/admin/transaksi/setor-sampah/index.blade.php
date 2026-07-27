@@ -234,7 +234,9 @@
             document.querySelector('[name="action"][value="cetak"]').addEventListener('click', function() {
                 var form = document.getElementById('formFilterSetoran');
                 form.target = '_blank';
-                setTimeout(function() { form.target = ''; }, 100);
+                setTimeout(function() {
+                    form.target = '';
+                }, 100);
             });
 
             // Void handler
@@ -306,13 +308,13 @@
                 fetch('/admin/get-sampah-by-jenis/' + jenisID)
                     .then(res => res.json())
                     .then(data => {
-                        sampahSelect.innerHTML = '<option value="">Pilih Nama Jenis</option>';
+                        sampahSelect.innerHTML = '<option value="">Pilih Jenis Sampah</option>';
                         data.forEach(item => {
                             let opt = document.createElement('option');
                             opt.value = item.id;
                             opt.dataset.harga = item.harga_per_kg;
-                            opt.textContent = item.nama_jenis + ' - Rp' + parseInt(item.harga_per_kg)
-                                .toLocaleString('id-ID') + '/kg';
+                            opt.textContent = item.nama_jenis
+                                .toLocaleString('id-ID')
                             sampahSelect.appendChild(opt);
                         });
                     })
@@ -444,6 +446,22 @@
                     return;
                 }
 
+                let beratInvalid = false;
+                document.querySelectorAll('.berat-input').forEach(el => {
+                    let val = parseFloat(el.value);
+                    if (el.value && val <= 0.1) {
+                        beratInvalid = true;
+                    }
+                });
+
+                if (beratInvalid) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Berat minimal 0.1 Kg'
+                    });
+                    return;
+                }
+
                 Swal.fire({
                     title: 'Konfirmasi Setoran',
                     html: `<div style="text-align: left;">
@@ -527,7 +545,7 @@
                 $('input[name="tanggal_akhir"]').addClass('is-invalid')
                     .after(
                         '<small class="text-danger date-error">Tanggal Akhir harus lebih besar atau sama dengan Tanggal Awal</small>'
-                        );
+                    );
             }
         }
 
