@@ -44,6 +44,7 @@ class ElasticIndexCreate extends Command
                 'analyzer' => [
                     'ngram_analyzer' => [
                         'tokenizer' => 'ngram_tokenizer',
+                        'filter' => ['lowercase'],
                     ],
                 ],
                 'tokenizer' => [
