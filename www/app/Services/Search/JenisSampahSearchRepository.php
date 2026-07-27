@@ -23,7 +23,6 @@ class JenisSampahSearchRepository
                     'query' => $keyword,
                     'fields' => ['nama_jenis', 'kategori'],
                     'type' => 'best_fields',
-                    'fuzziness' => 'AUTO',
                 ],
             ],
         ];
