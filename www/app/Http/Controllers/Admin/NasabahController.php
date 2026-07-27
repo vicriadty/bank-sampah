@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 
+use App\Exceptions\SearchUnavailableException;
 use App\Models\Nasabah;
 use App\Models\User;
+use App\Services\Search\NasabahSearchRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -13,15 +15,23 @@ use Illuminate\Validation\Rule;
 
 class NasabahController extends Controller
 {
+    public function __construct(
+        private NasabahSearchRepository $nasabahSearch
+    ) {}
+
     public function index(Request $request)
     {
-        $query = Nasabah::query();
-
         if ($request->filled('nasabah')) {
-            $query->where('nama', 'LIKE', '%' . $request->nasabah . '%');
+            try {
+                $result = $this->nasabahSearch->search($request->nasabah, 10, $request->get('page', 1));
+                $nasabah = $result['result'];
+            } catch (SearchUnavailableException $e) {
+                $result = $this->nasabahSearch->mysqlFallback($request->nasabah, 10, $request->get('page', 1));
+                $nasabah = $result['result'];
+            }
+        } else {
+            $nasabah = Nasabah::latest()->paginate(10)->withQueryString();
         }
-
-        $nasabah = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.nasabah.index', compact('nasabah'));
     }
@@ -143,13 +153,17 @@ class NasabahController extends Controller
 
     public function search(Request $request)
     {
-        $query = Nasabah::query();
-
         if ($request->filled('nasabah')) {
-            $query->where('nama', 'LIKE', '%' . $request->nasabah . '%');
+            try {
+                $result = $this->nasabahSearch->search($request->nasabah, 10, $request->get('page', 1));
+                $nasabah = $result['result'];
+            } catch (SearchUnavailableException $e) {
+                $result = $this->nasabahSearch->mysqlFallback($request->nasabah, 10, $request->get('page', 1));
+                $nasabah = $result['result'];
+            }
+        } else {
+            $nasabah = Nasabah::latest()->paginate(10)->withQueryString();
         }
-
-        $nasabah = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.nasabah.index', compact('nasabah'));
     }
