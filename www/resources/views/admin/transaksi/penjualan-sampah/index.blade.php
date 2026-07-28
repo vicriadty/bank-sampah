@@ -279,22 +279,20 @@
                         data.forEach(item => {
                             let opt = document.createElement('option');
                             opt.value = item.id;
-                            opt.dataset.harga = item.harga_per_kg;
                             opt.textContent = item.nama_jenis + ' - (Stok: ' + parseFloat(
                                 item.stok).toFixed(2) + ' kg)';
                             sampahSelect.appendChild(opt);
                         });
+                        hargaInput.value = '';
                     })
                     .catch(() => alert('Gagal memuat data sampah'));
             }
 
             function updateSubtotal(row) {
-                let sampahSelect = row.querySelector('.sampah-select');
-                let hargaOption = sampahSelect.options[sampahSelect.selectedIndex];
-                let harga = parseFloat(hargaOption?.dataset?.harga) || 0;
+                let harga = parseFloat(row.querySelector('.harga-per-kg').value) || 0;
                 let berat = parseFloat(row.querySelector('.berat-input').value) || 0;
                 let subtotal = harga * berat;
-                row.querySelector('.harga-per-kg').value = harga ? formatRupiah(harga) : '';
+                row.querySelector('.harga-per-kg').value = harga ? harga : '';
                 let subEl = row.querySelector('.subtotal');
                 subEl.value = subtotal ? formatRupiah(subtotal) : '';
                 subEl.dataset.nilai = subtotal;
@@ -338,7 +336,7 @@
             });
 
             document.getElementById('sampah-container').addEventListener('input', function(e) {
-                if (e.target.classList.contains('berat-input')) {
+                if (e.target.classList.contains('berat-input') || e.target.classList.contains('harga-per-kg')) {
                     updateSubtotal(e.target.closest('.sampah-row'));
                 }
             });

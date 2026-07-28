@@ -31,7 +31,8 @@
 
         <div class="col-md-2 col-sm-4">
             <label>Harga/kg</label>
-            <input type="text" class="form-control harga-per-kg form-control-sm" readonly>
+            <input type="number" name="harga[]" class="form-control harga-per-kg form-control-sm" step="1"
+                min="0" required>
         </div>
 
         <div class="col-md-1 col-sm-4">
