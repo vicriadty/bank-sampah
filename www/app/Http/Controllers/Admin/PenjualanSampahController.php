@@ -86,6 +86,8 @@ class PenjualanSampahController extends Controller
             'pengepul_id' => ['required', 'exists:pengepuls,id'],
             'sampah_id' => ['required', 'array'],
             'sampah_id.*' => ['required', 'exists:jenis_sampahs,id'],
+            'harga' => ['required', 'array'],
+            'harga.*' => ['required', 'numeric', 'min:0'],
             'berat' => ['required', 'array'],
             'berat.*' => ['required', 'numeric', 'min:0.1'],
         ]);
@@ -93,9 +95,15 @@ class PenjualanSampahController extends Controller
         $errors = [];
         foreach ($request->sampah_id as $index => $sampahId) {
             $berat = $request->berat[$index] ?? null;
+            $harga = $request->harga[$index] ?? null;
 
             if ($berat === null || $berat <= 0) {
                 $errors["berat.{$index}"] = 'Berat sampah harus lebih dari 0.';
+                continue;
+            }
+
+            if ($harga === null || $harga < 0) {
+                $errors["harga.{$index}"] = 'Harga per kg wajib diisi.';
                 continue;
             }
 
@@ -124,20 +132,21 @@ class PenjualanSampahController extends Controller
 
             foreach ($request->sampah_id as $index => $sampahId) {
                 $berat = $request->berat[$index];
+                $harga = $request->harga[$index];
                 $jenisSampah = JenisSampah::where('id', $sampahId)->lockForUpdate()->firstOrFail();
 
                 if ($berat > $jenisSampah->stok) {
                     throw new \Exception('Stok sampah ' . $jenisSampah->nama_jenis . ' tidak mencukupi.');
                 }
 
-                $subtotal = $berat * $jenisSampah->harga_per_kg;
+                $subtotal = $berat * $harga;
                 $totalHarga += $subtotal;
 
                 DetailPenjualanSampah::create([
                     'penjualan_sampah_id' => $penjualan->id,
                     'sampah_id' => $sampahId,
                     'berat' => $berat,
-                    'harga_per_kg' => $jenisSampah->harga_per_kg,
+                    'harga_per_kg' => $harga,
                     'subtotal' => $subtotal,
                 ]);
 
