@@ -1,674 +1,362 @@
+Saya menyarankan agar AI Agent **tidak langsung mengubah query Elasticsearch**, tetapi melakukannya secara bertahap. Dengan begitu setiap perubahan dapat diuji, dibandingkan hasilnya, dan jika terjadi penurunan relevansi pencarian akan lebih mudah diidentifikasi.
+
+Berikut adalah high level plan yang saya rekomendasikan.
+
+Buatkan branch fix/elasticsearch-improve
+
 ---
 
-# Elasticsearch Enhancement Roadmap
+# Prompt untuk AI Agent
 
 ## Objective
 
-Enhance the existing Elasticsearch implementation to achieve:
+Lakukan peningkatan kualitas fitur pencarian pada aplikasi Bank Sampah berbasis Laravel 12 yang menggunakan MySQL sebagai primary database, Elasticsearch sebagai search engine, dan Redis sebagai cache.
 
-* Better architecture (SOLID)
-* Better maintainability
-* Better scalability
-* Better search quality
-* Better monitoring
-* Better benchmarking
-* Better documentation
+Tujuan implementasi adalah meningkatkan **akurasi hasil pencarian**, **relevansi ranking**, serta **kualitas response API**, tanpa mengubah arsitektur yang sudah berjalan.
 
-The existing implementation must remain functional.
-
-Do **NOT** rewrite working code unless necessary.
-
-Start with creating new branch for this implementation. feature/elasticsearch-enhancement
+Implementasi dilakukan secara bertahap (phase-based), dengan setiap phase dapat diuji secara independen.
 
 ---
 
-# Phase 1 — Architecture Refactoring
+# Phase 1 – Audit dan Analisis Search
 
-## Goal
+### Tujuan
 
-Improve code architecture without changing business logic.
+Lakukan audit terhadap implementasi pencarian Elasticsearch saat ini.
 
-### Tasks
+### Task
 
-Analyze the current implementation.
+- Analisis seluruh Search Repository:
+    - NasabahSearchRepository
+    - JenisSampahSearchRepository
+    - SetoranSearchRepository
 
-Refactor search architecture by introducing:
+- Identifikasi:
+    - field yang menggunakan ngram
+    - jenis query yang digunakan
+    - analyzer yang dipakai
+    - ranking (\_score)
 
-```text
-Contracts/
-    SearchRepositoryInterface.php
-```
+- Dokumentasikan kelemahan implementasi saat ini, misalnya:
+    - hasil terlalu banyak
+    - false positive
+    - ranking kurang relevan
+    - pencarian nama menghasilkan data yang tidak sesuai.
 
-Implement:
+### Deliverable
 
-```text
-Repositories/
-
-    ElasticsearchSearchRepository.php
-
-    MysqlSearchRepository.php
-```
-
-Controllers must depend only on:
-
-```text
-SearchRepositoryInterface
-```
-
-Use Laravel Dependency Injection.
-
-Register binding inside
-
-```text
-AppServiceProvider
-```
-
-No controller may instantiate repositories manually.
-
-### Deliverables
-
-- Dependency Injection implemented
-- Interface-based architecture
-- SOLID compliance improved
+Dokumen audit implementasi search.
 
 ---
 
-# Phase 2 — Elasticsearch Index Versioning
+# Phase 2 – Perbaikan Query Elasticsearch
 
-## Goal
+### Tujuan
 
-Support future mapping changes without downtime.
+Meningkatkan relevansi hasil pencarian.
 
-### Tasks
+### Task
 
-Implement versioned indexes.
+Ganti query sederhana:
 
-Instead of:
-
-```text
-banksampah_nasabahs
+```php
+multi_match
 ```
 
-use
+menjadi query bertingkat menggunakan:
 
-```text
-banksampah_nasabahs_v1
-```
+- bool query
+- should clause
+- match_phrase
+- prefix
+- multi_match sebagai fallback
+- minimum_should_match yang sesuai
 
-Future versions:
+Prioritas pencarian:
 
-```text
-banksampah_nasabahs_v2
-```
+1. Exact phrase
+2. Prefix
+3. Partial search (ngram)
 
-Create helper methods for:
+Field dapat memiliki bobot (boost) yang berbeda.
 
-- current version
-- active version
-- latest version
+Contoh prioritas:
 
-Never hardcode index names.
+- nama lebih tinggi daripada alamat
+- nik lebih tinggi daripada alamat
+- email lebih rendah jika tidak sering digunakan
 
-### Deliverables
+Pastikan hasil pencarian tetap kompatibel dengan pagination Laravel.
 
-Versioned indexes.
+### Deliverable
+
+Search Repository yang lebih relevan dan mudah dikembangkan.
 
 ---
 
-# Phase 3 — Alias Management
+# Phase 3 – Optimasi Mapping dan Analyzer
 
-## Goal
+### Tujuan
 
-Decouple application from physical index names.
+Mengurangi false positive.
 
-### Tasks
+### Task
 
-Implement aliases.
+Evaluasi seluruh mapping Elasticsearch.
 
-Example
+Pastikan:
 
-```text
-banksampah_nasabahs
-```
+- field yang memang perlu ngram tetap menggunakan ngram
+- field yang tidak membutuhkan partial matching menggunakan keyword atau analyzer standar
+- evaluasi penggunaan ngram pada:
+    - nama
+    - alamat
+    - email
+    - nik
 
-↓
+Buat rekomendasi mapping terbaik sesuai kebutuhan aplikasi Bank Sampah.
 
-Alias
+Jika diperlukan, lakukan recreate index dan reimport data.
 
-↓
+### Deliverable
 
-```text
-banksampah_nasabahs_v1
-```
-
-Application must search only through aliases.
-
-Add Artisan commands
-
-```bash
-php artisan elastic:alias:list
-
-php artisan elastic:alias:update
-
-php artisan elastic:alias:switch
-```
-
-### Deliverables
-
-Alias-based searching.
+Mapping Elasticsearch yang lebih optimal.
 
 ---
 
-# Phase 4 — Advanced Mapping & Analyzer
+# Phase 4 – Optimasi Ranking
 
-## Goal
+### Tujuan
 
-Improve search quality.
+Meningkatkan kualitas urutan hasil pencarian.
 
-### Tasks
+### Task
 
-Replace simple mappings with multi-field mappings.
+Gunakan boosting pada field.
 
-Example
+Contoh prioritas:
 
-```text
-nama
+- nama
+- nik
+- email
+- alamat
 
-├── text
+Pastikan pencarian:
 
-├── keyword
-
-└── autocomplete
+```
+Raf
 ```
 
-Implement custom analyzer.
+lebih memprioritaskan
 
-Include:
+```
+Raffa
+Rafli
+Rafif
+```
 
-- lowercase
-- asciifolding
-- edge_ngram
-- standard tokenizer
+dibanding
 
-Support:
+```
+Safitri
+Ifa
+```
 
-- partial matching
-- case insensitive
-- accent insensitive
+Tambahkan minimum_score apabila diperlukan untuk menghilangkan hasil dengan relevansi yang sangat rendah.
 
-Document analyzer configuration.
+### Deliverable
 
-### Deliverables
-
-Advanced search analyzer.
+Ranking hasil pencarian lebih akurat.
 
 ---
 
-# Phase 5 — Search Quality Enhancement
+# Phase 5 – Perbaikan Response API
 
-## Goal
+### Tujuan
 
-Improve relevance.
+Meningkatkan kualitas response.
 
-### Tasks
+### Task
 
-Implement
+Perbaiki response JSON.
 
-- fuzzy search
-- phrase match
-- boosting
-- multi-match query
+Pastikan collection selalu di-reset menggunakan:
 
-Search priority example
-
-```text
-Nama
-
-↓
-
-NIK
-
-↓
-
-Email
-
-↓
-
-Alamat
+```php
+->values()
 ```
 
-Support typo tolerance.
+sehingga response menjadi:
 
-Example
-
-```text
-adtya
-
-↓
-
-Aditya
+```json
+[
+  {...},
+  {...},
+  {...}
+]
 ```
 
-### Deliverables
+bukan
 
-High-quality search experience.
+```json
+{
+  "0": {...},
+  "1": {...},
+  "3": {...}
+}
+```
+
+Tambahkan metadata response jika belum tersedia:
+
+- search_engine
+- cache_status
+- search_time
+- total
+- current_page
+- last_page
+
+Pastikan struktur response konsisten.
+
+### Deliverable
+
+API response lebih bersih dan mudah digunakan frontend.
 
 ---
 
-# Phase 6 — Pagination Strategy
+# Phase 6 – Search Quality Testing
 
-## Goal
+### Tujuan
 
-Support large datasets.
+Memastikan seluruh perubahan meningkatkan kualitas pencarian.
 
-### Tasks
+### Task
 
-Review current pagination.
+Buat skenario pengujian untuk:
 
-If using
+### Exact Match
 
-```text
-from + size
+```
+Raffa
 ```
 
-keep for small datasets.
+harus menghasilkan
 
-Implement
-
-```text
-search_after
+```
+Raffa
 ```
 
-for future scalability.
-
-Abstract pagination logic.
-
-### Deliverables
-
-Scalable pagination.
+di urutan pertama.
 
 ---
 
-# Phase 7 — Search Cache Integration
+### Prefix Search
 
-## Goal
-
-Reduce repeated Elasticsearch requests.
-
-### Tasks
-
-Integrate Redis cache.
-
-Cache
-
-- keyword
-- page
-- filters
-
-Cache key example
-
-```text
-search:nasabah:adi:page1
+```
+Raf
 ```
 
-TTL
+menghasilkan
 
-```text
-5 minutes
 ```
-
-Cache invalidation after
-
-- create
-- update
-- delete
-
-### Deliverables
-
-Search cache implemented.
+Raffa
+Rafli
+Rafif
+```
 
 ---
 
-# Phase 8 — Retry & Circuit Breaker
+### Partial Search
 
-## Goal
-
-Improve resilience.
-
-### Tasks
-
-Instead of
-
-```text
-Exception
-
-↓
-
-Fallback
+```
+ffa
 ```
 
-Implement
+tetap menemukan
 
-```text
-Search
-
-↓
-
-Retry (1–2x)
-
-↓
-
-Still failed?
-
-↓
-
-Fallback MySQL
 ```
-
-Handle
-
-- timeout
-- network error
-- unavailable cluster
-
-Log retry attempts.
-
-### Deliverables
-
-Fault-tolerant search.
+Raffa
+```
 
 ---
 
-# Phase 9 — Health Monitoring
+### NIK Search
 
-## Goal
-
-Monitor Elasticsearch status.
-
-### Tasks
-
-Create Artisan commands
-
-```bash
-php artisan elastic:health
-
-php artisan elastic:cluster
-
-php artisan elastic:stats
+```
+320102
 ```
 
-Display
-
-- cluster status
-- nodes
-- memory
-- document count
-- index size
-
-### Deliverables
-
-Monitoring commands.
+menghasilkan NIK yang sesuai.
 
 ---
 
-# Phase 10 — Performance Metrics
+### Email Search
 
-## Goal
-
-Measure Elasticsearch performance.
-
-### Tasks
-
-Measure
-
-- search duration
-- indexing duration
-- bulk import duration
-
-Store metrics.
-
-Generate summary.
-
-Log slow queries.
-
-Threshold
-
-```text
->200 ms
+```
+gmail
 ```
 
-### Deliverables
-
-Performance metrics.
+menghasilkan email yang relevan.
 
 ---
 
-# Phase 11 — Benchmark Framework
+### Address Search
 
-## Goal
+Pastikan pencarian alamat tidak menghasilkan terlalu banyak false positive.
 
-Generate measurable comparison.
+---
 
-### Tasks
+### Redis
 
-Create benchmark command.
+Lakukan dua kali request.
 
-Compare
+Request pertama:
 
-MySQL LIKE
-
-↓
-
-Elasticsearch
-
-Dataset
-
-```text
-100
-
-1,000
-
-10,000
-
-50,000
-
-100,000
+```
+X-Cache: MISS
 ```
 
-Measure
+Request kedua:
 
-- execution time
-- memory usage
-
-Generate report.
-
-### Deliverables
-
-Benchmark report.
-
----
-
-# Phase 12 — Bulk Import Optimization
-
-## Goal
-
-Improve import performance.
-
-### Tasks
-
-Review current import.
-
-Implement
-
-Chunk
-
-↓
-
-Bulk API
-
-↓
-
-Progress Bar
-
-↓
-
-Summary
-
-Configurable chunk size.
-
-Default
-
-```text
-500
+```
+X-Cache: HIT
 ```
 
-Allow
+---
 
-```text
---chunk=1000
-```
+### Elasticsearch Fallback
 
-### Deliverables
+Matikan Elasticsearch.
 
-Optimized importer.
+Pastikan pencarian tetap berhasil menggunakan MySQL.
 
 ---
 
-# Phase 13 — Logging Enhancement
+### Performance Comparison
 
-## Goal
+Bandingkan:
 
-Improve observability.
+- waktu sebelum optimasi
+- waktu sesudah optimasi
 
-### Tasks
+Gunakan data:
 
-Separate logs.
+- search time
+- jumlah dokumen
+- relevansi hasil
 
-Categories
+### Deliverable
 
-```text
-Connection
-
-Index
-
-Search
-
-Import
-
-Retry
-
-Fallback
-
-Slow Query
-```
-
-Include execution time.
-
-### Deliverables
-
-Structured logging.
+Dokumen hasil pengujian beserta perbandingan sebelum dan sesudah optimasi.
 
 ---
 
-# Phase 14 — Testing
+# Target Akhir
 
-## Goal
+Setelah seluruh phase selesai, implementasi pencarian harus memenuhi karakteristik berikut:
 
-Increase reliability.
-
-### Tasks
-
-Create tests.
-
-Unit Tests
-
-- repository
-- service
-- analyzer
-- retry
-
-Feature Tests
-
-- search
-- fallback
-- alias
-- cache
-
-Performance Tests
-
-Benchmark validation.
-
-### Deliverables
-
-High test coverage.
-
----
-
-# Phase 15 — Documentation
-
-## Goal
-
-Produce thesis-quality documentation.
-
-### Tasks
-
-Update
-
-```text
-docs/elasticsearch.md
-```
-
-Include
-
-- Architecture
-- Sequence Diagram
-- Index Versioning
-- Alias
-- Analyzer
-- Mapping
-- Retry
-- Cache
-- Benchmark
-- Monitoring
-- Performance Results
-- Future Improvements
-
-Generate Mermaid diagrams.
-
-### Deliverables
-
-Complete technical documentation.
-
----
-
-# Recommended Execution Order
-
-| Phase                               | Priority   | Estimated Complexity |
-| ----------------------------------- | ---------- | -------------------- |
-| 1. Architecture Refactoring         | ⭐⭐⭐⭐⭐ | Medium               |
-| 2. Index Versioning                 | ⭐⭐⭐⭐   | Medium               |
-| 3. Alias Management                 | ⭐⭐⭐⭐   | Medium               |
-| 4. Advanced Mapping & Analyzer      | ⭐⭐⭐⭐⭐ | High                 |
-| 5. Search Quality Enhancement       | ⭐⭐⭐⭐   | High                 |
-| 6. Pagination Strategy              | ⭐⭐⭐     | Low                  |
-| 7. Search Cache Integration (Redis) | ⭐⭐⭐⭐⭐ | Medium               |
-| 8. Retry & Circuit Breaker          | ⭐⭐⭐⭐   | Medium               |
-| 9. Health Monitoring                | ⭐⭐⭐     | Low                  |
-| 10. Performance Metrics             | ⭐⭐⭐⭐   | Medium               |
-| 11. Benchmark Framework             | ⭐⭐⭐⭐⭐ | Medium               |
-| 12. Bulk Import Optimization        | ⭐⭐⭐     | Low                  |
-| 13. Logging Enhancement             | ⭐⭐⭐     | Low                  |
-| 14. Testing                         | ⭐⭐⭐⭐⭐ | Medium               |
-| 15. Documentation                   | ⭐⭐⭐⭐⭐ | Low                  |
-
----
-
-## Catatan penting untuk AI Agent
-
-- **Jangan menghapus implementasi Elasticsearch yang sudah ada.**
-- Seluruh enhancement harus bersifat **incremental** dan **backward compatible**.
-- Semua endpoint, command, observer, dan service yang sudah berfungsi harus tetap bekerja setelah enhancement.
-- Setiap phase harus dapat diuji dan diverifikasi secara independen sebelum melanjutkan ke phase berikutnya.
-- Seluruh perubahan harus mengikuti konvensi Laravel 12, memanfaatkan Dependency Injection, Service Container, dan prinsip SOLID.
-
-Roadmap ini akan menghasilkan implementasi Elasticsearch yang tidak hanya berfungsi, tetapi juga memiliki kualitas arsitektur yang lebih matang, mudah dipelihara, dan memberikan bukti teknis yang kuat untuk kebutuhan skripsi maupun demonstrasi saat sidang.
+- Akurasi pencarian meningkat dengan mengurangi false positive.
+- Hasil pencarian diurutkan berdasarkan tingkat relevansi yang lebih baik.
+- Struktur response API konsisten dan bersih untuk frontend.
+- Integrasi Elasticsearch, Redis, dan MySQL fallback tetap berjalan tanpa perubahan arsitektur.
+- Performa pencarian tetap cepat, dengan request pertama melalui Elasticsearch dan request berikutnya memanfaatkan cache Redis.
+- Seluruh perubahan terdokumentasi dan dapat dijadikan bagian dari dokumentasi teknis maupun bahan demonstrasi saat sidang skripsi.

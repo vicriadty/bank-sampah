@@ -210,7 +210,7 @@
                     <a href="{{ route('register') }}" class="btn btn-cta">Daftar Nasabah</a>
                 </div>
                 <div class="col-md-6 hero-image">
-                    <img src="/images/43173.jpg" alt="Ilustrasi Lingkungan" class="img-fluid">
+                    <img src="/images/hero-image.png" alt="Ilustrasi Lingkungan" class="img-fluid">
                 </div>
             </div>
         </div>

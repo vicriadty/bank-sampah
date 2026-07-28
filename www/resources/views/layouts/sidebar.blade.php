@@ -2,10 +2,11 @@
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('admin.dashboard') }}">
-        <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-recycle"></i>
+        <div class="sidebar-brand-icon">
+            <img src="{{ asset('logo-trashgold.svg') }}" width="35" height="35" alt="Bank Sampah" class="brand-logo">
         </div>
-        <div class="sidebar-brand-text mx-3">Bank Sampah</div>
+        <div class="sidebar-brand-text mx-3 text-lg"><span class="title-bas" style="color: #10b981">BAS</span><span
+                class="title-emas" style="color: #febd14">EMAS</span></div>
     </a>
 
     <!-- Divider -->

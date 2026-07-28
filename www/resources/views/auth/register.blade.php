@@ -43,10 +43,10 @@
             margin-bottom: 0.5rem;
         }
 
-        .brand-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #10b981;
+        .title-bas,
+        .title-emas {
+            font-size: 1.75rem;
+            font-weight: 900;
             letter-spacing: 0.5px;
             margin-bottom: 0.25rem;
         }
@@ -216,8 +216,10 @@
 
             {{-- Brand Header --}}
             <div class="text-center">
-                <img src="{{ asset('favicon1.svg') }}" alt="Bank Sampah" class="brand-logo">
-                <h1 class="brand-title">BANK SAMPAH</h1>
+                <img src="{{ asset('logo-trashgold.svg') }}" alt="Bank Sampah" class="brand-logo">
+                <h1 class="brand-title"><span class="title-bas" style="color: #10b981">BAS</span><span
+                        class="title-emas" style="color: #febd14">EMAS</span>
+                </h1>
                 <p class="brand-subtitle">Daftar Akun Baru</p>
             </div>
 

@@ -7,7 +7,7 @@
     <meta name="description" content="Bank Sampah - Login">
     <title>Bank Sampah - Login</title>
 
-    <link rel="icon" href="{{ asset('favicon1.svg') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('logo-trashgold.svg') }}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -40,10 +40,10 @@
             margin-bottom: 0.5rem;
         }
 
-        .brand-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #10b981;
+        .title-bas,
+        .title-emas {
+            font-size: 1.75rem;
+            font-weight: 900;
             letter-spacing: 0.5px;
             margin-bottom: 0.25rem;
         }
@@ -114,6 +114,11 @@
             color: #10b981;
         }
 
+        .brand-logo {
+            width: 20%;
+            height: 20%;
+        }
+
         .invalid-feedback {
             font-size: 0.8rem;
             margin-top: 0.25rem;
@@ -174,8 +179,10 @@
 
             {{-- Brand Header --}}
             <div class="text-center">
-                <img src="{{ asset('favicon1.svg') }}" alt="Bank Sampah" class="brand-logo">
-                <h1 class="brand-title">BANK SAMPAH</h1>
+                <img src="{{ asset('logo-trashgold.svg') }}" alt="Bank Sampah" class="brand-logo">
+                <h1 class="brand-title"><span class="title-bas" style="color: #10b981">BAS</span><span
+                        class="title-emas" style="color: #febd14">EMAS</span>
+                </h1>
                 <p class="brand-subtitle">Selamat Datang</p>
             </div>
 

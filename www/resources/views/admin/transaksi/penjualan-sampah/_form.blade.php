@@ -34,7 +34,7 @@
             <input type="text" class="form-control harga-per-kg form-control-sm" readonly>
         </div>
 
-        <div class="col-md-2 col-sm-4">
+        <div class="col-md-1 col-sm-4">
             <label>Berat (kg)</label>
             <input type="number" name="berat[]" class="form-control berat-input form-control-sm" step="0.1"
                 min="0.1" required>

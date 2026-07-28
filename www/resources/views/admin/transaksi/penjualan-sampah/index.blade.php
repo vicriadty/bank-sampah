@@ -201,7 +201,9 @@
             document.querySelector('[name="action"][value="cetak"]').addEventListener('click', function() {
                 var form = document.getElementById('formFilterPenjualan');
                 form.target = '_blank';
-                setTimeout(function() { form.target = ''; }, 100);
+                setTimeout(function() {
+                    form.target = '';
+                }, 100);
             });
 
             // Void handler
@@ -278,8 +280,8 @@
                             let opt = document.createElement('option');
                             opt.value = item.id;
                             opt.dataset.harga = item.harga_per_kg;
-                            opt.textContent = item.nama_jenis + ' - Rp' + parseInt(item.harga_per_kg)
-                                .toLocaleString('id-ID') + '/kg (Stok: ' + parseFloat(item.stok).toFixed(2) + ' kg)';
+                            opt.textContent = item.nama_jenis + ' - (Stok: ' + parseFloat(
+                                item.stok).toFixed(2) + ' kg)';
                             sampahSelect.appendChild(opt);
                         });
                     })
