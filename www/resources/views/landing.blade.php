@@ -175,7 +175,7 @@
                             <li><a class="dropdown-item"
                                     href="{{ Auth::user()->role === 'admin' ? route('admin.dashboard') : route('nasabah.dashboard') }}">Dashboard</a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('settings.edit') }}">Settings</a></li>
+                            <!-- <li><a class="dropdown-item" href="{{ route('settings.edit') }}">Settings</a></li> -->
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -210,7 +210,7 @@
                     <a href="{{ route('register') }}" class="btn btn-cta">Daftar Nasabah</a>
                 </div>
                 <div class="col-md-6 hero-image">
-                    <img src="/images/hero-image.png" alt="Ilustrasi Lingkungan" class="img-fluid">
+                    <img src="/images/hero-image2.png" alt="Ilustrasi Lingkungan" class="img-fluid">
                 </div>
             </div>
         </div>

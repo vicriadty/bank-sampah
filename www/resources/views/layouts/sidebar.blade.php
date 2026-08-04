@@ -5,7 +5,7 @@
         <div class="sidebar-brand-icon">
             <img src="{{ asset('logo-trashgold.svg') }}" width="35" height="35" alt="Bank Sampah" class="brand-logo">
         </div>
-        <div class="sidebar-brand-text mx-3 text-lg"><span class="title-bas" style="color: #10b981">BAS</span><span
+        <div class="sidebar-brand-text mx-3 text-lg"><span class="title-bas" style="color: #007c52">BAS</span><span
                 class="title-emas" style="color: #febd14">EMAS</span></div>
     </a>
 
