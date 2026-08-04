@@ -3,6 +3,7 @@ services:
   db:
     image: mysql:8.0
     container_name: laravel_db
+    command: --innodb-buffer-pool-size=64M --max-connections=50
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
@@ -30,14 +31,14 @@ services:
       - laravel_network
 
   # Mailpit
-  mailpit:
-    image: 'axllent/mailpit:latest'
-    container_name: laravel_mailpit
-    ports:
-      - "${FORWARD_MAILPIT_PORT:-1025}:1025"
-      - "${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025"
-    networks:
-      - laravel_network
+  # mailpit:
+  #   image: 'axllent/mailpit:latest'
+  #   container_name: laravel_mailpit
+  #   ports:
+  #     - "${FORWARD_MAILPIT_PORT:-1025}:1025"
+  #     - "${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025"
+  #   networks:
+  #     - laravel_network
 
   # Elasticsearch 8.11.1 Engine (Layanan Tambahan Baru)
   elasticsearch:
@@ -46,7 +47,7 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false # Dimatikan agar tidak rumit mengurus token/SSL saat sidang skripsi
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m" # Alokasi RAM dibatasi 512MB (Aman & Ringan untuk Laptop)
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m" # Alokasi RAM dibatasi 256MB (Aman & Ringan untuk Laptop)
     ports:
       - "${FORWARD_ELASTIC_PORT:-9200}:9200"
     volumes:
@@ -73,6 +74,7 @@ services:
       - "${APP_PORT:-8000}:80"
     volumes:
       - ./www:/var/www/html
+      # - /var/www/html/vendor
     networks:
       - laravel_network
 
